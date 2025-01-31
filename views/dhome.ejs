@@ -75,6 +75,7 @@
             width: 100px;
             background-color: black;
         }
+        
 </style>
 
 <body>
@@ -83,7 +84,7 @@
     
     
     
-        <nav>  <h1>Doctorreviews</h1>
+        <nav>  <h1>Doctorreviews</h1><span class="roomid"></span>
             <a href="/doctor/dhome/profile"><button>profile</button></a>
             <a href="/doctor/dhome/reviews"><button>reviews</button></a></nav>
       <form action="/doctor/logout" method="post"><button id="logout">logout</button></form>
@@ -115,7 +116,9 @@
             const msg = await response.json()
             console.log(msg.details)
             doctordetails=msg.details
+            
             socket.emit('register',{name:"doctor",email:doctordetails.email})
+            return doctordetails;
 
         } catch (error) {
             console.log(error)
@@ -167,22 +170,25 @@
         btn[1].style.display = "none"
         btn[0].textContent = "Creating Room..."
         //fetch roomid from the db for that doctor        
-        decode().then(()=>{
+        const response=await decode()
+        var roomid=response.roomid
+        console.log(roomid)
         socket.emit('room', {
-            roomid: "113344465575",
+            roomid: roomid,
             pid: pid
         }, (response) => {
 
             btn[0].textContent="Join"
             btn[0].style.backgroundColor="green"
+            document.getElementsByClassName('roomid')[0].textContent=roomid
            
 
-        })})
+        })
     }
     else{
-        window.location.href="/room"
+        const roomid=document.getElementsByClassName('roomid')[0].textContent
+        window.location.href=`/room/${roomid}`
     }
-  
     }
 
     async function reject(r) {

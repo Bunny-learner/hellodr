@@ -51,6 +51,9 @@
     em{
         display:none;
     }
+    .roomid{
+        display: none;
+    }
     h3,h4{
         display: none;
     }
@@ -75,6 +78,7 @@
                 <span><%= doctor.Username %></span>
                 <span class="status"><%=doctor.status%> </span>
                 </span>
+                <span class="roomid"></span>
                 <em></em>
                 <span class="info"><%= doctor.info[0].experience%> of Experience</span>
                 <button onclick="consult(this)">Consult</button>
@@ -165,9 +169,11 @@ async function consult(ele) {
             ele.style.backgroundColor = "red";
         } 
 
-    if (ele.textContent === "Join") {
+        if (ele.textContent === "Join") {
+      const roomid=ele.parentElement.getElementsByClassName('roomid')[0].textContent
+      console.log(roomid)
         alert('Successfully connected to doctor!!')
-        window.location.href = "/room";
+        window.location.href = `/room/${roomid}`;
     }
 }
 
@@ -186,36 +192,39 @@ socket.on('rejected', (rejected) => {
 });
 
 
-async function store(roomid){
+// async function store(roomid){
 
-    const response=await fetch('/storeroomid',{
-        method:'GET',
-        headers:{
-                'Authorization': `Bearer ${document.cookie.split('=')[1]}`,
-                'roomid':roomid
-            },
-            credentials: 'include'
-        });
+//     const response=await fetch('/storeroomid',{
+//         method:'GET',
+//         headers:{
+//                 'Authorization': `Bearer ${document.cookie.split('=')[1]}`,
+//                 'roomid':roomid
+//             },
+//             credentials: 'include'
+//         });
 
-        return response;
+//         return response;
 
-    }
+//     }
 
-const storeroomid =async(roomid)=>{
-const response=await store(roomid)
-const shortmsg=await response.json()
-alert('roomid stored successfully!!')}
+// const storeroomid =async(roomid)=>{
+// const response=await store(roomid)
+// const shortmsg=await response.json()
+// alert('roomid stored successfully!!')}
 
 socket.on('patientjoined', (joined) => {
     const did = joined.did;
     const ele = document.getElementsByTagName('p');
     Array.from(ele).forEach(e => {
         const idofdoc = e.getElementsByTagName('em')[0].textContent;
+        console.log(idofdoc,"  ",did)
         if (idofdoc === did) {
             const btn = e.getElementsByTagName('button')[0];
             btn.textContent = "Join";
             btn.style.backgroundColor = "green";
-            storeroomid(joined.roomid)
+            console.log(joined.roomid)
+            e.getElementsByClassName('roomid')[0].textContent=joined.roomid
+           
         }
     });
 });

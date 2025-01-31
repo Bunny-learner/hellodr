@@ -231,7 +231,7 @@
     <h5>
         <%=who%>
     </h5>
-    <button onclick="leave()" class="leave" id="exit"><img src="logout.png" alt=""></button>
+    <button onclick="leave()" class="leave"><img src="/logout.png" alt=""></button>
 
     <form id="form" action="">
 
@@ -240,7 +240,7 @@
         <label for="file">Upload</label>
         <input id="file" type="file" multiple />
 
-        <label id="sending" for="send"><img src="send-message.png" alt=""></label>
+        <label id="sending" for="send"><img src="/send-message.png" alt=""></label>
         <button hidden id="send">Send</button>
     </form>
 
@@ -341,8 +341,18 @@ function leave(){
         else if (input.value || file.files) {
 
             const array = await uploadFile()
+            const who=document.getElementsByTagName('h5')[0].textContent
+            if(who=="doctor"){
+                const roomid=window.location.href.split('/')[4]
+            
             socket.emit('Roomregister', {name:name,roomid:roomid,who:who})
-            socket.emit('sendMessage', { text: input.value, files: array });
+            socket.emit('sendMessage', { message: input.value, files: array ,who:who,roomid:roomid,sender:name});}
+            else{
+            const roomid=window.location.href.split('/')[4]
+            
+            socket.emit('Roomregister',{roomid:roomid,name:name,who:who})
+            socket.emit('sendMessage', { message: input.value, files: array ,who:who,sender:name,roomid:roomid});}
+            
             const message = input.value
             input.value = '';
             const item = document.createElement('li');
@@ -396,9 +406,9 @@ function leave(){
         item.className = "leftside"
         item.innerHTML = `
         <span>
-    ${msg.sender} </span><br/<br/><h3>${msg.message.text}</h3>`
+    ${msg.sender} </span><br/<br/><h3>${msg.message}</h3>`
         messages.appendChild(item);
-        const array = msg.message.files
+        const array = msg.files
         for (let i = 0; i < array.length; i++) {
 
             if (array[i].type == "image") {
@@ -431,27 +441,5 @@ function leave(){
 
         item.scrollIntoView({ behaviour: 'smooth', block: 'nearest' })
     });
-
-
-
-    // Prevent back button
-    window.history.pushState(null, "", window.location.href);
-    window.addEventListener("popstate", function () {
-        window.history.pushState(null, "", window.location.href);
-    });
-
-    // Prevent refresh & closing
-    window.addEventListener("beforeunload", function (event) {
-        event.preventDefault();
-        event.returnValue = "";
-    });
-
-    // Enable navigation when the button is clicked
-    document.getElementById("exit").addEventListener("click", function () {
-        window.removeEventListener("beforeunload", function () {});
-        window.removeEventListener("popstate", function () {});
-        alert("exited succesfully!");
-    });
 </script>
 <script src="/sendalert.js"></script>
-<script src="/stopreload.js"></script>

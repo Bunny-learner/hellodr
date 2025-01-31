@@ -100,21 +100,27 @@ io.on('connection', (socket) => {
 
   })
 
-let chatrooms = {}
-socket.on('Roomregister', (msg) => {
-
-  console.log(msg.who, "has arrived to register in room")
-  users[socket.id] = msg.name
-
-}
-)
-
-//broadcast the message to with senders name
-socket.on('sendMessage', (message) => {
-  console.log(message)
-  const sender = users[socket.id] || "Unknown"
-  socket.broadcast.emit('newMessage', { sender, message })
-})
+  let chatrooms = {}//mapping doctors to their roomids
+  socket.on('Roomregister', (msg) => {
+  
+    socket.join(msg.roomid)
+    console.log(`${msg.who} has completed roomregistration`)
+  }
+  )
+  
+  //broadcast the message to with senders name
+  socket.on('sendMessage', (data) => {
+   
+      socket.to(data.roomid).emit('newMessage', {
+            sender: data.sender,
+              message: data.message,
+              files:data.files
+    });
+  
+    
+  
+          console.log(`Message sent to room ${data.roomid} from ${data.sender}: ${data.message}`);
+  })
 
 socket.on('consult', (doctordetails) => {
   if (!doctordetails || !doctordetails.did || !doctordetails.patientname) {
@@ -155,10 +161,11 @@ socket.on('room', (roomdetails, callback) => {
   patientsockets[roomdetails.pid].join(roomdetails.roomid)//patient has joined the room
   console.log("patient joined room", roomdetails.roomid, roomdetails.pid)
 
+  var roomids=roomdetails.roomid
   socket.to(roomdetails.pid).emit('patientjoined', {
     message: "succesfully,joined the room",
     did: socket.id,
-    roomid: roomdetails.roomid
+    roomid: roomids
   })
 })
 socket.on('disconnect', () => {
@@ -186,7 +193,7 @@ app.use('/', router)
 app.use('/doctor', router1)
 app.use('/patient', router2)
 
-app.get('/room', verifyJWT, (req, res) => {
+app.get('/room/:any', verifyJWT, (req, res) => {
   const name = req.user.Username
   let who;
   if (!req.user.specality)
