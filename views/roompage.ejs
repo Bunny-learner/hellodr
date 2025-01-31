@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>Socket.IO chat</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();</script>
+
+
+    <style>
+        body {
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0px;
+            width: 100vw;
+            min-height: 100vh;
+            background-color: white;
+            position:relative;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        #form {
+            background: rgba(0, 0, 0, 0.15);
+            padding: 0.25rem;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            height: 3rem;
+            box-sizing: border-box;
+            backdrop-filter: blur(10px);
+        }
+
+        #input {
+            border: none;
+            padding: 0 1rem;
+            flex-grow: 1;
+            border-radius: 2rem;
+            margin: 0.25rem;
+        }
+
+        #input:focus {
+            outline: none;
+        }
+
+        #form>button {
+            background: #333;
+            border: none;
+            padding: 0 1rem;
+            margin: 0.25rem;
+            border-radius: 3px;
+            outline: none;
+            color: #fff;
+        }
+
+
+        #messages {
+            list-style-type: none;
+        }
+
+
+
+
+        video {
+            width: 400;
+            height: 300;
+        }
+
+        div {
+            display: flex;
+            width: 100vw;
+        }
+
+
+
+        li {
+            min-height: 10px;
+            border-radius: 10px;
+            background-color: #b6f8aa;
+            margin: 10px;
+            font-size: 18px;
+            width: auto;
+            max-width: 450px;
+            padding: 10px;
+            
+        }
+
+    
+
+        span {
+            font-size: 22px;
+            color: red;
+        }
+
+        html {
+            caret-color: green;
+            cursor: url('mouse-clicker.png'), pointer;
+
+        }
+
+        @media only screen and (max-width:480px) {
+
+            img {
+                width: 100%;
+                /* 100% of the container width */
+                max-width: 300px;
+                /* Optionally, set a max width on mobile */
+            }
+
+            span {
+                font-size: 16px;
+            }
+
+            li {
+                font-size: 13px;
+            }
+
+            label {
+                font-size: 13px;
+                font-weight: 300;
+            }
+
+            video {
+                min-width: 100px;
+                min-height: 200px;
+            }
+
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+
+        h3{
+            display:inline;
+            word-wrap: break-word;
+        }
+
+        #messages {
+            display: flex;
+            flex-direction: column;
+
+        }
+
+        ul {
+            padding: 0px;
+        }
+
+        label {
+            cursor: pointer;
+            background-color: blue;
+            color: white;
+            border-radius: 5px;
+            align-content: center;
+            text-align: center;
+            justify-content: center;
+            padding: 10px;
+
+        }
+
+        #input::placeholder {
+            color: blue;
+            font-size: larger;
+        }
+
+        #messages img {
+            max-width: 70%;
+            height: auto;
+            margin: 5px 0px 10px 50px;
+        }
+
+        #sending {
+            width: auto;
+            height: auto;
+            margin: 0px;
+            padding: 0px;
+            background-color: transparent;
+        }
+
+        #sending>img {
+            width: 25px;
+            height: 25px;
+        }
+
+        .rightside {
+            display: flex;
+            align-self: flex-end;
+            margin-right: 30px;
+            display: inline-block;
+        }
+
+        .leftside {
+            display: flex;
+            align-self: flex-start;
+            margin-left: 30px;
+            display: inline-block;
+        }
+
+        em ,h5{
+            display: none;
+        }
+
+        .leave{
+            z-index:2;
+            position:absolute;
+            top:10px;
+            border:0px;
+            background-color:transparent;
+            
+        }
+        .leave img{
+            width:30px 
+            
+        }
+    </style>
+</head>
+
+<body>
+
+    <ul id="messages">
+
+
+    </ul>
+    <em>
+        <%=name %>
+    </em>
+    <h5>
+        <%=who%>
+    </h5>
+    <button onclick="leave()" class="leave" id="exit"><img src="logout.png" alt=""></button>
+
+    <form id="form" action="">
+
+        <input id="input" placeholder="Type..." autocomplete="off" />
+
+        <label for="file">Upload</label>
+        <input id="file" type="file" multiple />
+
+        <label id="sending" for="send"><img src="send-message.png" alt=""></label>
+        <button hidden id="send">Send</button>
+    </form>
+
+</body>
+
+</html>
+
+
+<script>
+
+function leave(){
+    const who=document.getElementsByTagName('h5')[0].textContent
+    if(who=="doctor")
+    window.location.href="/doctor/main/dhome"
+    else
+    window.location.href="/patient/main/consult"
+}
+
+    document.getElementById('file').addEventListener('change', () => {
+        console.log('Upload button clicked')
+    })
+
+    async function uploadFile() {
+        const fily = document.getElementsByTagName('input')[1]; // Get the input element
+        // Fetch data from the server to get Cloudinary cloud name
+        try {
+            const response = await fetch('/help');
+            const data = await response.json();
+            const { name } = data; // Extract the Cloudinary cloud name
+
+            const uploadedFiles = []; // To store the objects with file type and URL
+
+            // Iterate through the FileList and upload each file separately
+            for (let i = 0; i < fily.files.length; i++) {
+                const formData = new FormData();
+                formData.append('file', fily.files[i]); // Add the current file
+                formData.append('upload_preset', 'g2rsi4nz'); // Unsigned upload preset
+                formData.append("quality", "100");
+
+                try {
+                    const uploadResponse = await fetch(`https://api.cloudinary.com/v1_1/${name}/auto/upload`, {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    const uploadResult = await uploadResponse.json();
+
+                    if (uploadResult.secure_url) {
+                        console.log(`File ${i + 1} uploaded successfully:`, uploadResult.secure_url);
+
+                        // Create an object with type and URL and push it to the array
+                        uploadedFiles.push({
+                            type: uploadResult.resource_type, // Extract the file type (image, video, etc.)
+                            url: uploadResult.secure_url, // The URL of the uploaded file
+                        });
+                    } else {
+                        console.error(`Error uploading file ${i + 1}:`, uploadResult);
+                    }
+                } catch (uploadError) {
+                    console.error(`Error uploading file ${i + 1}:`, uploadError);
+                }
+            }
+
+            // After all files are uploaded, you can use the uploadedFiles array
+            console.log('Uploaded Files:', uploadedFiles);
+            return uploadedFiles;
+            // You can now display or use the uploadedFiles array as needed
+
+        } catch (error) {
+            console.error('Error fetching /help:', error);
+        }
+    }
+
+
+
+
+
+
+
+
+
+    const form = document.getElementById('form');
+    const file = document.getElementById('file')
+    const input = document.getElementById('input');
+    const messages = document.getElementById('messages');
+
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementsByTagName('em')[0].textContent
+
+        if (name === undefined) {
+            window.location.href = "/login?alert=Your session has expired ,please re-login"
+        }
+        if (input.value == "" && file.files.length == 0) {
+            input.placeholder = "Please Ensure You Are Sending Something....."
+        }
+        else if (input.value || file.files) {
+
+            const array = await uploadFile()
+            socket.emit('Roomregister', {name:name,roomid:roomid,who:who})
+            socket.emit('sendMessage', { text: input.value, files: array });
+            const message = input.value
+            input.value = '';
+            const item = document.createElement('li');
+            item.className = "rightside"
+            item.innerHTML = `<span>${name}</span><br/><br/><h3>${message}</h3>`
+            messages.appendChild(item);
+
+            for (let i = 0; i < array.length; i++) {
+
+                if (array[i].type == "image") {
+                    const img = document.createElement('img')
+                    img.src = array[i].url
+                    item.appendChild(img)
+                }
+                else if (array[i].type == "video") {
+                    const video = document.createElement('video')
+                    video.src = array[i].url
+                    video.controls = true;  // Adds controls (play, pause, volume, etc.)
+                    video.autoplay = false; // Optional: Automatically play the video
+                    video.loop = false;     // Optional: Loop the video
+                    video.muted = false;
+                    item.appendChild(video)
+                }
+
+                else {
+                    const ifram = document.createElement('iframe')
+                    iframe.src = array[i].url
+                    iframe.width = "600";
+                    iframe.height = "400";
+                    iframe.frameBorder = "0";
+                    item.appendChild(iframe)
+                }
+
+            }
+            file.value = ''
+
+
+            item.scrollIntoView({ behaviour: 'smooth', block: 'nearest' })
+
+        }
+        else {
+
+        }
+
+    });
+
+
+
+    socket.on('newMessage', (msg) => {
+        const item = document.createElement('li');
+        item.className = "leftside"
+        item.innerHTML = `
+        <span>
+    ${msg.sender} </span><br/<br/><h3>${msg.message.text}</h3>`
+        messages.appendChild(item);
+        const array = msg.message.files
+        for (let i = 0; i < array.length; i++) {
+
+            if (array[i].type == "image") {
+                const img = document.createElement('img')
+                img.src = array[i].url
+                item.appendChild(img)
+            }
+            else if (array[i].type == "video") {
+                const video = document.createElement('video')
+                video.src = array[i].url
+                video.controls = true;
+                video.autoplay = false;
+                video.loop = false;
+                video.muted = false;
+                item.appendChild(video)
+            }
+
+            else {
+                const ifram = document.createElement('iframe')
+                iframe.src = array[i].url
+                iframe.width = "600";
+                iframe.height = "400";
+                iframe.frameBorder = "0";
+                item.appendChild(iframe)
+            }
+
+        }
+
+
+
+        item.scrollIntoView({ behaviour: 'smooth', block: 'nearest' })
+    });
+
+
+
+    // Prevent back button
+    window.history.pushState(null, "", window.location.href);
+    window.addEventListener("popstate", function () {
+        window.history.pushState(null, "", window.location.href);
+    });
+
+    // Prevent refresh & closing
+    window.addEventListener("beforeunload", function (event) {
+        event.preventDefault();
+        event.returnValue = "";
+    });
+
+    // Enable navigation when the button is clicked
+    document.getElementById("exit").addEventListener("click", function () {
+        window.removeEventListener("beforeunload", function () {});
+        window.removeEventListener("popstate", function () {});
+        alert("exited succesfully!");
+    });
+</script>
+<script src="/sendalert.js"></script>
+<script src="/stopreload.js"></script>

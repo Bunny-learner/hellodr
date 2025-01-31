@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+
+
+<style>
+
+    *{
+        margin:0px;
+        padding:0px;
+    }
+
+    body{
+        width:100vw;
+        height: 100vh;
+
+    }
+
+
+    button{
+        padding:10px;
+        border:1px solid ;
+        border-radius: 4px;
+        background-color: black;
+        font-size: 20px;
+        text-decoration: none;
+        color:white;
+    }
+    button:hover{
+        background-color: brown;
+    }
+
+    .nav{
+        position:relative;
+        display: flex;
+        align-items: center;
+        width:100vw;
+        height:10vh;
+        background-color: aliceblue;
+    }
+
+    .nav>div{
+        position:absolute;
+        right:30px;
+    }
+    form{
+            width: 100px;
+            background-color: black;
+        }
+</style>
+<body>
+    
+<div class="nav">
+    <h1>Patient main page</h1>
+    <div>  <a href="/patient/main/consult"><button>Consult a Doctor</button></a>
+        <a href="/patient/main/drugs"><button>Drugs INFORMATION</button></a></div>
+        <form action="/patient/logout" method="post"><button>logout</button></form>
+
+</div>
+   
+</body>
+
+
+
+</html>

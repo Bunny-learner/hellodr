@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>phome</title>
+</head>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();</script>
+
+  
+
+<style>
+    button {
+        padding: 10px;
+        background-color: blue;
+        color: white;
+
+    }
+
+    div {
+        width: 100vw;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: antiquewhite;
+    }
+
+    body {
+        font-size: 20px;
+        color: black;
+    }
+
+    p {
+        padding: 30px;
+        border: 1px solid black;
+        border-radius: 5px;
+    }
+
+    span {
+        color: blue;
+    }
+
+    .info{
+        padding:5px;
+        color:green;
+    }
+    em{
+        display:none;
+    }
+    h3,h4{
+        display: none;
+    }
+    .status{
+        color:red;
+    }
+    form{
+            width: 100px;
+            background-color: black;
+        }
+</style>
+
+<body>
+    <div>
+        <form action="/patient/logout" method="post"><button>logout</button></form>
+
+
+        <h1>doctors <h3><%=email%></h3><h4><%=username%></h4>
+        </h1>
+        <% doctors.forEach(function(doctor) { %>
+            <p>
+                <span><%= doctor.Username %></span>
+                <span class="status"><%=doctor.status%> </span>
+                </span>
+                <em></em>
+                <span class="info"><%= doctor.info[0].experience%> of Experience</span>
+                <button onclick="consult(this)">Consult</button>
+            </p>
+        <% }); %>
+    </div>
+</body>
+
+<script>
+    
+// async function decode() {
+//         try {
+//             const response = await fetch('/doctor/getemail', {
+//                 method: 'GET',
+//                 headers: {
+//                     'Authorization': `Bearer ${document.cookie.split('=')[1]}`,
+//                     'who':'doctor'
+//                 },
+//                 credentials: 'include'
+//             })
+//             const msg = await response.json()
+//             console.log(msg.details)
+//             doctordetails=msg.details
+//             return doctordetails
+//         } catch (error) {
+//             console.log(error)
+
+//         }
+//     }
+
+
+async function decode(doctorname) {
+        try {
+            const response = await fetch('/doctor/getsocketid', {
+                method: 'GET',
+                headers:{
+                        'name':doctorname
+                }
+            })
+            const msg = await response.json()
+            console.log(msg.details)
+            doctordetails=msg.details
+            return doctordetails
+        } catch (error) {
+            console.log(error)
+
+        }
+    }
+
+
+
+ const email=document.getElementsByTagName('h3')[0].textContent
+ const Username=document.getElementsByTagName('h4')[0].textContent
+        socket.emit('register',{name:"patient",email:email})
+
+
+
+socket.on('online',(msg)=>{
+console.log(msg)
+const ele=document.getElementsByTagName('div')[0]
+const docs=ele.getElementsByTagName('p')
+let username;
+
+for(let i=0;i<docs.length;i++){
+username=docs[i].getElementsByTagName('span')[0].textContent
+
+    if(username==msg.docname)
+    docs[i].getElementsByClassName('status')[0].textContent="Online"
+
+}
+
+})
+async function consult(ele) {
+    if (ele.textContent === "Consult") {
+        console.log("Consulting");
+        const dname = ele.parentElement.getElementsByTagName('span')[0];
+        const response=await decode(dname.textContent)
+        ele.parentElement.getElementsByTagName('em')[0].textContent=response.socketid
+        const did=response.socketid
+
+            socket.emit('consult', {
+                patientname: Username,
+                did: did,
+                condition: null
+            });
+
+            ele.textContent = "Waiting For Response...";
+            ele.style.backgroundColor = "red";
+        } 
+
+    if (ele.textContent === "Join") {
+        alert('Successfully connected to doctor!!')
+        window.location.href = "/room";
+    }
+}
+
+socket.on('rejected', (rejected) => {
+    alert(`${rejected.message}`);
+    const did = rejected.did;
+    const ele = document.getElementsByTagName('p');
+    Array.from(ele).forEach(e => {
+        const idofdoc = e.getElementsByTagName('em')[0].textContent;
+        if (idofdoc === did) {
+            const btn = e.getElementsByTagName('button')[0];
+            btn.textContent = "Consult";
+            btn.style.backgroundColor = "blue";
+        }
+    });
+});
+
+
+async function store(roomid){
+
+    const response=await fetch('/storeroomid',{
+        method:'GET',
+        headers:{
+                'Authorization': `Bearer ${document.cookie.split('=')[1]}`,
+                'roomid':roomid
+            },
+            credentials: 'include'
+        });
+
+        return response;
+
+    }
+
+const storeroomid =async(roomid)=>{
+const response=await store(roomid)
+const shortmsg=await response.json()
+alert('roomid stored successfully!!')}
+
+socket.on('patientjoined', (joined) => {
+    const did = joined.did;
+    const ele = document.getElementsByTagName('p');
+    Array.from(ele).forEach(e => {
+        const idofdoc = e.getElementsByTagName('em')[0].textContent;
+        if (idofdoc === did) {
+            const btn = e.getElementsByTagName('button')[0];
+            btn.textContent = "Join";
+            btn.style.backgroundColor = "green";
+            storeroomid(joined.roomid)
+        }
+    });
+});
+
+</script>
+
+
+<script src="/sendalert.js"></script>
+<script src="/stopreload.js"></script>
+</html>

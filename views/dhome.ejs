@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dhome</title>
+
+</head>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();</script>
+
+
+<style>
+    button {
+        padding: 10px;
+        background-color: black;
+        color: white;
+        margin: 5px;
+
+    }
+
+    div {
+        width: 100vw;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: antiquewhite;
+    }
+
+    body {
+        font-size: 20px;
+        color: black;
+    }
+
+    p {
+        padding: 30px;
+        border: 1px solid black;
+        border-radius: 5px;
+    }
+
+    em{
+        display:none;
+    }
+    span {
+        color: blue;
+    }
+    body{
+        width:100vw;
+        margin:0px;
+        padding:0px;
+        font-family: Arial, Helvetica, sans-serif;
+       
+    }
+        nav{
+        width:100vw;
+        height:50px;
+        background-color: black;
+        color:white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        }
+    
+        button{
+           background-color: transparent; 
+           color:white;
+           font-size: 20px;
+           border:0px;
+        
+        }
+        form{
+            width: 100px;
+            background-color: black;
+        }
+</style>
+
+<body>
+   
+    
+    
+    
+    
+        <nav>  <h1>Doctorreviews</h1>
+            <a href="/doctor/dhome/profile"><button>profile</button></a>
+            <a href="/doctor/dhome/reviews"><button>reviews</button></a></nav>
+      <form action="/doctor/logout" method="post"><button id="logout">logout</button></form>
+
+    <div class="patientlist">
+
+        <h1>Patients</h1>
+        
+
+
+
+    </div>
+</body>
+
+<script>
+
+    let doctordetails=null;
+
+    async function decode() {
+        try {
+            const response = await fetch('/doctor/getemail', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${document.cookie.split('=')[1]}`,
+                    'who':'doctor'
+                },
+                credentials: 'include'
+            })
+            const msg = await response.json()
+            console.log(msg.details)
+            doctordetails=msg.details
+            socket.emit('register',{name:"doctor",email:doctordetails.email})
+
+        } catch (error) {
+            console.log(error)
+
+        }
+    }
+
+    decode()
+    //fetch email using accesstoken
+    
+
+    
+
+
+    const ele = document.getElementsByClassName('patientlist')[0]
+    const children=ele.getElementsByTagName('p')
+
+    socket.on('patient', (patientdetails) => {
+        console.log(patientdetails)
+        
+        if(children.length!=0){
+
+           for(let i=0;i<children.length;i++){
+                if(children[i].getElementsByTagName('span')[0].textContent==patientdetails.pname)
+                {
+                 children[i].remove()
+                }
+            };
+        }
+      
+        const para = document.createElement('p')
+        para.innerHTML = `<span>${patientdetails.pname}</span><em>${patientdetails.pid}</em>
+        <button class="Accept" onclick="accept(this)">Accept</button>
+        <button class="Reject" onclick="reject(this)">Reject</button>
+        `
+        ele.append(para)}
+    )
+
+
+    async function accept(a) {
+
+
+        const btn = a.parentElement.getElementsByTagName('button')
+        console.log("accepted")
+        const pid=a.parentElement.getElementsByTagName('em')[0].textContent
+
+        if(btn[0].textContent==="Accept")
+        {
+        btn[1].style.display = "none"
+        btn[0].textContent = "Creating Room..."
+        //fetch roomid from the db for that doctor        
+        decode().then(()=>{
+        socket.emit('room', {
+            roomid: "113344465575",
+            pid: pid
+        }, (response) => {
+
+            btn[0].textContent="Join"
+            btn[0].style.backgroundColor="green"
+           
+
+        })})
+    }
+    else{
+        window.location.href="/room"
+    }
+  
+    }
+
+    async function reject(r) {
+        const pid = r.parentElement.getElementsByTagName('em')[0].textContent
+        //fetch did from the database
+        console.log("inside rejection",pid)
+            
+            decode().then(()=>{socket.emit('reject', {
+            pid: pid,
+            did: doctordetails.socketid
+        })})
+        r.parentElement.remove()
+
+        
+    }
+
+
+    document.querySelector('#logout').addEventListener('click',()=>{
+        socket.emit()
+    })
+</script>
+<script src="/stopreload.js"></script>
+<script src="/sendalert.js"></script>
+</html>

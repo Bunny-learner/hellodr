@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<style>
+    body {
+        overflow-x: hidden;
+        width: 100vw;
+        height: 100vh;
+        margin: 0px;
+        padding: 0px;
+        font-family: Arial, Helvetica, sans-serif;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    div {
+        width: 300px;
+    }
+
+    form {
+        border: 1px solid black;
+        border-radius: 5px;
+        height: 60%;
+        width: 300px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 10px;
+    }
+
+    button {
+        border: 1px solid;
+        border-radius: 15px;
+        background-color: black;
+        color: white;
+        height: 40px;
+        width: 100%;
+        margin-top: 2px;
+    }
+
+    input {
+        padding: 15px;
+        border: 1px solid black;
+        border-radius: 5px;
+    }
+
+    .google{
+        padding:10px;
+        margin-top: 10px;
+        text-decoration: none;
+        font-size: larger;
+        border:2px solid black;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+
+    }
+
+    .google img{
+        width:30px;
+        height:30px;
+        margin-left:40px;
+        
+    }
+    p {
+        border: 0;
+        height: 2px;
+        background-color: black;
+    }
+
+    label{
+        margin:10px;
+    }
+
+</style>
+
+
+<body>
+    <h1>Doctor-Validation</h1>
+    <form action="/doctor/logindata" method="POST" enctype="application/x-www-form-urlencoded">
+        <h1>Login</h1>
+        <label for="mail">Email</label>
+        <input type="text" width=50 id="mail" name="email" required placeholder="Enter your email...">
+        <label for="pass">Password</label>
+        <input type="text" width=50 id="pass" name="password" required placeholder="Enter your password...">
+        <button type="submit">Continue</button>
+    </form>
+    <div>
+        <a class="google" href="/auth/google">Login With Google <img src="/search.png" alt=""></a>
+    </div>
+
+
+
+
+</body>
+<script>
+    document.querySelector('form').addEventListener('submit', function (event) {
+        var email = document.querySelector('#mail').value;
+        console.log("Email submitted:", email);
+    });
+</script>
+
+<script src="/sendalert.js"></script>
+
+
+
+
+</html>
