@@ -68,7 +68,6 @@
 
 <body>
     <div>
-        <form action="/patient/logout" method="post"><button>logout</button></form>
 
 
         <h1>doctors <h3><%=email%></h3><h4><%=username%></h4>
@@ -228,6 +227,22 @@ socket.on('patientjoined', (joined) => {
         }
     });
 });
+
+socket.on('bye',(msg)=>{
+console.log(msg)
+const ele=document.getElementsByTagName('div')[0]
+const docs=ele.getElementsByTagName('p')
+let username;
+
+for(let i=0;i<docs.length;i++){
+username=docs[i].getElementsByTagName('span')[0].textContent
+
+    if(username==msg.docname)
+    docs[i].getElementsByClassName('status')[0].textContent="Offline"
+
+}
+
+})
 
 </script>
 

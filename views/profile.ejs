@@ -1,45 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
 
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
+</script>
+
 <style>
-
-
-body{
-    width:100vw;
-    margin:0px;
-    padding:0px;
-    font-family: Arial, Helvetica, sans-serif;
-   
-}
-    nav{
-    width:100vw;
-    height:50px;
-    background-color: black;
-    color:white;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    body {
+        width: 100vw;
+        margin: 0px;
+        padding: 0px;
+        font-family: Arial, Helvetica, sans-serif;
     }
 
-    button{
-       background-color: transparent; 
-       color:white;
-       font-size: 20px;
-       border:0px;
-    
+    nav {
+        width: 100vw;
+        height: 50px;
+        background-color: black;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    button {
+        background-color: transparent;
+        color: white;
+        font-size: 20px;
+        border: 0px;
+    }
+
+    a {
+        margin-right: 10px;
+    }
+
+    #logout {
+        background-color: red;
+        padding: 10px;
+        border-radius: 5px;
+    }
+
+    div {
+        display: flex;
+        padding: 10px;
+        align-items: center;
     }
 </style>
 
 <body>
-    <nav>  <h1>DoctorProfie</h1>
-        <a href="/doctor/dhome"><button>Home</button></a></nav>
-  
+    <nav>
+        <h1>DoctorProfile</h1>
+        <div>
+            <a href="/doctor/dhome"><button>Home</button></a>
+            <button id="logout" onclick="logout()">logout</button>
+        </div>
+    </nav>
 </body>
 
+<script>
+    async function decode() {
+        try {
+            const response = await fetch('/doctor/getemail', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${document.cookie.split('=')[1]}`,
+                    'who': 'doctor'
+                },
+                credentials: 'include'
+            });
+            const msg = await response.json();
+            console.log(msg.details);
+            return msg.details;
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async function out() {
+        const response = await fetch('/doctor/logout', {
+            method: 'POST'
+        });
+        const msg = await response.json();
+        return msg;
+    }
+
+    async function logout() {
+        try {
+
+            // Then call decode() to get doctor details
+            const doctorDetails = await decode();
+            console.log(doctorDetails.Username)
+            // First call out() and wait for it to finish
+            const logoutResponse = await out();
+          
+
+
+            // Emit offline event
+            socket.emit('offline', { name: doctorDetails.Username });
+            window.location.href="/doctor/login?alert=You have succesfully LOGGED OUT!!"
+        } catch (error) {
+            console.log(error);
+        }
+    }
+</script>
 
 </html>

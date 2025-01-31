@@ -65,9 +65,8 @@ io.on('connection', (socket) => {
 
 
     if (who.name == "doctor") {
-      const doc = await doctor.findOne({ email: who.email })
+      const doc = await doctor.findOne({ email: who.email })  
       if (doc) {
-      
       socket.to(common).emit('online', {
         docname: doc.Username,
         status: "online"
@@ -136,7 +135,13 @@ socket.on('consult', (doctordetails) => {
   });
 });
 
-
+socket.on('offline',(offline)=>{
+  const name=offline.name
+  socket.to(common).emit('bye',{
+    status:"offline",
+    docname:name
+  })
+})
 socket.on('reject', (rejection) => {
   console.log("rejection")
   socket.to(rejection.pid).emit('rejected', {

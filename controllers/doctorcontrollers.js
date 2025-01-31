@@ -107,7 +107,7 @@ const logoutuser=asynchandler(async(req,res)=>{
     .clearCookie("accesstoken",options)
     .clearCookie("refreshtoken",options)
     .clearCookie("who",options)
-    .redirect('/doctor?alert=successfully logged out!!')
+    .json({message:"logout done"})
 })
 
 const dhome=asynchandler(async(req,res)=>{
