@@ -1,71 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MediConnect - Welcome to Homepage</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="/patientmain.css" />
 </head>
 
-
-
-<style>
-
-    *{
-        margin:0px;
-        padding:0px;
-    }
-
-    body{
-        width:100vw;
-        height: 100vh;
-
-    }
-
-
-    button{
-        padding:10px;
-        border:1px solid ;
-        border-radius: 4px;
-        background-color: black;
-        font-size: 20px;
-        text-decoration: none;
-        color:white;
-    }
-    button:hover{
-        background-color: brown;
-    }
-
-    .nav{
-        position:relative;
-        display: flex;
-        align-items: center;
-        width:100vw;
-        height:10vh;
-        background-color: aliceblue;
-    }
-
-    .nav>div{
-        position:absolute;
-        right:30px;
-    }
-    form{
-            width: 100px;
-            background-color: black;
-        }
-</style>
 <body>
-    
-<div class="nav">
-    <h1>Patient main page</h1>
-    <div>  <a href="/patient/main/consult"><button>Consult a Doctor</button></a>
-        <a href="/patient/getmed"><button>Drugs INFORMATION</button></a>
+  <header>
+    <div class="logo">YOUR LOGO</div>
+    <nav>
+      <ul>
+        <li id="home"><a  href="">Home</a></li>
+        <!-- <li><a href="#">Profile</a></li> -->
+        <li><a href="/patient/main/consult">Consult</a></li>
+        <li><a href="/patient/getmed">Pharmacy</a></li>
+        <li><i class="fa-solid fa-magnifying-glass"></i></li>
+      </ul>
+    </nav>
+    <div class="newheader">
+      <div class="nav">
+          <div class="logoimg">YOUR LOGO</div>
+          <div id="menubtn">
+              <i class="ri-menu-line"></i>
+          </div>
+      </div>
+      <div class="menu">
+          <i class="ri-close-line"></i>
+          <h3 id ="home"><a  href="">Home</a></h3>
+          <h3><a href="/patient/main/consult">Consult</a></h3>
+          <h3><a href="/patient/getmed">Pharmacy</a></h3>
+          <h3><a href="">Search</a></h3>
+      </div>
+  </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-content">
+      <h1 id="tagline">
+        Transforming <span class="red-text">Care,</span> <br /><span class="red-text">Empowering</span>
+        Health
+      </h1>
+      <div class="para">
+        <p>
+          At our online medical service, we are dedicated to provide you with
+          the highest quality of healthcare. Our team of experienced medical
+          professionals is here to assist you.
+        </p>
+      </div>
     </div>
-        <form action="/patient/logout" method="post"><button>logout</button></form>
 
-</div>
-   
+    <div class="hero-image">
+      <img src="/doctor.png" alt="Doctor" />
+    </div>
+  </section>
+  <section class="results">
+    <div class="result-item a">
+      <h2>OUR RESULTS</h2>
+    </div>
+    <div class="result-item a">
+      <h3 class="num" data-val="5000">0</h3>
+      <p class="minntext">people used</p>
+    </div>
+    <div class="result-item a">
+      <div style="display: flex;justify-content: center;align-items: center;height: 100%;width: 100%">
+        <h3 class="num" data-val="90">0</h3>
+        <h3>%</h3>
+      </div>
+      <p class="mintext">people reviewed</p>
+    </div>
+    <div class="result-item">
+      <h3 class="num" data-val="1000">0</h3>
+      <p class="mintext">experienced doctors</p>
+    </div>
+  </section>
+  <section class="services">
+
+
+    <div class="doctor">
+      <img src="/doctor2.png" alt="Doctor2" />
+    </div>
+
+    <div class="doctor-content">
+      <div class="doctext">
+        <p class="newtext">
+          Health fuels dreams; <br />
+          illness seeks cures
+        </p>
+      </div>
+      <div class="para">
+        <p class="imgtext">
+          Please make sure to stay healthy, maintain your metabolic balance,
+          and recover from any sickness as soon as possible. Prioritizing your
+          well-being will help you stay strong and live life to the fullest.
+        </p>
+      </div>
+    </div>
+  </section>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
+    integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="/patientmain.js"></script>
 </body>
-
-
 
 </html>

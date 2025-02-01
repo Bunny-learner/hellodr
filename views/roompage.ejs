@@ -254,6 +254,7 @@
 
 
 <script>
+    const room_id=window.location.href.split('/')[4]
  var who = document.getElementsByTagName('h5')[0].textContent.trim().toLowerCase(); // Normalize the input
     function leave() {
        
@@ -292,9 +293,9 @@ const observer = new MutationObserver((mutationsList, observer) => {
                 setTimeout(() => {
                   
                     setTimeout(() => {
-                        window.location.href = "/patient/writeReviews"; // Redirect after the second timeout
+                        window.location.href = `/patient/writeReviews?r=${room_id}`; // Redirect after the second timeout
                     }, 1000); // 1 second delay to ensure alert visibility
-                }, 60000); // 1-minute delay for the alert
+                }, 1000); // 1-minute delay for the alert
                 observer.disconnect(); // Stop observing after the doctor leaves
             }
         }

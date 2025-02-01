@@ -12,7 +12,7 @@
     referrerpolicy="no-referrer"
   />
   <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
-    <link rel="stylesheet" href="/review.css">
+    <link rel="stylesheet" href="history.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body>
@@ -21,8 +21,8 @@
         <nav class="navbar">
           <ul>
             <li><a href="/dhome.html">Home</a></li>
-            <li><a href="/history.html">History</a></li>
-            <li><a href="#" style="border-bottom: 2px solid #2b2b2b; padding-bottom: 10px;">Reviews</a></li>
+            <li><a href="#" style="border-bottom: 2px solid #2b2b2b; padding-bottom: 10px;">History</a></li>
+            <li><a href="review.html">Reviews</a></li>
             <!-- <li><box-icon class="icon" name='user-circle'></box-icon></li> -->
             <li><a href="/profile.html"><i class='bx bx-user-circle'></i></a></i>
         </nav>
@@ -35,9 +35,9 @@
             </div>
             <div class="menu">
               <i class="ri-close-line"></i>
-              <h3><a href="/dhome.html">Home</a></h3>
-              <h3><a href="/history.html">History</a></h3>
-              <h3><a href="" style="border-bottom: 2px solid #2b2b2b; padding-bottom: 10px;">Reviews</a></h3>
+              <h3><a href="dhome.html">Home</a></h3>
+              <h3><a href="#" style="border-bottom: 2px solid #2b2b2b; padding-bottom: 10px;">History</a></h3>
+              <h3><a href="/review.html">Reviews</a></h3>
               <h3><a href="/profile.html">Profile</a></h3>
             </div>
           </div>
@@ -45,20 +45,26 @@
 
     <div class="container">
         <div class="pending-requests">
-            <h2>Your Feedbacks</h2>
-            <% doctors.forEach(function(doctor) { %>
-            <div class="feedback">
-                    <div class="name"><h3><%=doctor.reviews.patientname%></h3></div>
-                    <p><%=doctor.reviews.text%></p>
-                    <p><%=doctor.reviews.date%></p>
+            <h2>Pending Requests</h2>
+
+            <div class="request">
+                <div class="profile-pic">
+                    <i class="fas fa-user"></i>
+                </div>
+                <% patient.forEach(function(doctor) { %>
+                <div class="request-info">
+                    <h3><%=patient.patientname%></h3>
+                    <p><span class="bbold">Condition:</span><%=patient.condition%></p>
+                    <p><span class="bbold"><%=patient.date%></span></p>
+                </div>
+                <% }); %>
             </div>
-            <% }); %>
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
     integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-    <script src="/review.js"></script>
+    <script src="history.js"></script>
 </body>
 </html>

@@ -1,5 +1,8 @@
 import { asynchandler } from "../utils/asynchandler.js"
 import {doctor} from "../models/doctor.model.js"
+import { ObjectId } from 'mongodb';
+import { patient } from "../models/patient.model.js";
+
 import dotenv from "dotenv"
 dotenv.config()
 
@@ -12,6 +15,47 @@ const login = asynchandler(async (req, res) => {
 
     res.render('doctorlogin.ejs')
 })
+
+
+const lookdb = asynchandler(async (req, res) => {
+    console.log("came to lookdb");
+    const email = req.user?.email; // Safe check for email
+    if (email) {
+        console.log(email);
+        const pidToRemove = req.headers["pid"];
+
+        if (!pidToRemove) {
+            return res.status(400).json({ message: 'No pid provided' });
+        }
+
+        try {
+            const doc = await doctor.findOne({ email: email });
+
+            if (!doc) {
+                return res.status(404).json({ message: 'Doctor not found' });
+            }
+
+            // Filter the pendingrequests to remove the object with the matching psocketid
+            doc.pendingrequests = doc.pendingrequests.filter(
+                request => request.psocketid !== pidToRemove
+            );
+
+            await doc.save();
+            console.log(doc);
+            console.log("Deleted successfully");
+
+            res.json({ message: 'Pending request deleted successfully' });
+
+        } catch (error) {
+            console.log(error);
+            res.status(500).json({ message: 'Failed to delete pending request' });
+        }
+
+    } else {
+        console.log("email in req.user.email not found!!");
+        res.status(400).json({ message: 'Email not found in request' });
+    }
+});
 
 
 const getaccesstokenandrefreshtoken=async (User)=>{
@@ -149,11 +193,7 @@ const profile=asynchandler(async(req,res)=>{
     res.render("profile.ejs",{pic:pic})
 })
 
-const reviews=asynchandler(async(req,res)=>{
-  
 
-    res.render("reviews.ejs")
-})
 
 
 
@@ -231,4 +271,67 @@ console.log(req.body.url)
     
 })
 
-export {doctorwelcome,dbupload,logoutuser,uploadprofile,getsocketid,profile,pendingrequests,reviews,login,dhome,getemail,logindata}
+
+
+
+const writereview=asynchandler(async(req,res)=>{
+    const roomid=req.query.r
+    const pid=req.query.p
+    const review=req.body.review
+    console.log(roomid,pid,review)
+    try {
+        console.log(roomid,"//////////////////////////////")
+        console.log(typeof roomid, roomid)
+        console.log([`${roomid}`], [`${roomid.trim()}`]);
+        const exists = await doctor.findOne({ roomid: { $exists: true } });
+console.log(exists ? "Field exists" : "Field missing");
+console.log(await doctor.find({ roomid: roomid }));
+
+
+const user = await doctor.findOne({ roomid: roomid });
+    console.log(user)
+    console.log(user)
+    
+    const patient1=await patient.findById(pid)
+    user.reviews.push({
+        patientname:patient1.Username,
+        text:review,
+        date:new Date()
+    })
+    await user.save()
+    res.redirect('/patient/main/consult')
+    } catch (error) {
+        console.log(error)
+    }
+    
+   
+})
+const history=asynchandler(async (req,res) => {
+    const pname=req.body.pname
+    const condition=req.body.condition
+    const id=req.user._id
+    const user=await doctor.findById(id)
+    user.history.push({
+        patientname:pname,
+        condition:condition,
+        date:new Date()
+    })
+    await user.save()
+    console.log(user)
+    res.json({"message":"success"})
+})
+
+
+const reviews=asynchandler(async(req,res)=>{
+    const id=req.user._id
+    const user=await doctor.findById(id)
+    res.render("Reviews.ejs",{doctor:user})
+})
+
+const gethistory=asynchandler(async (req,res) => {
+    const id=req.user._id
+    const user=await doctor.findById(id)
+    res.render('history.ejs',{patient:user.reviews})
+})
+
+export {doctorwelcome,dbupload,history,gethistory,writereview,lookdb,logoutuser,uploadprofile,getsocketid,profile,pendingrequests,reviews,login,dhome,getemail,logindata}

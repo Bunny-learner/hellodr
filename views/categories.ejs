@@ -1,80 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>MediConnect - Consult a doctor</title>
+    <link rel="stylesheet" href="/categories.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link
+    href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
+    rel="stylesheet"/>
 </head>
 
-<style>
-
-
-    body{
-       width:100vw;
-    margin:0px;
-    padding:0px;
-    overflow-x: hidden;
-    }
-    
-    
-    img{
-        width:300px;
-        height:300px;
-        border:1px solid;
-    
-    }
-    
-    .types{
-        display: flex;
-        justify-content: center;
-    }
-    
-    ul{
-        width:100vw;
-        min-height:100vh;
-        display: flex;
-        flex-wrap: wrap;
-        row-gap:20px;
-        margin-left:30px;
-        
-    
-    
-    }
-    
-    a{
-        border:1px solid ;
-        border-radius: 5px;
-        padding:15px;
-        margin:10px;
-        display:flex;
-        flex-direction: column;
-        justify-content: center;
-        
-        
-    }
-
-    li{
-        list-style-type: none;
-    }
-        </style>
-    
 <body>
+    <header class="header">
+        <div class="logo">YOUR LOGO</div>
+        <nav class="navbar">
+            <ul>
+                <li><a id ="home" href="/patient/main">Home</a></li>
+                <!-- <li><a href="#">Profile</a></li> -->
+                <li><a id="consult" href="/patient/main/consult">Consult</a></li>
+                <li><a href="/patient/getmed">Pharmacy</a></li>
+                <li><i class="fa-solid fa-magnifying-glass"></i></li>
+            </ul>
+        </nav>
+        <div class="newheader">
+            <div class="nav">
+                <div class="logoimg">YOUR LOGO</div>
+                <div id="menubtn">
+                    <i class="ri-menu-line"></i>
+                </div>
+            </div>
+            <div class="menu">
+                <i class="ri-close-line"></i>
+                <h3><a href="/patient/main">Home</a></h3>
+                <h3><a href="/patient/main/consult">Consult</a></h3>
+                <h3><a href="/patient/getmed">Pharmacy</a></h3>
+                <h3><a href="">Search</a></h3>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        <a href="/patient/main/consult/Pulmonologist"><div class="box" style="border: 7px solid rgb(237, 211, 154);
+            background: linear-gradient(135deg, rgb(237, 211, 154,0.8),rgb(237, 211, 154,0.6), white);">
+                    <img src="/lungs.png" alt="">
+                    <h2>Lungs and Breathing</h2>
+                </div></a>
+                <a href="/patient/main/consult/Neurologist ">
+                    <div class="box" style="border: 7px solid rgb(113, 213, 223);
+    background: linear-gradient(135deg, rgb(113, 213, 223,0.8),rgb(113, 213, 223,0.6), white);">
+            <img src="/brain.png" alt="">
+            <h2>Brain and Nerves</h2>
+        </div>
+                </a>
+        
+        <a href="/patient/main/consult/Cardiologist"><div class="box" style="border: 7px solid rgb(241, 204, 186);
+    background: linear-gradient(135deg, rgb(241, 204, 186,0.8),rgb(241, 204, 186,0.6), white);">
+            <img src="/heart.png" alt="">
+            <h2>Heart</h2>
+        </div></a>
+        <a href="/patient/main/consult/Ophthalmologist"><div class="box" style="border: 7px solid rgb(181, 219, 204);
+    background: linear-gradient(135deg, rgb(181, 219, 204,0.8),rgb(181, 219, 204,0.6), white);">
+            <img src="/eye.png" alt="">
+            <h2>Eye Treatment</h2>
+        </div></a>
+        <a href="/patient/main/consult/Hepatologist"><div class="box" style="border: 7px solid rgb(241, 204, 186);
+    background: linear-gradient(135deg, rgb(241, 204, 186,0.8),rgb(241, 204, 186,0.6), white);">
+            <img src="/liver.png" alt="">
+            <h2>Eye,Vision care</h2>
+        </div></a>
+        <a href="/patient/main/consult/OrthopedicSurgeon"><div class="box" style="border: 7px solid rgb(181, 219, 204);
+    background: linear-gradient(135deg, rgb(181, 219, 204,0.8),rgb(181, 219, 204,0.6), white);">
+            <img src="/bone.png" alt="">
+            <h2>Bones and Joints</h2>
+        </div></a>
+        <a href="/patient/main/consult/Otolaryngologist"><div class="box" style="border: 7px solid rgb(237, 211, 154);
+    background: linear-gradient(135deg, rgb(237, 211, 154,0.8),rgb(237, 211, 154,0.6), white);">
+            <img src="/head.png" alt="">
+            <h2>Ear,Nose,Throat</h2>
+        </div></a>
+        <a href="/patient/main/consult/Dentist"><div class="box" style="border: 7px solid rgb(113, 213, 223);
+    background: linear-gradient(135deg, rgb(113, 213, 223,0.8),rgb(113, 213, 223,0.6), white);">
+            <img src="/dental.png" alt="">
+            <h2>Dentist</h2>
+        </div></a>
+       
+        <a href="/patient/main/consult/Endocrinologist"><div class="box" style="border: 7px solid rgb(237, 211, 154);
+    background: linear-gradient(135deg, rgb(237, 211, 154,0.8),rgb(237, 211, 154,0.6), white);">
+            <img src="/preg.png" alt="">
+            <h2>Gynaecologists</h2>
+        </div></a>
+        <a href="/patient/main/consult/Urologist"><div class="box" style="border: 7px solid rgb(241, 204, 186);
+    background: linear-gradient(135deg, rgb(241, 204, 186,0.8),rgb(241, 204, 186,0.6), white);">                    <img src="/urine.png" alt="">
+                    <h2>Urologist</h2>
+                </div></a>
+        <a href="/patient/main/consult/others"><div class="box" style="border: 7px solid rgb(181, 219, 204);
+    background: linear-gradient(135deg, rgb(181, 219, 204,0.8),rgb(181, 219, 204,0.6), white);">
+            <img src="/others.png" alt="">
+            <h2>Others</h2>
+        </div></a>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="/categories.js"></script>
     
 
-<div class="types">
-    <ul>
-        <li><a href="/patient/main/consult/GeneralPhysician"><img src="" alt="">General-Physician</a></li>
-        <li><a href="/patient/main/consult/DentalCare"><img src="" alt="">Dental Care</a></li>
-        <li><a href="/patient/main/consult/Women'Health"><img src="" alt="">Women'Health</a></li>
-        <li><a href="/patient/main/consult/Skin&Hair"><img src="" alt="">Skin&Hair</a></li>
-        <li><a href="/patient/main/consult/ChildSpecalist"><img src="" alt="">Child Specalist</a></li>
-        <li><a href="/patient/main/consult/Menatlwellness"><img src="" alt="">Menatl wellness</a></li>
-        <li><a href="/patient/main/consult/Cancer"><img src="" alt="">Cancer</a></li>
-        <li><a href="/patient/main/consult/PhysioTherapy"><img src="" alt="">PhysioTherapy</a></li>
-        <li><a href="/patient/main/consult/Ayurveda"><img src="" alt="">Ayurveda</a></li>
-        <li><a href="/patient/main/consult/Heart"><img src="" alt="">Heart</a></li>
-        <li><a href="/patient/main/consult/Others"><img src="" alt="">Others</a></li>
-    </ul>
-</div>
+    
 </body>
+
 </html>

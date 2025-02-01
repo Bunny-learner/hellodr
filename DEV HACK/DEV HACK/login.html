@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>MediConnect-Login into the website</title>
+    <link rel="stylesheet" href="login.css">
+    <script defer type="module" src="main.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <canvas id="webgl-canvas">
+        
+    </canvas>
+    <div class="container">
+        <div class="form-wrapper" id="formWrapper">
+            <div class="form-side login-form">
+                <h1>LOG IN</h1>
+                <form>
+                    <div class="inpdiv">
+                        <input type="text" placeholder="Enter username" name="username" required>
+                    </div>
+                    <div class="inpdiv">
+                        <input type="password" placeholder="Enter password" name="password" required>
+                    </div>
+                    <button class="subbtn" type="submit">Submit</button>
+                </form>
+                <p>DON'T HAVE AN ACCOUNT? <a href="#" id="signupLink">SIGN UP</a></p>
+            </div>
+            <div class="form-side signup-form">
+                <h1>SIGN UP</h1>
+                <form id="signupForm">
+                    <div class="inpdiv">
+                        <input type="text" placeholder="Enter username" name="username" required>
+                    </div>
+                    <div class="inpdiv">
+                        <input type="email" placeholder="Enter email" name="email" required>
+                    </div>
+                    <div class="inpdiv">
+                        <input type="password" placeholder="Enter password" name="password" id="password" required>
+                    </div>
+                    <div class="inpdiv">
+                        <input type="password" placeholder="Confirm password" name="cfmpassword" id="cfmpassword"
+                            required>
+                    </div>
+                    <button class="subbtn" type="submit">Sign up</button>
+                </form>
+                <p>ALREADY HAVE AN ACCOUNT? <a href="#" id="loginLink">LOG IN</a></p>
+            </div>
+        </div>
+    </div>
+    <script src="login.js"></script>
+
+</body>
+
+</html>

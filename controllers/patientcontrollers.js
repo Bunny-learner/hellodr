@@ -153,9 +153,7 @@ const categories=asynchandler(async(req,res)=>{
     res.render("categories.ejs")
 })
 
-const write=asynchandler(async(req,res)=>{
-    res.render("writeReview.ejs")
-})
+
 
 const getmed=async (req,res) => {
     const query = req.query.q;
@@ -198,5 +196,12 @@ const getmed=async (req,res) => {
 
 
 
+
+const write=asynchandler(async(req,res)=>{
+    const roomid=req.query.r;
+    const patientid=req.user._id
+    console.log(roomid,patient,'.........///////////////')
+    res.render("writeReview.ejs",{"roomid":roomid,"pid":patientid})
+})
 
 export { patientwelcome, getmed,write,logoutuser,categories,main,getemail,phome,signup,login,login_details,signup_details}

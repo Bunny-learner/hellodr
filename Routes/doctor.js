@@ -1,5 +1,5 @@
 import {Router} from "express"
-import {doctorwelcome,reviews,uploadprofile,dbupload,profile,getemail,getsocketid,pendingrequests,login,logindata,dhome, logoutuser} from "../controllers/doctorcontrollers.js"
+import {doctorwelcome,lookdb,writereview,gethistory,history,reviews,uploadprofile,dbupload,profile,getemail,getsocketid,pendingrequests,login,logindata,dhome, logoutuser} from "../controllers/doctorcontrollers.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js"
 
 const router1=Router()
@@ -15,4 +15,8 @@ router1.post('/logout',verifyJWT,logoutuser)
 router1.post('/pendingrequests',pendingrequests)
 router1.get('/uploadprofile',uploadprofile)
 router1.post('/dbupload',verifyJWT,dbupload)
+router1.get('/lookdb',verifyJWT,lookdb)
+router1.post('/writeReviews',writereview)
+router1.post('/history',verifyJWT,history)
+router1.get('/history',verifyJWT,gethistory)
 export default router1

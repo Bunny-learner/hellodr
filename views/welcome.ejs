@@ -2,98 +2,219 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MediConnect - Welcome to Homepage</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="/welcome.css" />
+
+  <style>
+    .nextpage {
+      height: 60vh;
+      background-color: black;
+    }
+
+    #motion {
+      height: 120vh;
+      width: 66%;
+      position: fixed;
+      /* top: 20%; */
+      top: 0%;
+      right: 0px;
+    }
+
+    .leftbox {
+      width: 34%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .nextnextpage {
+      height: 200vh;
+      background-color: black;
+    }
+
+    .box {
+      border: 2px solid black;
+      width: 75%;
+      padding-top: 35px;
+      padding-bottom: 85px;
+      padding-left: 35px;
+      padding-right: 50px;
+      margin-bottom: 50px;
+      position: relative;
+      border-radius: 20px;
+    }
+    .boxcontent{
+      text-align: center;
+      width: 100%;
+    }
+    .boxcontent h1 {
+      font-size: 1.7rem;
+      color: rgb(151, 151, 151);
+    }
+
+    .boxcontent p {
+      margin-top: 25px;
+      font-size: 1.2rem;
+      width: 75%;
+      color: lightgrey;
+      width: 100%;
+    }
+  </style>
 </head>
 
-<style>
-    body {
-        margin: 0px;
-        padding: 0px;
-        color:black;
-        width:100vw;
-        height:100vh;
-        font-family: Arial, Helvetica, sans-serif;
-        overflow-x:hidden ;
-        z-index: -2;
-    }
-
-    button {
-        border: 1px solid black;
-        border-radius: 5px;
-        background-color: black;
-        color: white;
-        height:40px;
-        width:100px;
-        margin-right:10px;
-    }
-
-    div.a{
-        background-color: Rgba(255,255,255,0.5);
-        width:100vw;
-        height:55px;
-        display:flex ;
-        align-items:center;
-        justify-content: space-between;
-
-    }
-    .a div{
-       display: flex;
-    }
-
-    .b {
-        width:100vw;
-        min-height:100vh;
-        z-index:-1;
-        
-
-    }
-    
-  .b  iframe{
-        width:100vw;
-        height: 100vh;
-    }
-    button:hover{
-        color:white;
-        background-color:black;
-    }
-@media only screen and (max-width:460px){
-body{
-font-size:10px;
-}
-
-button{
-    width:60px;
-    height:30px;
-    text-align: center;
-}   
-
-}
-
-iframe{
-    pointer-events: none;
-}
-</style>
-
 <body>
-    <div class="a">
-        <h1>Welcome</h1>
-        <div>
-            <a href="/doctor"><button>Doctor</button></a>
-            <a href="/patient"><button>Patient</button></a>
+  <header>
+    <div class="logo">YOUR LOGO</div>
+    <nav>
+      <ul>
+        <li id="home"><a href="">Home</a></li>
+        <!-- <li><a href="#">Profile</a></li> -->
+        <li><a href="/patient/main/consult">Consult</a></li>
+        <li><a href="/patient/getmed">Pharmacy</a></li>
+        <li><i class="fa-solid fa-magnifying-glass"></i></li>
+      </ul>
+    </nav>
+    <div class="newheader">
+      <div class="nav">
+        <div class="logoimg">YOUR LOGO</div>
+        <div id="menubtn">
+          <i class="ri-menu-line"></i>
         </div>
+      </div>
+      <div class="menu">
+        <i class="ri-close-line"></i>
+        <h3 id="home"><a href="">Home</a></h3>
+        <h3><a href="/patient/main/consult">Consult</a></h3>
+        <h3><a href="/patient/getmed">Pharmacy</a></h3>
+        <h3><a href="">Search</a></h3>
+      </div>
     </div>
-<div class="b">
-    <iframe src='https://my.spline.design/untitled-6e2eea089a5b034f56fce6182b28c9f3/' frameborder='0' width='100%' height='100%'></iframe>
+  </header>
 
-</div>
-      
-   
+  <section class="hero">
+    <div class="hero-content">
+      <h1 id="tagline">
+        Transforming <span class="red-text">Care,</span> <br /><span class="red-text">Empowering</span>
+        Health
+      </h1>
+      <div class="para">
+        <p>
+          At our online medical service, we are dedicated to provide you with
+          the highest quality of healthcare. Our team of experienced medical
+          professionals is here to assist you.
+        </p>
+      </div>
+    </div>
 
-    
+    <div class="hero-image">
+      <img src="doctor.png" alt="Doctor" />
+    </div>
+  </section>
+  <section class="results">
+    <div class="result-item a">
+      <h2>OUR RESULTS</h2>
+    </div>
+    <div class="result-item a">
+      <h3 class="num" data-val="5000">0</h3>
+      <p class="minntext">people used</p>
+    </div>
+    <div class="result-item a">
+      <div style="display: flex;justify-content: center;align-items: center;height: 100%;width: 100%">
+        <h3 class="num" data-val="90">0</h3>
+        <h3>%</h3>
+      </div>
+      <p class="mintext">people reviewed</p>
+    </div>
+    <div class="result-item">
+      <h3 class="num" data-val="1000">0</h3>
+      <p class="mintext">experienced doctors</p>
+    </div>
+  </section>
+  <section class="services">
+
+
+    <div class="doctor">
+      <img src="/doctor2.png" alt="Doctor2" />
+    </div>
+
+    <div class="doctor-content">
+      <div class="doctext">
+        <p class="newtext">
+          Health fuels dreams; <br />
+          illness seeks cures
+        </p>
+      </div>
+      <div class="para">
+        <p class="imgtext">
+          Please make sure to stay healthy, maintain your metabolic balance,
+          and recover from any sickness as soon as possible. Prioritizing your
+          well-being will help you stay strong and live life to the fullest.
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+
+
+  <div class="nextpage">
+
+    <div id="motion">
+      <spline-viewer url="https://prod.spline.design/Bhpm7Vc05T5b6-JX/scene.splinecode"></spline-viewer>
+      <!-- <spline-viewer url="https://prod.spline.design/S4xNoYVyS-GEcos5/scene.splinecode"></spline-viewer> -->
+    </div>
+    <div class="boxs">
+
+    </div>
+  </div>
+  <div class="nextnextpage">
+    <div class="leftbox">
+      <div class="box box1">
+        <div class="boxcontent">
+          <h1>Enhance Your Healthcare Experience</h1>
+          <p>Connect with experienced doctors, get medical advice, and manage your health with ease. Our platform
+            fosters seamless doctor-patient interaction, ensuring timely consultations, expert guidance, and better
+            healthcare outcomes.</p>
+
+        </div>
+      </div>
+      <div class="box box2">
+        <div class="boxcontent">
+          <h1>Consult with Experts</h1>
+          <p>Our platform connects you with experienced doctors for consultations, health advice, and medical insights.
+            Stay informed about the latest healthcare advancements and receive expert guidance tailored to your needs.
+          </p>
+
+        </div>
+      </div>
+      <div class="box box3">
+        <div class="boxcontent">
+          <h1>Manage Your Health Records</h1>
+          <p>Keep track of your medical history, prescriptions, and reports in one place. Our platform allows seamless
+            record management, ensuring doctors have the information they need for accurate diagnoses and better
+            treatment.</p>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
+    integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.59/build/spline-viewer.js"></script>
+  <script src="/welcome.js"></script>
 </body>
-<script src="/sendalert.js"></script>
-<script src="/stopreload.js"></script>
 
 </html>

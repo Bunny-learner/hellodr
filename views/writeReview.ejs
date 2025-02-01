@@ -4,57 +4,86 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="/reviews.css">
+</head>
 </head>
 
-<style>
-    body {
-        width: 100vw;
-        margin: 0px;
-        padding: 0px;
-        font-family: Arial, Helvetica, sans-serif;
-    }
-
-    nav {
-        width: 100vw;
-        height: 50px;
-        background-color: black;
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    button {
-        background-color: transparent;
-        color: white;
-        font-size: 20px;
-        border: 0px;
-    }
-
-    a {
-        margin-right: 10px;
-    }
-
-    #logout {
-        background-color: red;
-        padding: 10px;
-        border-radius: 5px;
-    }
-
-    div {
-        display: flex;
-        padding: 10px;
-        align-items: center;
-    }
-    </style>
 <body>
 
-    <nav>
-        <h1>DoctorProfile</h1>
-        <div>
-            <a href="/patient/main/drugs"><button>ConsultPage</button></a>
-            <a href="/patient/main/consult"><button>ConsultPage</button></a>
+    <div class="container">
+        <div class="feedback-form">
+            <h2>Feedback</h2>
+            <p>Please provide a review to help others</p>
+            <p id="roomid" style="display: none;"><%=roomid%></p>
+            <p id="pid" style="display: none;"><%=pid%></p>
+            
+            <!-- <label>How much would you rate your experience:</label>
+            <div class="stars" id="experience">
+                <span class="star" data-value="1">&#9733;</span>
+                <span class="star" data-value="2">&#9733;</span>
+                <span class="star" data-value="3">&#9733;</span>
+                <span class="star" data-value="4">&#9733;</span>
+                <span class="star" data-value="5">&#9733;</span>
+            </div>
+
+            <label>How much would you rate your doctor:</label>
+            <div class="stars" id="doctor">
+                <span class="star" data-value="1">&#9733;</span>
+                <span class="star" data-value="2">&#9733;</span>
+                <span class="star" data-value="3">&#9733;</span>
+                <span class="star" data-value="4">&#9733;</span>
+                <span class="star" data-value="5">&#9733;</span>
+            </div>
+
+            <label>How much would you rate our service:</label>
+            <div class="stars" id="service">
+                <span class="star" data-value="1">&#9733;</span>
+                <span class="star" data-value="2">&#9733;</span>
+                <span class="star" data-value="3">&#9733;</span>
+                <span class="star" data-value="4">&#9733;</span>
+                <span class="star" data-value="5">&#9733;</span>
+            </div> -->
+            <form method="post" id="form">
+            <label for="review"><b>Description:</b></label>
+            <textarea id="review" rows="4" name="review" placeholder="Write your feedback here..."></textarea>
+
+            <button class="submit-btn">Submit response</button>
+            </form>
         </div>
+        <div class="image">
+            <img src="/rating.png" alt="Feedback Illustration">
+        </div>
+    </div>
+
+    <!-- <nav>
+        <h1>DoctorProfile</h1>
+        <p id="roomid" style="display: none;"><%=roomid%></p>
+        <p id="pid" style="display: none;"><%=pid%></p>
     </nav>
+    <form method="post" id="form">
+        <label for="review"></label>
+        <input type="text" id="review" name="review">
+        <input type="submit">
+    </form> -->
+
+
+    <script>
+        document.querySelectorAll('.stars').forEach(starGroup => {
+            starGroup.addEventListener('click', function(e) {
+                if (e.target.classList.contains('star')) {
+                    let value = e.target.getAttribute('data-value');
+                    this.querySelectorAll('.star').forEach(star => {
+                        star.style.color = star.getAttribute('data-value') <= value ? 'gold' : 'gray';
+                    });
+                }
+            });
+        });
+    </script>
+    <script>
+        const roomid=document.querySelector('#roomid').innerHTML.trim()
+        const pid=document.querySelector('#pid').innerHTML.trim()
+        const form=document.querySelector('#form')
+        form.action=`/doctor/writeReviews?r=${roomid}&p=${pid}`
+    </script>
 </body>
 </html>

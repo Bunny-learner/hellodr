@@ -5,83 +5,233 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>phome</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #faf9fc;
+            color: #333;
+        }
+
+        header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        nav {
+            width: 450px;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+        }
+
+        nav li {
+            margin-left: 20px;
+        }
+
+        nav li i {
+            font-size: 25px;
+            height: 25px;
+            width: 25px;
+            cursor: pointer;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 450;
+            font-size: 22px;
+        }
+
+        nav li a:hover {
+            border-bottom: 2px solid #2b2b2b;
+            padding-bottom: 10px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+        }
+
+        .profile-pic {
+            width: 160px;
+            height: 160px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            img{
+                object-fit: cover;
+                height: 160px;
+                width: 160px;
+            }
+        }
+
+        .card-content {
+            flex: 1;
+        }
+
+        .card-content h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .card-content p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+
+        .rating {
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .stars {
+            color: gold;
+            margin-left: 10px;
+        }
+
+        .consult-button {
+            background-color: #1B3C74;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .consult-button:hover {
+            background-color: #16325d;
+        }
+
+        .consult-button i {
+            margin-left: 5px;
+        }
+
+        .card-textarea {
+            display: flex;
+            width: 100%;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .textbox {
+            width: 70%;
+            padding: 20px;
+            border: 2px solid #1B3C74;
+            background-color: #D9D9D966;
+        }
+
+        .send-button {
+            background-color: #1B3C74;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            height: 40px;
+        }
+.roomid,.email,.uname,em{
+    display: none;
+}
+        .consult-form {
+            display: none;
+            margin-top: 20px;
+            width: 100%; /* Added for full card width */
+        }
+
+        .consult-form.active {
+            display: block;
+        }
+    </style>
 </head>
 <script src="/socket.io/socket.io.js"></script>
 <script>
   const socket = io();</script>
 
-  
-
-<style>
-    button {
-        padding: 10px;
-        background-color: blue;
-        color: white;
-
-    }
-
-    div {
-        width: 100vw;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        background-color: antiquewhite;
-    }
-
-    body {
-        font-size: 20px;
-        color: black;
-    }
-
-    p {
-        padding: 30px;
-        border: 1px solid black;
-        border-radius: 5px;
-    }
-
-    span {
-        color: blue;
-    }
-
-    .info{
-        padding:5px;
-        color:green;
-    }
-    em{
-        display:none;
-    }
-    .roomid{
-        display: none;
-    }
-    h3,h4{
-        display: none;
-    }
-    .status{
-        color:red;
-    }
-    form{
-            width: 100px;
-            background-color: black;
-        }
-
-        p>img{
-            width: 70px;
-            height:70px;
-            border:2px solid;
-            border-radius: 50px;
-        }
-        p{
-            display:flex;
-            align-items: center;
-        }
-</style>
-
 <body>
-    <div>
+    <header>
+        <div class="logo">YOUR LOGO</div>
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Consult</a></li>
+                <li><a href="#">Pharmacy</a></li>
+                <li><i class="fa-solid fa-magnifying-glass"></i></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1 class="category"><h3 class="email"><%=email%></h3><h4 class="uname"><%=username%></h4>
+        </h1>
+        <% doctors.forEach(function(doctor) { %>
+        <div class="card" >
+            <div class="profile-pic">
+                <img src="<%= doctor.profilepic || '/dp.png' %>" alt="Doctor's profile picture">
+            </div>
+            <div class="card-content">
+                <span class="roomid"></span>
+                <em></em>
+                <h3 class="nameofdoc"><%= doctor.Username %></h3> 
+                <span class="status"><%=doctor.status%> </span> 
+                <span class="rating">Rating: <%= doctor.info[0].Rating %>/10</span><br/>
+                <strong>Experience:</strong><p class="info"> <%= doctor.info[0].experience %> of Experience</p>
+                <strong>Description:</strong><p><%= doctor.description %></p>
+                <button class="consult-button">Consult <i class="fas fa-chevron-down"></i></button>
+                <div class="consult-form">
+                    <div class="card-textarea">
+                        <input class="textbox" type="text" placeholder="Mention your condition here:" />
+                        <button class="send-button" onclick="consult(this)">Consult</button>
+                        <!-- <button onclick="consult(this)">Consult</button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <% }); %>
+
+    </div>
 
 
-        <h1>doctors <h3><%=email%></h3><h4><%=username%></h4>
+   
+    <!-- <div>
+        <h1>doctors <h3 class="email"><%=email%></h3><h4 class="uname"><%=username%></h4>
         </h1>
         <% doctors.forEach(function(doctor) { %>
             <p><img src=<%=doctor.profilepic%> alt="">
@@ -94,9 +244,38 @@
                 <button onclick="consult(this)">Consult</button>
             </p>
         <% }); %>
-    </div>
+    </div> -->
 </body>
+<script>
 
+
+ // Assuming the URL is stored in window.lca.href
+ const url = window.location.href;
+
+    // Extract the specialty from the URL
+const specialty = url.split('/').pop(); // Splits the URL at each "/" and takes the last part
+    
+    document.querySelector('.category').textContent=`${specialty}`
+    
+        const consultButtons = document.querySelectorAll('.consult-button');
+
+        consultButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const consultForm = button.nextElementSibling;
+
+                consultForm.classList.toggle('active');
+
+                if (consultForm.classList.contains('active')) {
+                    button.textContent = 'Close';
+                    button.innerHTML += ' <i class="fas fa-chevron-up"></i>';
+                } else {
+                    button.textContent = 'Consult';
+                    button.innerHTML += ' <i class="fas fa-chevron-down"></i>';
+                }
+            });
+        });
+    </script>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 <script>
     
 // async function decode() {
@@ -104,7 +283,7 @@
 //             const response = await fetch('/doctor/getemail', {
 //                 method: 'GET',
 //                 headers: {
-//                     'Authorization': `Bearer ${document.cookie.split('=')[1]}`,
+//                     'Authorization': Bearer ${document.cookie.split('=')[1]},
 //                     'who':'doctor'
 //                 },
 //                 credentials: 'include'
@@ -140,8 +319,8 @@ async function decode(doctorname) {
 
 
 
- const email=document.getElementsByTagName('h3')[0].textContent
- const Username=document.getElementsByTagName('h4')[0].textContent
+ const email=document.querySelector('.email').textContent
+ const Username=document.querySelector('.uname').textContent
  
 socket.emit('register',{name:"patient",email:email})
 
@@ -149,15 +328,18 @@ socket.emit('register',{name:"patient",email:email})
 
 socket.on('online',(msg)=>{
 console.log(msg)
-const ele=document.getElementsByTagName('div')[0]
-const docs=ele.getElementsByTagName('p')
+const ele=document.querySelector(".container")
+const docs=ele.getElementsByClassName('card')
 let username;
 
 for(let i=0;i<docs.length;i++){
-username=docs[i].getElementsByTagName('span')[0].textContent
+username=docs[i].querySelector(".nameofdoc").textContent
 
-    if(username==msg.docname)
+    if(username==msg.docname){
+        
     docs[i].getElementsByClassName('status')[0].textContent="Online"
+    docs[i].getElementsByClassName('status')[0].style.color="green"
+}
 
 }
 
@@ -165,23 +347,29 @@ username=docs[i].getElementsByTagName('span')[0].textContent
 async function consult(ele) {
     if (ele.textContent === "Consult") {
         console.log("Consulting");
-        const dname = ele.parentElement.getElementsByTagName('span')[0];
+        const dname = ele.parentElement.parentElement.parentElement.querySelector(".nameofdoc");
         const response=await decode(dname.textContent)
-        ele.parentElement.getElementsByTagName('em')[0].textContent=response.socketid
+        ele.parentElement.parentElement.parentElement.getElementsByTagName('em')[0].textContent=response.socketid
         const did=response.socketid
-
+   
+        const desc=ele.parentElement.querySelector(".textbox").value
             socket.emit('consult', {
                 patientname: Username,
                 did: did,
-                condition: null
+                condition:desc
             });
 
             ele.textContent = "Waiting For Response...";
-            ele.style.backgroundColor = "red";
+            ele.style.backgroundColor = 'red';
+ele.style.padding = '10px';
+ele.style.fontSize = '14px';
+ele.style.letterSpacing = '0.15rem';
+
+            
         } 
 
         if (ele.textContent === "Join") {
-      const roomid=ele.parentElement.getElementsByClassName('roomid')[0].textContent
+      const roomid=ele.parentElement.parentElement.parentElement.getElementsByClassName('roomid')[0].textContent
       console.log(roomid)
         alert('Successfully connected to doctor!!')
         window.location.href = `/room/${roomid}`;
@@ -191,13 +379,16 @@ async function consult(ele) {
 socket.on('rejected', (rejected) => {
     alert(`${rejected.message}`);
     const name = rejected.name;
-    const ele = document.getElementsByTagName('p');
+
+    const ele = document.getElementsByClassName('card');
     Array.from(ele).forEach(e => {
         const nameofdoc= e.getElementsByClassName('nameofdoc')[0].textContent;
         if (nameofdoc === name) {
-            const btn = e.getElementsByTagName('button')[0];
+            const btn = e.getElementsByClassName('send-button')[0];
             btn.textContent = "Consult";
             btn.style.backgroundColor = "blue";
+           e.parentElement.querySelector(".textbox").value=""
+
         }
     });
 });
@@ -208,7 +399,7 @@ socket.on('rejected', (rejected) => {
 //     const response=await fetch('/storeroomid',{
 //         method:'GET',
 //         headers:{
-//                 'Authorization': `Bearer ${document.cookie.split('=')[1]}`,
+//                 'Authorization': Bearer ${document.cookie.split('=')[1]},
 //                 'roomid':roomid
 //             },
 //             credentials: 'include'
@@ -226,12 +417,12 @@ socket.on('rejected', (rejected) => {
 socket.on('patientjoined', (joined) => {
     const name = joined.name;
     console.log("...............",name)
-    const ele = document.getElementsByTagName('p');
+    const ele = document.getElementsByClassName('card');
     Array.from(ele).forEach(e => {
         const nameofdoc = e.getElementsByClassName('nameofdoc')[0].textContent;
         console.log(nameofdoc)
         if (nameofdoc === name) {
-            const btn = e.getElementsByTagName('button')[0];
+            const btn = e.getElementsByClassName('send-button')[0];
             btn.textContent = "Join";
             btn.style.backgroundColor = "green";
             console.log(joined.roomid)
@@ -243,15 +434,17 @@ socket.on('patientjoined', (joined) => {
 
 socket.on('bye',(msg)=>{
 console.log(msg)
-const ele=document.getElementsByTagName('div')[0]
-const docs=ele.getElementsByTagName('p')
+const ele=document.getElementsByClassName('container')[0]
+const docs=ele.getElementsByClassName('card')
 let username;
 
 for(let i=0;i<docs.length;i++){
-username=docs[i].getElementsByTagName('span')[0].textContent
+username=docs[i].getElementsByClassName('nameofdoc')[0].textContent
 
     if(username==msg.docname)
     docs[i].getElementsByClassName('status')[0].textContent="Offline"
+    docs[i].getElementsByClassName('status')[0].style.color="red"
+
 
 }
 

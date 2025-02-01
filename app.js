@@ -69,7 +69,7 @@ io.on('connection', (socket) => {
       if (doc) {
       socket.to(common).emit('online', {
         docname: doc.Username,
-        status: "online"
+        status: " Online"
 
       })
       console.log(doc)

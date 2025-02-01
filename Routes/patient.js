@@ -16,7 +16,7 @@ router2.get('/main/consult/:category',verifyJWT,phome)
 
 router2.get('/getemail',verifyJWT,getemail)
 router2.post('/logout',verifyJWT,logoutuser)
-router2.get('/writeReview',write)
+router2.get('/writeReviews',verifyJWT,write)
 
 router2.get('/getmed',getmed)
 export default router2
