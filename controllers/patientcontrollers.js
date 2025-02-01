@@ -1,6 +1,7 @@
 import { asynchandler } from "../utils/asynchandler.js"
 import { doctor } from "../models/doctor.model.js"
 import { patient } from "../models/patient.model.js"
+import { Medicine } from "../models/medicine.model.js"
 
 
 
@@ -152,6 +153,48 @@ const categories=asynchandler(async(req,res)=>{
     res.render("categories.ejs")
 })
 
+const write=asynchandler(async(req,res)=>{
+    res.render("writeReview.ejs")
+})
+
+const getmed=async (req,res) => {
+    const query = req.query.q;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    let filter = {};
+    if (query) {
+      filter = {$or: [
+        { medical_condition: { $regex: query, $options: "i" } },
+        { drug_name: { $regex: query, $options: "i" } }
+      ]}
+    }
+
+    const results = await Medicine.find(filter).lean()
+    .sort({
+        normalized_score: -1, // Sort by normalized score
+      })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    // Compute normalized score dynamically since MongoDB doesn't support sorting by computed values
+    results.forEach(medicine => {
+      medicine.normalized_score = medicine.rating * Math.log10(medicine.no_of_reviews + 1);
+    });
+
+    results.sort((a, b) => b.normalized_score - a.normalized_score);
+    const totalRecords = await Medicine.countDocuments(filter);
+
+    res.render("patientdrugs.ejs", {
+      totalRecords,
+      totalPages: Math.ceil(totalRecords / limit),
+      currentPage: page,
+      results,
+      query: query || "All Medicines",
+    });
+}
 
 
-export { patientwelcome, logoutuser,categories,main,getemail,phome,signup,login,login_details,signup_details}
+export { patientwelcome, getmed,write,logoutuser,categories,main,getemail,phome,signup,login,login_details,signup_details}

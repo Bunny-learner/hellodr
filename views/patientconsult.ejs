@@ -64,6 +64,17 @@
             width: 100px;
             background-color: black;
         }
+
+        p>img{
+            width: 70px;
+            height:70px;
+            border:2px solid;
+            border-radius: 50px;
+        }
+        p{
+            display:flex;
+            align-items: center;
+        }
 </style>
 
 <body>
@@ -73,8 +84,8 @@
         <h1>doctors <h3><%=email%></h3><h4><%=username%></h4>
         </h1>
         <% doctors.forEach(function(doctor) { %>
-            <p>
-                <span><%= doctor.Username %></span>
+            <p><img src="<%=doctor.profilepic>" alt="">
+                <span class="nameofdoc"><%= doctor.Username %></span>
                 <span class="status"><%=doctor.status%> </span>
                 </span>
                 <span class="roomid"></span>
@@ -131,7 +142,8 @@ async function decode(doctorname) {
 
  const email=document.getElementsByTagName('h3')[0].textContent
  const Username=document.getElementsByTagName('h4')[0].textContent
-        socket.emit('register',{name:"patient",email:email})
+ 
+socket.emit('register',{name:"patient",email:email})
 
 
 
@@ -178,11 +190,11 @@ async function consult(ele) {
 
 socket.on('rejected', (rejected) => {
     alert(`${rejected.message}`);
-    const did = rejected.did;
+    const name = rejected.name;
     const ele = document.getElementsByTagName('p');
     Array.from(ele).forEach(e => {
-        const idofdoc = e.getElementsByTagName('em')[0].textContent;
-        if (idofdoc === did) {
+        const nameofdoc= e.getElementsByClassName('nameofdoc')[0].textContent;
+        if (nameofdoc === name) {
             const btn = e.getElementsByTagName('button')[0];
             btn.textContent = "Consult";
             btn.style.backgroundColor = "blue";
@@ -212,12 +224,13 @@ socket.on('rejected', (rejected) => {
 // alert('roomid stored successfully!!')}
 
 socket.on('patientjoined', (joined) => {
-    const did = joined.did;
+    const name = joined.name;
+    console.log("...............",name)
     const ele = document.getElementsByTagName('p');
     Array.from(ele).forEach(e => {
-        const idofdoc = e.getElementsByTagName('em')[0].textContent;
-        console.log(idofdoc,"  ",did)
-        if (idofdoc === did) {
+        const nameofdoc = e.getElementsByClassName('nameofdoc')[0].textContent;
+        console.log(nameofdoc)
+        if (nameofdoc === name) {
             const btn = e.getElementsByTagName('button')[0];
             btn.textContent = "Join";
             btn.style.backgroundColor = "green";

@@ -87,6 +87,19 @@ const userschema=new Schema({
           }
         }
     ],
+    pendingrequests:[
+{
+  psocketid:{
+    type:String
+  },
+  pname:{
+    type:String
+  },
+  pcondition:{
+    type:String
+  }
+}
+    ],
     history:[history]
     },{
         timestamps:true

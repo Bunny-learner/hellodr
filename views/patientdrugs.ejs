@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicine Search</title>
+    <style>
+        :root {
+            --background-light: #ffffff;
+            --text-light: #000000;
+            --background-dark: #121212;
+            --text-dark: #ffffff;
+        }
+
+        body {
+            background-color: var(--background-light);
+            color: var(--text-light);
+            font-family: Arial, sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .dark-mode {
+            background-color: var(--background-dark);
+            color: var(--text-dark);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .search-bar {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .toggle-btn {
+            margin-top: 10px;
+            padding: 10px;
+            cursor: pointer;
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .toggle-btn:hover {
+            background: #555;
+        }
+
+        .description {
+            display: -webkit-box;
+            -webkit-line-clamp: 3; /* Show only 3 lines */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: 10px;
+        }
+
+        .show-more {
+            color: #007bff;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .expanded-description {
+            display: block;
+            margin-top: 10px;
+        }
+
+        .medicine-link {
+            margin-top: 10px;
+            font-weight: bold;
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .medicine-link:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+
+    <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement(
+                { pageLanguage: "en", includedLanguages: "fr,es,hi,te,ta,zh,ar,de", layout: google.translate.TranslateElement.InlineLayout.SIMPLE },
+                "google_translate_element"
+            );
+        }
+    </script>
+    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+  
+</head>
+<body>
+
+<div class="container">
+    <h1>Search Medicine</h1>
+
+    <!-- Search Bar -->
+    <div class="search-bar">
+        <form action="/patient/getmed" method="get">
+            <input type="text" name="q" placeholder="Search for medicine..." value="<%= query %>">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+    <button id="toggle-mode" class="toggle-btn">Toggle Dark Mode</button>
+    <div id="google_translate_element"></div>
+
+    <h2>Search Results for "<%= query %>"</h2>
+    
+    <% if (results.length > 0) { %>
+        <% results.forEach(medicine => { %>
+            <div class="medicine">
+                <h3><a href="<%= medicine.drug_link %>" target="_blank"><%= medicine.drug_name %></a></h3>
+                <p><strong>Condition:</strong> <%= medicine.medical_condition %></p>
+                
+                <!-- Description with Show More Button -->
+                <div class="description" id="description-<%= medicine._id %>">
+                    <%= medicine.medical_condition_description %>
+                </div>
+                <button class="show-more" onclick="toggleDescription('<%= medicine._id %>')">Show More</button>
+
+                <!-- Link to other medicines with the same condition -->
+                <a href="/patient/getmed?condition=<%= medicine.medical_condition %>" class="medicine-link">Other medicines for <%= medicine.medical_condition %></a>
+            </div>
+        <% }); %>
+    <% } else { %>
+        <p>No results found.</p>
+    <% } %>
+
+    <!-- Pagination -->
+    <div class="pagination">
+        <% if (currentPage > 1) { %>
+            <a href="/patient/getmed?q=<%= query %>&page=<%= currentPage - 1 %>&limit=20">Previous</a>
+        <% } %>
+
+        <span>Page <%= currentPage %> of <%= totalPages %></span>
+
+        <% if (currentPage < totalPages) { %>
+            <a href="/patient/getmed?q=<%= query %>&page=<%= currentPage + 1 %>&limit=20">Next</a>
+        <% } %>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const toggleButton = document.getElementById("toggle-mode");
+      const body = document.body;
+  
+      // Load theme from local storage
+      if (localStorage.getItem("theme") === "dark") {
+        body.classList.add("dark-mode");
+      }
+  
+      toggleButton.addEventListener("click", () => {
+        body.classList.toggle("dark-mode");
+  
+        // Save the preference
+        if (body.classList.contains("dark-mode")) {
+          localStorage.setItem("theme", "dark");
+        } else {
+          localStorage.setItem("theme", "light");
+        }
+      });
+    });
+
+    // Function to toggle description
+    function toggleDescription(medicineId) {
+        const description = document.getElementById(`description-${medicineId}`);
+        const showMoreButton = description.nextElementSibling;
+        
+        if (description.style.display === "block") {
+            description.style.display = "-webkit-box"; // Collapse the description
+            showMoreButton.innerText = "Show More";
+        } else {
+            description.style.display = "block"; // Expand the description
+            showMoreButton.innerText = "Show Less";
+        }
+    }
+</script>
+
+</body>
+</html>

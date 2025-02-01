@@ -83,6 +83,12 @@ const logindata=asynchandler( async(req,res)=>{
 })
 
 const logoutuser=asynchandler(async(req,res)=>{
+
+
+    const doc=await doctor.findById(req.user._id)
+    doc.pendingrequests=[]
+    await doc.save()
+
     await doctor.findByIdAndUpdate(
         req.user._id,
         {
@@ -111,9 +117,21 @@ const logoutuser=asynchandler(async(req,res)=>{
 })
 
 const dhome=asynchandler(async(req,res)=>{
-  
+    const mail=req.user.email
 
-    res.render("dhome.ejs")
+    if(mail){
+
+    try{
+  const load= await doctor.findOne({email:mail})
+  const data=load.pendingrequests
+  res.render("dhome.ejs",{data})}
+  catch(error){
+    console.log(error)
+    res.json({message:"failed in getting the load"})
+  }}
+  else{
+    res.json({message:"failed in getting the load"})
+  }
 })
 
 
@@ -147,6 +165,30 @@ const getemail=asynchandler(async(req,res)=>{
         res.json({details:user})
         })
     
+const pendingrequests=asynchandler(async(req,res)=>{
 
+    const {data,docname}=req.body
+console.log(data)
+console.log(docname)
+    if(!docname){
+        console.log("-----no doctor name provided--------")
+        res.json({message:"failure"})
+    }
+    else{
+        try {
+            const doc=await doctor.findOne({Username:docname})
+            doc.pendingrequests=data
+            await doc.save()
+            console.log("pending requests saved in db!!!!!!!!!!!")
+            res.json({message:"success"})
 
-export {doctorwelcome,logoutuser,getsocketid,profile,reviews,login,dhome,getemail,logindata}
+        } catch (error) {
+            console.log(error)
+            res.json({message:"failure"})
+        }
+        
+    }
+    
+})
+
+export {doctorwelcome,logoutuser,getsocketid,profile,pendingrequests,reviews,login,dhome,getemail,logindata}

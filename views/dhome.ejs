@@ -91,6 +91,19 @@
     <div class="patientlist">
 
         <h1>Patients</h1>
+        <% if (data && data.length > 0) { %>
+            <% data.forEach(patientdetails => { %>
+              <p>
+                <span class="name"><%= patientdetails.pname %></span>
+                <em class="pid"><%= patientdetails.psocketid %></em>
+                <button class="Accept" onclick="accept(this)">Accept</button>
+                <button class="Reject" onclick="reject(this)">Reject</button>
+              </p>
+            <% }) %>
+          <% } else { %>
+            <p>No pending requests available.</p>
+          <% } %>
+          
         
 
 
@@ -135,28 +148,63 @@
     const ele = document.getElementsByClassName('patientlist')[0]
     const children=ele.getElementsByTagName('p')
 
-    socket.on('patient', (patientdetails) => {
-        console.log(patientdetails)
-        
-        if(children.length!=0){
+    
+socket.on('patient', (patientdetails) => {
+    console.log(patientdetails);
 
-           for(let i=0;i<children.length;i++){
-                if(children[i].getElementsByTagName('span')[0].textContent==patientdetails.pname)
-                {
-                 children[i].remove()
-                }
-            };
+    // Get the parent element where patients are listed
+   
+    // Check if "No pending requests" message exists
+    const noRequestsMessage = ele.querySelector('p');
+    if (noRequestsMessage && noRequestsMessage.textContent === "No pending requests available.") {
+        noRequestsMessage.remove();  // Remove the "No pending requests" message if there are patients now
+    }
+
+    // Check if the patient already exists in the list
+    let patientExists = false;
+    for (let i = 0; i < children.length; i++) {
+        if (children[i].getElementsByTagName('span')[0].textContent === patientdetails.pname) {
+            patientExists = true;
+            children[i].remove(); // Remove the existing entry for this patient (if any)
+            break;  // Exit loop once found and removed
         }
-      
-        const para = document.createElement('p')
-        para.innerHTML = `<span>${patientdetails.pname}</span><em>${patientdetails.pid}</em>
-        <button class="Accept" onclick="accept(this)">Accept</button>
-        <button class="Reject" onclick="reject(this)">Reject</button>
-        `
-        ele.append(para)}
-    )
+    }
+
+    // Only add the patient if they are not already in the list
+    if (!patientExists) {
+        const para = document.createElement('p');
+        para.innerHTML = `
+            <span class="name">${patientdetails.pname}</span>
+            <em class="pid">${patientdetails.pid}</em>
+            <button class="Accept" onclick="accept(this)">Accept</button>
+            <button class="Reject" onclick="reject(this)">Reject</button>
+        `;
+        ele.appendChild(para);  // Append the new patient to the list
+    }
+});
 
 
+
+
+    async function pendingrequests(data,docname){
+
+
+
+        const response=await fetch('/doctor/pendingrequests',{
+            method:'POST',
+            headers: {
+    'Content-Type': 'application/json' // or other content types
+    // Add other headers if necessary
+  },
+            body:JSON.stringify({
+                "data":data,
+                "docname":docname
+            })
+        })
+        const msg=await response.json()
+        console.log(msg)
+        return msg.message;
+    }
     async function accept(a) {
 
 
@@ -171,10 +219,14 @@
         //fetch roomid from the db for that doctor        
         const response=await decode()
         var roomid=response.roomid
+        var usy=response.Username
+        console.log(usy,".....................................................")
+
         console.log(roomid)
         socket.emit('room', {
             roomid: roomid,
-            pid: pid
+            pid: pid,
+            docname:usy
         }, (response) => {
 
             btn[0].textContent="Join"
@@ -186,7 +238,27 @@
     }
     else{
         const roomid=document.getElementsByClassName('roomid')[0].textContent
-        window.location.href=`/room/${roomid}`
+        const pending = Array.from(a.parentElement.parentElement.getElementsByTagName('p')).filter(p => p !== a.parentElement);  // Exclude the clicked <p> element
+        let data=[]
+for(let i=0;i<pending.length;i++){
+data.push({
+    pname:pending[i].getElementsByClassName('name')[0].textContent,
+    psocketid:pending[i].getElementsByClassName('pid')[0].textContent,
+    pcondition:null
+})
+
+}
+console.log(data)
+        const res=await decode()
+        console.log("before sending .....")
+        console.log(res.Username)
+       const response= await pendingrequests(data,res.Username)
+    //    note here......
+       .then((response)=>{
+        window.location.href=`/room/${roomid}`})
+       .catch(error=>{
+            console.log(error)
+        })
     }
     }
 
@@ -197,7 +269,7 @@
             
             decode().then(()=>{socket.emit('reject', {
             pid: pid,
-            did: doctordetails.socketid
+            docname: doctordetails.Username
         })})
         r.parentElement.remove()
 

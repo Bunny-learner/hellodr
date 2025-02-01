@@ -104,21 +104,27 @@ io.on('connection', (socket) => {
   
     socket.join(msg.roomid)
     console.log(`${msg.who} has completed roomregistration`)
-  }
-  )
-  
+  })
+
   //broadcast the message to with senders name
   socket.on('sendMessage', (data) => {
    
+    if(data.there){
       socket.to(data.roomid).emit('newMessage', {
-            sender: data.sender,
+              sender: data.sender,
               message: data.message,
               files:data.files
-    });
+    });}
+    else{
+      console.log("false")
+      socket.to(data.roomid).emit('newMessage',{
+        message:data.message
+      })
+    }
   
     
   
-          console.log(`Message sent to room ${data.roomid} from ${data.sender}: ${data.message}`);
+  
   })
 
 socket.on('consult', (doctordetails) => {
@@ -146,7 +152,7 @@ socket.on('reject', (rejection) => {
   console.log("rejection")
   socket.to(rejection.pid).emit('rejected', {
     message: "I am busy with other patient please kindly try again after sometime!!",
-    did: rejection.did
+    name: rejection.docname
   })
 })
 
@@ -167,12 +173,15 @@ socket.on('room', (roomdetails, callback) => {
   console.log("patient joined room", roomdetails.roomid, roomdetails.pid)
 
   var roomids=roomdetails.roomid
+  var namy=roomdetails.docname
   socket.to(roomdetails.pid).emit('patientjoined', {
     message: "succesfully,joined the room",
-    did: socket.id,
+    name:namy,
     roomid: roomids
   })
 })
+
+
 socket.on('disconnect', () => {
   const username = users[socket.id]
   delete users[socket.id]
