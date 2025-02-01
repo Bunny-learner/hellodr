@@ -84,7 +84,7 @@
         <h1>doctors <h3><%=email%></h3><h4><%=username%></h4>
         </h1>
         <% doctors.forEach(function(doctor) { %>
-            <p><img src="<%=doctor.profilepic>" alt="">
+            <p><img src=<%=doctor.profilepic%> alt="">
                 <span class="nameofdoc"><%= doctor.Username %></span>
                 <span class="status"><%=doctor.status%> </span>
                 </span>

@@ -197,4 +197,6 @@ const getmed=async (req,res) => {
 }
 
 
+
+
 export { patientwelcome, getmed,write,logoutuser,categories,main,getemail,phome,signup,login,login_details,signup_details}

@@ -1,5 +1,7 @@
 import { asynchandler } from "../utils/asynchandler.js"
 import {doctor} from "../models/doctor.model.js"
+import dotenv from "dotenv"
+dotenv.config()
 
 const doctorwelcome=asynchandler(async(req,res)=>{
 res.render("doctorwelcome.ejs")
@@ -82,6 +84,11 @@ const logindata=asynchandler( async(req,res)=>{
     }
 })
 
+
+const uploadprofile=asynchandler(async(req,res)=>{
+console.log(process.env.CLOUDINARY_CLOUD_NAME)
+res.json({cloudname:process.env.CLOUDINARY_CLOUD_NAME})
+})
 const logoutuser=asynchandler(async(req,res)=>{
 
 
@@ -137,8 +144,9 @@ const dhome=asynchandler(async(req,res)=>{
 
 const profile=asynchandler(async(req,res)=>{
   
-
-    res.render("profile.ejs")
+    const doc=await doctor.findOne({email:req.user.email})
+    const pic=doc.profilepic
+    res.render("profile.ejs",{pic:pic})
 })
 
 const reviews=asynchandler(async(req,res)=>{
@@ -189,6 +197,38 @@ console.log(docname)
         
     }
     
+
+
+
 })
 
-export {doctorwelcome,logoutuser,getsocketid,profile,pendingrequests,reviews,login,dhome,getemail,logindata}
+
+const dbupload=asynchandler(async(req,res)=>{
+console.log("99999999999999999999999999999999999999999999999999999999999")
+    const email=req.user.email
+    
+    if(email){
+        console.log(email)
+console.log(req.body.url)
+        try {
+
+            const doc=await doctor.findOne({email:email})
+            doc.profilepic=req.body.url
+            console.log(doc.profilepic)
+            await doc.save()
+            console.log(doc)
+            res.json({message:'saved inside db'})
+
+        } catch (error) {
+            console.log(error)
+        }
+       
+    }
+    else{
+        console.log("email in req.user.email not there!!")
+    }
+    
+    
+})
+
+export {doctorwelcome,dbupload,logoutuser,uploadprofile,getsocketid,profile,pendingrequests,reviews,login,dhome,getemail,logindata}
