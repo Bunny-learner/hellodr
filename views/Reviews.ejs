@@ -24,7 +24,7 @@
             <li><a href="/doctor/dhome/history">History</a></li>
             <li><a href="#" style="border-bottom: 2px solid #2b2b2b; padding-bottom: 10px;">Reviews</a></li>
             <!-- <li><box-icon class="icon" name='user-circle'></box-icon></li> -->
-            <li><a href=""><i class='bx bx-user-circle'></i></a></i>
+            <li><a href="/doctor/dhome/profile"><i class='bx bx-user-circle'></i></a></i>
         </nav>
         <div class="newheader">
             <div class="nav">
@@ -49,9 +49,9 @@
             <div class="flexy">
               <% doctor.forEach(function(doc) { %>
                 <div class="feedback">
-                        <div class="name"><h3><%=doc.patientname%></h3></div>
-                        <p><%=doc.text%></p>
-                        <p><%=doc.date%></p>
+                        <div class="name"><h6 id="name"><%=doc.patientname%></h6></div>
+                        <p class="comments"><%=doc.text%></p>
+                        <strong>Sent on <%=doc.date%></strong>
                 </div>
                 <% }); %>
             </div>

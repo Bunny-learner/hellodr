@@ -74,6 +74,28 @@ tl.from(".results", {
     //     }, duration)
     //})
 });
+let tl2=gsap.timeline({
+    scrollTrigger:{
+        trigger:".box",
+        // markers:true,
+        start:"top 60%",
+        end:"bottom -20%",
+        scrub:2
+    }
+})
+
+tl2.from(".box",{
+    y:200,
+    ease:Power4.out,
+    opacity:0,
+    duration:2,
+    stagger:4,
+    scale:0.5
+},'c')
+tl2.to(".box",{
+    backgroundColor: "rgba(16, 23, 32, 1)",
+},'c')
+
 // gsap.to(".num", {
 //     scrollTrigger: {
 //         trigger: ".results", 
@@ -105,7 +127,8 @@ gsap.to(".num", {
     scrollTrigger: {
         trigger: ".results", // Set the same trigger for the counter
         start: "top 89%",  // Start when .results is at 89% of the viewport
-        end: "top 83%",    // End when .results is at 83%
+        end: "top 83%",  
+        markers:false,  // End when .results is at 83%
         scrub: 1,          // Scrub makes the counter synced to the scroll
         onEnter: () => startCounter() // Call counter function when triggered
     }
@@ -157,12 +180,13 @@ tl.from(".doctor-content", {
         scrub: 1,
     }
 });
+tl.to("results",{ backgroundColor: "black", duration: 1,markers:true })
+
 var tl1=gsap.timeline()
 tl1.from(".nav .logoimg",{
     opacity:0,
     y:-20,
     duration:0.8
-
 })
 tl1.from(".nav #menubtn",{
     opacity:0,
@@ -195,4 +219,24 @@ var close = document.querySelector(".ri-close-line")
 close.addEventListener("click", function () {
     // tl.reverse()
     document.getElementsByClassName("menu")[0].style.display = "none";
+})
+
+var tlm=gsap.timeline()
+tlm.from("#motion",{
+    opacity:0,
+    // x:50,
+    start:"top 80%",
+    duration:0.5,
+    scrollTrigger:{
+        trigger:".nextpage",
+        start:"top 30%",
+        end:"top 10%",
+        scroll:"body",
+        scrub:2,
+        // markers:true
+       }
+})
+
+tlm.from("#motion",{
+    pin:true
 })

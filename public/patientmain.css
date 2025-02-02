@@ -4,6 +4,8 @@ body {
     padding: 0;
     background-color: #faf9fc; 
     color: #333; 
+    margin: 0%;
+    padding: 0%;
 }
 
 header {
@@ -18,10 +20,6 @@ header {
 .newheader{
     display: none;
 }
-
-/* #home{
-    border-bottom: 2px solid;
-} */
 .logo {
     font-size: 1.5em;
     font-weight: bold;
@@ -405,6 +403,8 @@ nav a {
         margin-top: 0px;
         text-align: center;
     }
+
+    
     #tagline{
         font-size: 40px;
         letter-spacing: 1px;

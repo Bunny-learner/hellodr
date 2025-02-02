@@ -294,7 +294,7 @@ const observer = new MutationObserver((mutationsList, observer) => {
                   
                     setTimeout(() => {
                         window.location.href = `/patient/writeReviews?r=${room_id}`; // Redirect after the second timeout
-                    }, 1000); // 1 second delay to ensure alert visibility
+                    }, 60000); // 1 second delay to ensure alert visibility
                 }, 1000); // 1-minute delay for the alert
                 observer.disconnect(); // Stop observing after the doctor leaves
             }

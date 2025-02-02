@@ -1,13 +1,14 @@
 body {
     font-family: sans-serif;
     margin: 0;
+
     padding: 0;
     background-color: #faf9fc; 
     color: #333; 
     display: flex;
     flex-direction: column;
-    overflow: hidden;
-    height: 100vh;
+    overflow-y: auto;
+    /* min-height: 100vh; */
     width: 100%;
 }
 
@@ -92,6 +93,18 @@ nav a {
     overflow-y: auto;
 }
 
+
+.comments{
+
+    width:inherit;
+    min-height:50px;
+    background-color: aliceblue;
+    color:blue;
+    border-radius: 50px;
+    font-size:23px;
+    align-content: center;
+    font-family:Arial, Helvetica, sans-serif
+}
 .pending-requests h2 {
     text-align: center;
     font-size: 2.5rem;
@@ -114,8 +127,21 @@ nav a {
     width: 300px;
     border: 3px solid white;
     border-radius: 15px;
+    padding:20px;
 }
 
+strong{
+    font-size:14px;
+    letter-spacing: 0.1rem;
+    
+}
+#name{
+    font-size: 20px;
+    background-color: white;
+    color:blue;
+    padding:15px;
+    border-radius: 3px;
+}
 
 @media (max-width:649px) and (min-width:344px) {
     body{
@@ -165,6 +191,8 @@ nav a {
         right: 30px;
         cursor: pointer;
     }
+
+
     .menu h3{
         padding-top: 20px;
         a{
@@ -177,4 +205,6 @@ nav a {
     .menu h3:hover{
         scale: 1.05;
     }
+
+
 }
