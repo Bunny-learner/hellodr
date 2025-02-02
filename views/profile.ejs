@@ -18,6 +18,20 @@
 </script>
 
 
+<style>
+
+    h2{
+        margin-top: 5px;
+        padding-top:10px;
+        color:skyblue;
+        
+    }
+    .profile-info{
+        
+        
+        margin-bottom:10px;
+    }
+</style>
 <body>
     <header class="header">
         <div class="logo">YOUR LOGO</div>
@@ -45,7 +59,8 @@
             </div>            
             <div class="profile-info">
                 <h2></h2>
-                <p><strong>Experience:</strong><%=doc.info[0].experience%></p>
+
+                <h2><%=doc.Username%></h2>
                 <p><strong>PhoneNumber:</strong><%=doc.info[0].phonenumber%></p>
                 <p>Currently working in <strong><%=doc.info[0].Hospitals%></strong></p>
             </div>

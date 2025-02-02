@@ -15,6 +15,128 @@
     <link rel="stylesheet" href="/review.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
+
+<style>/* General Styling for the Body */
+  body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #f8f9fa, #e2e2e2);
+      color: #333;
+      margin: 0;
+      padding: 0;
+  }
+  
+  /* Container for Reviews */
+  .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Pending Requests Header */
+  .pending-requests {
+      text-align: center;
+      margin-bottom: 30px;
+  }
+  
+  .pending-requests h2 {
+      font-size: 36px;
+      color: #2b2b2b;
+      font-weight: bold;
+      margin-bottom: 15px;
+      letter-spacing: 1px;
+  }
+  
+  /* Flex for Feedback Cards */
+  .flexy {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      animation: fadeIn 1.2s ease-in-out;
+  }
+  
+  /* Hover Effect for Feedback Cards */
+  .feedback {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      width: 280px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      overflow: hidden;
+      position: relative;
+  }
+  
+  .feedback:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Name and Profile Picture */
+  .name {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+  }
+  
+  .name h6 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #333;
+  }
+  
+  .profile-pic {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #f0f0f0;
+      border: 2px solid #ddd;
+  }
+  
+  /* Comment Text */
+  .comments {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #555;
+      margin-bottom: 15px;
+  }
+  
+  /* Date Styling */
+  strong {
+      font-size: 14px;
+      color: #888;
+  }
+  
+  /* Star Rating Section */
+  .star-rating {
+      color: #ffb400;
+      font-size: 18px;
+      margin-bottom: 10px;
+  }
+  
+  /* Animation for Feedback Cards */
+  @keyframes fadeIn {
+      from {
+          opacity: 0;
+      }
+      to {
+          opacity: 1;
+      }
+  }
+  
+  /* Responsive Design for Smaller Screens */
+  @media (max-width: 600px) {
+      .feedback {
+          width: 100%;
+      }
+  }
+
+  
+  </style>
 <body>
     <header class="header">
         <div class="logo">YOUR LOGO</div>
@@ -45,16 +167,34 @@
 
     <div class="container">
         <div class="pending-requests">
-            <h2>Your Feedbacks</h2>
+            <h2 style=" color:whitesmoke;">Your Feedbacks</h2>
             <div class="flexy">
               <% doctor.forEach(function(doc) { %>
                 <div class="feedback">
-                        <div class="name"><h6 id="name"><%=doc.patientname%></h6></div>
-                        <p class="comments"><%=doc.text%></p>
-                        <strong>Sent on <%=doc.date%></strong>
+                  <div class="name">
+                    <div class="profile-pic">
+                      <img src="<%=doc.patientImageURL || '/default.png' %>" alt="Patient Image" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;" />
+                    </div>
+                    <h6 id="name"><%=doc.patientname%></h6>
+                  </div>
+                  <p class="comments"><%=doc.text%></p>
+                  
+                  <!-- Star Rating (Dynamic Based on Rating) -->
+                  <div class="star-rating">
+                    <% for(let i = 0; i < doc.rating; i++) { %>
+                      <i class="fa-solid fa-star"></i>
+                    <% } %>
+                    <% for(let i = doc.rating; i < 5; i++) { %>
+                      <i class="fa-regular fa-star"></i>
+                    <% } %>
+                  </div>
+                  
+                  <strong>Sent on <%=doc.date%></strong>
                 </div>
-                <% }); %>
+              <% }); %>
             </div>
+            
+            
            
         </div>
     </div>
