@@ -189,8 +189,8 @@ const dhome=asynchandler(async(req,res)=>{
 const profile=asynchandler(async(req,res)=>{
   
     const doc=await doctor.findOne({email:req.user.email})
-    const pic=doc.profilepic
-    res.render("profile.ejs",{pic:pic})
+    
+    res.render("profile.ejs",{doc:doc})
 })
 
 
@@ -324,8 +324,11 @@ const history=asynchandler(async (req,res) => {
 
 const reviews=asynchandler(async(req,res)=>{
     const id=req.user._id
+    console.log("reviews000000000000000000000000000000000")
     const user=await doctor.findById(id)
-    res.render("Reviews.ejs",{doctor:user})
+    const reviews=user.reviews
+    console.log(reviews)
+    res.render("Reviews.ejs",{doctor:reviews})
 })
 
 const gethistory=asynchandler(async (req,res) => {

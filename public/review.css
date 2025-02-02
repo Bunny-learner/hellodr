@@ -11,6 +11,11 @@ body {
     width: 100%;
 }
 
+.flexy{
+    display:flex;
+    flex-wrap: wrap;
+    gap:30px;
+}
 header {
     /* background-color: #fff; */
     /* background-color: white; */

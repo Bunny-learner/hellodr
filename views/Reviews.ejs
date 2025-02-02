@@ -20,11 +20,11 @@
         <div class="logo">YOUR LOGO</div>
         <nav class="navbar">
           <ul>
-            <li><a href="/dhome.html">Home</a></li>
-            <li><a href="/history.html">History</a></li>
+            <li><a href="/doctor/dhome">Home</a></li>
+            <li><a href="/doctor/dhome/history">History</a></li>
             <li><a href="#" style="border-bottom: 2px solid #2b2b2b; padding-bottom: 10px;">Reviews</a></li>
             <!-- <li><box-icon class="icon" name='user-circle'></box-icon></li> -->
-            <li><a href="/profile.html"><i class='bx bx-user-circle'></i></a></i>
+            <li><a href=""><i class='bx bx-user-circle'></i></a></i>
         </nav>
         <div class="newheader">
             <div class="nav">
@@ -35,10 +35,10 @@
             </div>
             <div class="menu">
               <i class="ri-close-line"></i>
-              <h3><a href="/dhome.html">Home</a></h3>
-              <h3><a href="/history.html">History</a></h3>
+              <h3><a href="/doctor/dhome">Home</a></h3>
+              <h3><a href="/doctor/dhome/history">History</a></h3>
               <h3><a href="" style="border-bottom: 2px solid #2b2b2b; padding-bottom: 10px;">Reviews</a></h3>
-              <h3><a href="/profile.html">Profile</a></h3>
+              <h3><a href="/doctor/dhome/profile">Profile</a></h3>
             </div>
           </div>
       </header>
@@ -46,13 +46,16 @@
     <div class="container">
         <div class="pending-requests">
             <h2>Your Feedbacks</h2>
-            <% doctors.forEach(function(doctor) { %>
-            <div class="feedback">
-                    <div class="name"><h3><%=doctor.reviews.patientname%></h3></div>
-                    <p><%=doctor.reviews.text%></p>
-                    <p><%=doctor.reviews.date%></p>
+            <div class="flexy">
+              <% doctor.forEach(function(doc) { %>
+                <div class="feedback">
+                        <div class="name"><h3><%=doc.patientname%></h3></div>
+                        <p><%=doc.text%></p>
+                        <p><%=doc.date%></p>
+                </div>
+                <% }); %>
             </div>
-            <% }); %>
+           
         </div>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"

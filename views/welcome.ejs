@@ -10,97 +10,18 @@
     crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
     rel="stylesheet">
-
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
   <link rel="stylesheet" href="/welcome.css" />
-
-  <style>
-    .nextpage {
-      height: 60vh;
-      background-color: black;
-    }
-
-    #motion {
-      height: 120vh;
-      width: 66%;
-      position: fixed;
-      /* top: 20%; */
-      top: 0%;
-      right: 0px;
-    }
-
-    .leftbox {
-      width: 34%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
-
-    .nextnextpage {
-      height: 200vh;
-      background-color: black;
-    }
-
-    .box {
-      border: 2px solid black;
-      width: 75%;
-      padding-top: 35px;
-      padding-bottom: 85px;
-      padding-left: 35px;
-      padding-right: 50px;
-      margin-bottom: 50px;
-      position: relative;
-      border-radius: 20px;
-    }
-    .boxcontent{
-      text-align: center;
-      width: 100%;
-    }
-    .boxcontent h1 {
-      font-size: 1.7rem;
-      color: rgb(151, 151, 151);
-    }
-
-    .boxcontent p {
-      margin-top: 25px;
-      font-size: 1.2rem;
-      width: 75%;
-      color: lightgrey;
-      width: 100%;
-    }
-  </style>
 </head>
 
 <body>
-  <header>
+  <header class="header">
     <div class="logo">YOUR LOGO</div>
-    <nav>
-      <ul>
-        <li id="home"><a href="">Home</a></li>
-        <!-- <li><a href="#">Profile</a></li> -->
-        <li><a href="/patient/main/consult">Consult</a></li>
-        <li><a href="/patient/getmed">Pharmacy</a></li>
-        <li><i class="fa-solid fa-magnifying-glass"></i></li>
-      </ul>
+    <nav class="navbar">
+      <button type="submit" class="btn1"><a href="/doctor/login">Login as Doctor</a></button>
+      <button type="submit" class="btn2"><a href="/patient/login">Login as Patient</a></button>
     </nav>
-    <div class="newheader">
-      <div class="nav">
-        <div class="logoimg">YOUR LOGO</div>
-        <div id="menubtn">
-          <i class="ri-menu-line"></i>
-        </div>
-      </div>
-      <div class="menu">
-        <i class="ri-close-line"></i>
-        <h3 id="home"><a href="">Home</a></h3>
-        <h3><a href="/patient/main/consult">Consult</a></h3>
-        <h3><a href="/patient/getmed">Pharmacy</a></h3>
-        <h3><a href="">Search</a></h3>
-      </div>
-    </div>
   </header>
-
   <section class="hero">
     <div class="hero-content">
       <h1 id="tagline">
@@ -117,7 +38,7 @@
     </div>
 
     <div class="hero-image">
-      <img src="doctor.png" alt="Doctor" />
+      <img src="/doctor.png" alt="Doctor" />
     </div>
   </section>
   <section class="results">
@@ -157,64 +78,19 @@
       <div class="para">
         <p class="imgtext">
           Please make sure to stay healthy, maintain your metabolic balance,
-          and recover from any sickness as soon as possible. Prioritizing your
-          well-being will help you stay strong and live life to the fullest.
+          and recover from any sickness as soon as possible. Prioritizing your well-being will help you stay strong and
+          live life to the fullest.
         </p>
       </div>
     </div>
   </section>
-
-
-
-
-  <div class="nextpage">
-
-    <div id="motion">
-      <spline-viewer url="https://prod.spline.design/Bhpm7Vc05T5b6-JX/scene.splinecode"></spline-viewer>
-      <!-- <spline-viewer url="https://prod.spline.design/S4xNoYVyS-GEcos5/scene.splinecode"></spline-viewer> -->
-    </div>
-    <div class="boxs">
-
-    </div>
-  </div>
-  <div class="nextnextpage">
-    <div class="leftbox">
-      <div class="box box1">
-        <div class="boxcontent">
-          <h1>Enhance Your Healthcare Experience</h1>
-          <p>Connect with experienced doctors, get medical advice, and manage your health with ease. Our platform
-            fosters seamless doctor-patient interaction, ensuring timely consultations, expert guidance, and better
-            healthcare outcomes.</p>
-
-        </div>
-      </div>
-      <div class="box box2">
-        <div class="boxcontent">
-          <h1>Consult with Experts</h1>
-          <p>Our platform connects you with experienced doctors for consultations, health advice, and medical insights.
-            Stay informed about the latest healthcare advancements and receive expert guidance tailored to your needs.
-          </p>
-
-        </div>
-      </div>
-      <div class="box box3">
-        <div class="boxcontent">
-          <h1>Manage Your Health Records</h1>
-          <p>Keep track of your medical history, prescriptions, and reports in one place. Our platform allows seamless
-            record management, ensuring doctors have the information they need for accurate diagnoses and better
-            treatment.</p>
-
-        </div>
-      </div>
-    </div>
-
-  </div>
+  <!-- <iframe src='https://my.spline.design/untitled-6e2eea089a5b034f56fce6182b28c9f3/' frameborder='0' width='100%' height='100%'></iframe> -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
     integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
-  <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.59/build/spline-viewer.js"></script>
   <script src="/welcome.js"></script>
+  <script src="/sendalert.js"></script>
 </body>
 
 </html>
