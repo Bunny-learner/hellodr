@@ -118,7 +118,7 @@ const logindata=asynchandler( async(req,res)=>{
     const {refreshtoken,accesstoken}=await getaccesstokenandrefreshtoken(currentuser)
     // console.log("this is accesstoken of doctor:",accesstoken)
 
-    currentuser.status="online";
+    currentuser.status="Online";
     await currentuser.save()
     return res.status(200)
     .cookie("accesstoken",accesstoken)

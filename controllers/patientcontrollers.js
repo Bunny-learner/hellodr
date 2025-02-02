@@ -27,10 +27,7 @@ const generate = async (userid) => {
 
 }
 
-const patientwelcome = asynchandler(async (req, res) => {
-    res.render("patientwelcome.ejs")
 
-})
 
 const getemail=asynchandler(async(req,res)=>{
 const user = await req.user
@@ -40,11 +37,6 @@ console.log("ended patient verification.....")
 res.json({details:user})
 })
 
-const signup = asynchandler(async (req, res) => {
-
-
-    res.render('patientsignup.ejs')
-})
 
 const login = asynchandler(async (req, res) => {
 
@@ -61,6 +53,7 @@ const main=asynchandler(async(req,res)=>{
 const login_details = asynchandler(async (req, res) => {
 
     const { email,password } = req.body
+    console.log(email,password)
     const doesuser = await patient.findOne({ email: email })
     const id = doesuser._id
     if (!doesuser) {
@@ -204,4 +197,4 @@ const write=asynchandler(async(req,res)=>{
     res.render("writeReview.ejs",{"roomid":roomid,"pid":patientid})
 })
 
-export { patientwelcome, getmed,write,logoutuser,categories,main,getemail,phome,signup,login,login_details,signup_details}
+export { getmed,write,logoutuser,categories,main,getemail,phome,login,login_details,signup_details}

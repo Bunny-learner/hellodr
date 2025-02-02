@@ -1,295 +1,366 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medicine Search</title>
+    <title>MediConnect - Drug Info Search</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
     <style>
-
-
-
-        :root {
-            --background-light: #ffffff;
-            --text-light: #000000;
-            --background-dark: #121212;
-            --text-dark: #ffffff;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
         }
 
         body {
-
-            width:100vw;
-            background-color: var(--background-light);
-            color: var(--text-light);
-            font-family: Arial, sans-serif;
-            transition: background-color 0.3s, color 0.3s;
+            
+        
+            align-items: center;
+            align-content: center;
+        
+            background: url('/homepage.png');
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: top;
+            display: flex;
+            flex-direction: column;
         }
+
+        html,body{
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+        .overlay {
+           position: absolute;
+            width: 100vw;
+            height:100%;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.4);
+            z-index:-1;
+        }
+
+        header {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .newheader {
+            display: none;
+        }
+
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        nav {
+            width: 450px;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+        }
+
+        nav li {
+            margin-left: 20px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 450;
+            font-size: 22px;
+        }
+
+        nav li a:hover {
+            border-bottom: 2px solid #2b2b2b;
+            padding-bottom: 10px;
+        }
+
+
+        img{
+            
+            width: 250px;
+            height: 250px;
+        }
+        .search-container {
+            width: 60%;
+            max-width: 800px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 30px;
+            padding: 10px 20px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-bar {
+            flex: 1;
+            border: none;
+
+            font-size: 18px;
+            background-color: transparent;
+            outline: none;
+        }
+
+        .translate-btn {
+            background: black;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .dark-mode-toggle {
+            background: white;
+            border: 2px solid black;
+            border-radius: 50%;
+            padding: 6px;
+            font-size: 18px;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .drugs {
+            width: 90vw;
+            display: flex;
+            gap: 140px;
+            flex-wrap: wrap;
+
+            min-height: 100vh;
+        }
+
+        .flip-card {
+            width: 350px;
+            height: 400px;
+            perspective: 1000px;
+            cursor: pointer;
+            margin-top: 30px;
+        }
+
+        .flip-card-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+
+        .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front,
+        .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .flip-card-front {
+            background-color: #fff;
+            padding: 15px;
+            border: 1px solid #ccc;
+        }
+
+        .flip-card-back {
+            background-color: #f1f1f1;
+            transform: rotateY(180deg);
+            padding: 15px;
+            border: 1px solid #ccc;
+        }
+
+        .drug-info {
+            color: red;
+            font-size: 14px;
+        }
+
+        .read-more {
+            color: blue;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
 
         .dark-mode {
-            background-color: var(--background-dark);
-            color: var(--text-dark);
+    background-color: #121212;
+    color: white;
+}
+
+.dark-mode .search-container {
+    background: #333;
+}
+
+
+.pagination {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
         }
-
-        .container {
-            max-width: 800px;
-            margin: auto;
-            padding: 20px;
-        }
-
-        
-
-        input[type="text"] {
-            width: 80%;
-            padding: 10px;
+        .pagination a {
+            margin: 0 5px;
+            padding: 8px 12px;
+            text-decoration: none;
             border: 1px solid #ccc;
             border-radius: 5px;
+            color: #333;
         }
-
-        button {
-            padding: 10px 15px;
-            border: none;
-            background-color: #007bff;
-            color: white;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        .toggle-btn {
-           
-            padding: 10px;
-            cursor: pointer;
+        .pagination a.active {
             background: #333;
             color: white;
-            border: none;
-            border-radius: 5px;
         }
-
-        .toggle-btn:hover {
-            background: #555;
+        .pagination a:hover {
+            background: #ddd;
         }
-
-        .description {
-            display: -webkit-box;
-            -webkit-line-clamp: 3; /* Show only 3 lines */
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-bottom: 10px;
-        }
-       .medicine {
-    line-height: 2rem;
-    padding: 10px;
-    border-bottom: 5px solid;
-    letter-spacing: 0.1rem;
-    font-family:Arial, Helvetica, sans-serif;
-    margin-bottom: 20px;
-    }
-
-    .condition{
-        text-decoration:dashed;
-    }
-        .show-more {
-            color: white;
-            cursor: pointer;
-            font-size: larger;
-            text-decoration: none;
-        }
-
-        .expanded-description {
-            display: block;
-            margin-top: 10px;
-        }
-
-        .medicine-link {
-            margin-top: 10px;
-            font-weight: bold;
-            text-decoration: none;
-            color: #007bff;
-        }
-
-        .medicine-link:hover {
-            text-decoration: underline;
-        }
-
-        a{
-            text-decoration: none;
-            font-size: 20px;
-            color:white;
-        }
-       a>button{
-        padding:10px;
-        border-radius: 4px;
-        background-color: blue;
-       }
-
-       .flexy{
-        display:flex;
-        width:100vw;
-        padding:10px;
-        align-items: center;
-        border:1px solid;
-
-       }
-       form>button{
-        display: inline;
-       }
-
-
-       /* Basic Reset */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+.dark-mode a {
+    color: #ddd;
 }
 
-/* Navbar container */
-.navbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 20px;
-    background-color:#00BFFF;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Search Bar */
-.search-bar form {
-    display: flex;
-    align-items: center;
-}
-
-.search-bar input {
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    margin-right: 10px;
-    width:500px;
-}
-
-.search-bar button {
-    padding: 8px 12px;
+.dark-mode .search-bar {
+    color: white !important; 
+    background-color: #333 !important; 
     border: none;
-    background-color:green;
+}
+
+
+.dark-mode .flip-card-front,
+.dark-mode .flip-card-back {
+    background-color: #222;
     color: white;
-    border-radius: 5px;
-    cursor: pointer;
+    border: 1px solid #444;
 }
 
-.search-bar button:hover {
-    background-color: green;
-}
+        h3,.des{
+            position: absolute;
+            top:10px;
+            font-size: 25px;
+    
+        }
+        .flip-card-back>p{
+            font-size: 18px;
+            letter-spacing: 0.1rem;
 
-/* Dark Mode Toggle Button */
-.toggle-btn {
-    padding: 8px 16px;
-    background-color:black;
-    border-radius: 5px;
-    cursor: pointer;
-}
+        }
 
-.toggle-btn:hover {
-    background-color:white;
-    color:black;
-}
-
-/* Home Button */
-.home-btn {
-    padding: 8px 16px;
-    background-color: transparent;
-    color:black;
-    font-size: 20px;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.home-btn:hover {
-    transform:scale(1.3);
-    background-color:transparent;
-}
-
-strong{
-    color:black;
-}
-.condition{
-    color:red;
-    font-size: 25px;
-
-}
-/* Google Translate Element */
-#google_translate_element {
-    margin-left: 15px;
-}
 
 
     </style>
-
-    <script type="text/javascript">
-        function googleTranslateElementInit() {
-            new google.translate.TranslateElement(
-                { pageLanguage: "en", includedLanguages: "fr,es,hi,te,ta,zh,ar,de", layout: google.translate.TranslateElement.InlineLayout.SIMPLE },
-                "google_translate_element"
-            );
-        }
-    </script>
-    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-  
 </head>
-<body>
-    <div class="navbar">
-        <a href="/patient/main"><button class="home-btn">Home</button></a>
-        <button id="toggle-mode" class="toggle-btn">Toggle Dark Mode</button>
-        <div id="google_translate_element"></div>
-        <div class="search-bar">
-            <form action="/patient/getmed" method="get">
-                <input type="text" name="q"  placeholder="Search for medicines..." value="<%= query %>">
-                <button type="submit">Search</button>
-            </form>
-        </div>
-       
-    </div>
-    
-    
-<div class="container">
-    <br><br>
-    <h2>Search Results for "<%= query %>"</h2>
-    <br><br>
-    
-    <% if (results.length > 0) { %>
-        <% results.forEach(medicine => { %>
-            <div class="medicine">
-                <h3><a href="<%= medicine.drug_link %>" target="_blank"><%= medicine.drug_name %></a></h3>
-                <p class="condition"><strong>Purpose:</strong> <%= medicine.medical_condition %></p><br><br>
-                
-                <!-- Description with Show More Button -->
-                <div class="description" id="description-<%= medicine._id %>">
-                    <%= medicine.medical_condition_description %>
-                </div>
-                <button class="show-more" onclick="toggleDescription('<%= medicine._id %>')">Show More</button>
 
-                <!-- Link to other medicines with the same condition -->
-                <a href="/patient/getmed?condition=<%= medicine.medical_condition %>" class="medicine-link">Other medicines for <%= medicine.medical_condition %></a>
+<body>
+
+    <header class="header">
+        <div class="logo">YOUR LOGO</div>
+        <nav class="navbar">
+            <ul>
+                <li><a href="/doctor/dhome">Home</a></li>
+                <li><a href="/doctor/dhome/consult">Consult</a></li>
+                <li><a href="#" style="border-bottom: 2px solid #2b2b2b; padding-bottom: 10px;">Pharmacy</a></li>
+                <li><i class="fa-solid fa-magnifying-glass"></i></li>
+            </ul>
+        </nav>
+        <div class="newheader">
+            <div class="nav">
+                <div class="logoimg">YOUR LOGO</div>
+                <div id="menubtn">
+                    <i class="ri-menu-line"></i>
+                </div>
+            </div>
+            <div class="menu">
+                <i class="ri-close-line"></i>
+                <h3><a href="/doctor/dhome">Home</a></h3>
+                <h3><a href="/doctor/dhome/consult">Consult</a></h3>
+                <h3><a href="" style="border-bottom: 2px solid #2b2b2b; padding-bottom: 10px;">Pharmacy</a></h3>
+                <h3><a href="">Search</a></h3>
+            </div>
+        </div>
+    </header>
+
+<div class="overlay"></div>
+    <!-- Search Bar -->
+    <div class="search-container">
+        <input type="text" class="search-bar" placeholder="Search...">
+        <button class="translate-btn" >Translate ▼</button>
+        <button id="toggle-mode" class="dark-mode-toggle">☀</button>
+    </div>
+
+    <div class="drugs">
+        <% results.forEach(medicine => { %>
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <h3><%= medicine.drug_name %></h3>
+                        <p><%= medicine.medical_condition %></p>
+                        <img src=<%= medicine.src %> alt="Pills" width="100">
+                        <p>Rating: <%= medicine.rating %></p>
+                        <p class="drug-info"><%= medicine.pregnancy_category %></p>
+                        <a href="<%= medicine.drug_link %>" class="read-more">read more</a>
+                    </div>
+                    <div class="flip-card-back">
+                        <h3 class="des">Description:</h3>
+                        <p><%= medicine.medical_condition_description.slice(0,300) %></p>
+                        <a href="<%= medicine.medical_condition_url %>" class="read-more">read about similar drugs</a>
+                    </div>
+                </div>
             </div>
         <% }); %>
-    <% } else { %>
-        <p>No results found.</p>
-    <% } %>
+    </div>
 
-    <!-- Pagination -->
     <div class="pagination">
         <% if (currentPage > 1) { %>
-            <a href="/patient/getmed?q=<%= query %>&page=<%= currentPage - 1 %>&limit=20">Previous</a>
+            <a href="?q=<%= query %>&page=<%= currentPage - 1 %>&limit=20" class="prev">&laquo; Prev</a>
         <% } %>
-
-        <span>Page <%= currentPage %> of <%= totalPages %></span>
-
+        
+        <% for (let i = 1; i <= totalPages; i++) { %>
+            <a href="?q=<%= query %>&page=<%= i %>&limit=20" class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
+        <% } %>
+        
         <% if (currentPage < totalPages) { %>
-            <a href="/patient/getmed?q=<%= query %>&page=<%= currentPage + 1 %>&limit=20">Next</a>
+            <a href="?q=<%= query %>&page=<%= currentPage + 1 %>&limit=20" class="next">Next &raquo;</a>
         <% } %>
     </div>
-</div>
+    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
+        integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="/patientdrugs.js"></script>
+
+</body>
+
+
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -299,15 +370,19 @@ strong{
       // Load theme from local storage
       if (localStorage.getItem("theme") === "dark") {
         body.classList.add("dark-mode");
+         document.querySelector('.search-bar').style.color="black"
       }
   
       toggleButton.addEventListener("click", () => {
         body.classList.toggle("dark-mode");
+         document.querySelector('.search-bar').style.color="white"
   
         // Save the preference
         if (body.classList.contains("dark-mode")) {
           localStorage.setItem("theme", "dark");
+         
         } else {
+           
           localStorage.setItem("theme", "light");
         }
       });
@@ -328,5 +403,4 @@ strong{
     }
 </script>
 
-</body>
 </html>

@@ -1,118 +1,69 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>MediConnect-Login into the website</title>
+    <link rel="stylesheet" href="/patientlogin.css">
+    <script defer type="module" src="/main.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 
+
 <style>
-    body {
-        overflow-x: hidden;
-        width: 100vw;
-        height: 100vh;
-        margin: 0px;
-        padding: 0px;
-        font-family: Arial, Helvetica, sans-serif;
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    div {
-        width: 300px;
-    }
-
-    form {
-        border: 1px solid black;
-        border-radius: 5px;
-        height: 60%;
-        width: 300px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        padding: 10px;
-    }
-
-    button {
-        border: 1px solid;
-        border-radius: 15px;
-        background-color: black;
-        color: white;
-        height: 40px;
-        width: 100%;
-        margin-top: 2px;
-    }
-
-    input {
-        padding: 15px;
-        border: 1px solid black;
-        border-radius: 5px;
-    }
-
-    .google{
-        padding:10px;
-        margin-top: 10px;
+    #signupLink,#loginLink{
         text-decoration: none;
-        font-size: larger;
-        border:2px solid black;
-        border-radius: 4px;
-        display: flex;
-        align-items: center;
-
-    }
-
-    .google img{
-        width:30px;
-        height:30px;
-        margin-left:40px;
-        
-    }
-    p {
-        border: 0;
-        height: 2px;
-        background-color: black;
-    }
-    label{
-        margin:10px;
+        /* color:blue; */
+        /* font-size: 20px; */
+        font-weight:bold;
     }
 </style>
-
-
 <body>
-    <h1>Patient-Validation</h1>
-    <form action="/patient/logindetails" method="POST" enctype="application/x-www-form-urlencoded">
-        <h1>Login</h1>
-        <label for="mail">Email</label>
-        <input type="text" width=50 id="mail" name="email" required placeholder="Enter your email...">
-        <label for="pass">Password</label>
-        <input type="text" width=50 id="pass" name="password" required placeholder="Enter your password...">
-        <button type="submit">Continue</button>
-    </form>
-    <div>
-        <p></p>
-        <h4>New to RealTimeChatApp? Signup now!!</h4>
-        <p></p>
-        <a href="/patient/signup"><button>Create your account</button></a>
-        <a class="google" href="/auth/google">Login With Google <img src="/search.png" alt=""></a>
+    <canvas id="webgl-canvas">
+        
+    </canvas>
+    <div class="container">
+        <div class="form-wrapper" id="formWrapper">
+            <div class="form-side login-form">
+                <h1>LOG IN</h1>
+                <form action="/patient/logindetails" method="POST" enctype="application/x-www-form-urlencoded">
+                    <div class="inpdiv">
+                        <input type="text" placeholder="Enter Email Address" name="email" required>
+                    </div>
+                    <div class="inpdiv">
+                        <input type="password" placeholder="Enter password" name="password" required>
+                    </div>
+                    <button class="subbtn" type="submit">Submit</button>
+                </form>
+                <p>DON'T HAVE AN ACCOUNT? <a href="#" id="signupLink">SIGN UP</a></p>
+            </div>
+            <div class="form-side signup-form">
+                <h1>SIGN UP</h1>
+                <form id="signupForm" action="/patient/signupdetails" method="POST"enctype="application/x-www-form-urlencoded">
+                    <div class="inpdiv">
+                        <input type="text" placeholder="Enter Username" name="Username" required>
+                    </div>
+                    <div class="inpdiv">
+                        <input type="email" placeholder="Enter email Address" name="email" required>
+                    </div>
+                    <div class="inpdiv">
+                        <input type="password" placeholder="Enter Password" name="password" id="password" required>
+                    </div>
+                    <div class="inpdiv">
+                        <input type="text" placeholder="Confirm password" name="cfmpassword" id="cfmpassword"
+                            required>
+                    </div>
+                    <div class="inpdiv">
+                        <input type="text" placeholder="Enter Age" name="age" 
+                            required>
+                    </div>
+                    <button class="subbtn" type="submit">Sign up</button>
+                </form>
+                <p>ALREADY HAVE AN ACCOUNT? <a href="#" id="loginLink">LOG IN</a></p>
+            </div>
+        </div>
     </div>
-
-
-
+    <script src="/patientlogin.js"></script>
 
 </body>
-<script>
-    document.querySelector('form').addEventListener('submit', function (event) {
-        var email = document.querySelector('#mail').value;
-        console.log("Email submitted:", email);
-    });
-</script>
-
-<script src="/sendalert.js"></script>
-
-
-
 
 </html>
