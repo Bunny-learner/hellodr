@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediConnect - Drug Info Search</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+        integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/drugs.css">
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="logo">YOUR LOGO</div>
+        <nav class="navbar">
+            <ul>
+                <li><a href="/patient/main">Home</a></li>
+                <li><a href="/patient/main/consult">Consult</a></li>
+                <li><a href="#" style="border-bottom: 2px solid #2b2b2b; padding-bottom: 10px;">Pharmacy</a></li>
+                <li><i class="fa-solid fa-magnifying-glass"></i></li>
+            </ul>
+        </nav>
+        <div class="newheader">
+            <div class="nav">
+                <div class="logoimg">YOUR LOGO</div>
+                <div id="menubtn">
+                    <i class="ri-menu-line"></i>
+                </div>
+            </div>
+            <div class="menu">
+                <i class="ri-close-line"></i>
+                <h3><a class="hola" href="/patient/main">Home</a></h3>
+                <h3><a class="hola" href="/patient/main/consult">Consult</a></h3>
+                <h3><a class="hola" href="" style="border-bottom: 2px solid #2b2b2b; padding-bottom: 10px;">Pharmacy</a></h3>
+                <h3><a href="" class="hola">Search</a></h3>
+            </div>
+        </div>
+    </header>
+
+    <div class="overlay"></div>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+        <form action="/patient/getmed" method="get" enctype="application/x-www-form-urlencoded" class="search-form">
+            <input type="text" name="q" class="search-bar" placeholder="Search...">
+            <button type="submit" class="search-btn">Search</button>
+        </form>
+        <div class="button-group">
+            <button id="toggle-mode" class="dark-mode-toggle">☀</button>
+        </div>
+    </div>
+    
+    <div class="pagination">
+        <% if (currentPage > 1) { %>
+            <a href="?q=<%= query %>&page=<%= currentPage - 1 %>&limit=20" class="prev">&laquo; Prev</a>
+        <% } %>
+
+        <% for (let i = 1; i <= totalPages; i++) { %>
+            <a href="?q=<%= query %>&page=<%= i %>&limit=20" class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
+        <% } %>
+
+        <% if (currentPage < totalPages) { %>
+            <a href="?q=<%= query %>&page=<%= currentPage + 1 %>&limit=20" class="next">Next &raquo;</a>
+        <% } %>
+    </div>
+
+    <div class="drugs">
+        <% results.forEach(medicine => { %>
+            <div class="flip-card">
+                <div class="flip-card-inner">
+                    <div class="flip-card-front">
+                        <h3><%= medicine.drug_name %></h3>
+                        <p id="b"><%= medicine.medical_condition %></p>
+                        <img  class="imagio" src="<%= medicine.src %>" alt="Pills" width="100">
+                        <p>Rating: <%= medicine.rating %></p>
+                        <p class="drug-info"><%= medicine.pregnancy_category %></p>
+                        <a href="<%= medicine.drug_link %>" class="read-more">read more</a>
+                    </div>
+                    <div class="flip-card-back">
+                        <h3 class="des">Description:</h3>
+                        <p><%= medicine.medical_condition_description.slice(0, 300) %></p>
+                        <a href="<%= medicine.medical_condition_url %>" class="read-more">read about similar drugs</a>
+                    </div>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
+        integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="/patientdrugs.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const toggleButton = document.getElementById("toggle-mode");
+            const body = document.body;
+
+            // Load theme from local storage
+            if (localStorage.getItem("theme") === "dark") {
+                body.classList.add("dark-mode");
+            }
+
+            toggleButton.addEventListener("click", () => {
+                body.classList.toggle("dark-mode");
+
+                if (body.classList.contains("dark-mode")) {
+                    localStorage.setItem("theme", "dark");
+                } else {
+                    localStorage.setItem("theme", "light");
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>

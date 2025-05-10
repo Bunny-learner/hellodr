@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>MediConnect-Login into the website</title>
+    <link rel="stylesheet" href="/login.css">
+    <script defer type="module" src="main.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+
+<style>
+
+iframe{
+    
+    height: 100vh;
+    width: 100vw;
+    z-index:-1;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+</style>
+<body>
+    <!-- <canvas id="webgl-canvas">
+        
+    </canvas> -->
+    <iframe src='https://my.spline.design/untitled-9c0f02d0c857e9c18b3f5d477b0c922e/' frameborder='0' width='100%' height='100%'></iframe>
+    
+    <div class="container">
+        <div class="form-wrapper" id="formWrapper">
+            <div class="form-side login-form">
+                <h1>LOG IN</h1>
+                <form enctype="application/x-www-form-urlencoded" method="POST" action="/doctor/logindata">
+                    <div class="inpdiv">
+                        <input type="text" placeholder="Enter Email address" name="email" required>
+                    </div>
+                    <div class="inpdiv">
+                        <input type="password" placeholder="Enter password" name="password" required>
+                    </div>
+                    <button class="subbtn" type="submit">Submit</button>
+                </form>
+                <p>DON'T HAVE AN ACCOUNT? <a href="#" id="signupLink">SIGN UP</a></p>
+            </div>
+            <div class="form-side signup-form">
+                <h1>SIGN UP</h1>
+                <form id="signupForm">
+                    <div class="inpdiv">
+                        <input type="text" placeholder="Enter username" name="username" required>
+                    </div>
+                    <div class="inpdiv">
+                        <input type="email" placeholder="Enter email" name="email" required>
+                    </div>
+                    <div class="inpdiv">
+                        <input type="password" placeholder="Enter password" name="password" id="password" required>
+                    </div>
+                    <div class="inpdiv">
+                        <input type="password" placeholder="Confirm password" name="cfmpassword" id="cfmpassword"
+                            required>
+                    </div>
+                    <button class="subbtn" type="submit">Sign up</button>
+                </form>
+                <p>ALREADY HAVE AN ACCOUNT? <a href="#" id="loginLink">LOG IN</a></p>
+            </div>
+        </div>
+    </div>
+    <script src="/login.js"></script>
+
+</body>
+
+</html>
