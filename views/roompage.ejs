@@ -205,11 +205,14 @@
             display: none;
         }
 
+<<<<<<< HEAD
         .leavingmessage{
             background-color: #b6f8aa;
             color:red;
         }
 
+=======
+>>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
         .leave {
             z-index: 2;
             position: absolute;
@@ -299,7 +302,11 @@ const observer = new MutationObserver((mutationsList, observer) => {
                   
                     setTimeout(() => {
                         window.location.href = `/patient/writeReviews?r=${room_id}`; // Redirect after the second timeout
+<<<<<<< HEAD
                     }, 20000); // 1 second delay to ensure alert visibility
+=======
+                    }, 60000); // 1 second delay to ensure alert visibility
+>>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
                 }, 1000); // 1-minute delay for the alert
                 observer.disconnect(); // Stop observing after the doctor leaves
             }
@@ -321,7 +328,10 @@ socket.emit('Roomregister', { roomid: roomid, name: name, who: who })
         console.log('Upload button clicked')
     })
 
+<<<<<<< HEAD
     //this method of uploading is unsigned upload from client side which is less secure!!
+=======
+>>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
     async function uploadFile() {
         const fily = document.getElementsByTagName('input')[1]; // Get the input element
         // Fetch data from the server to get Cloudinary cloud name

@@ -215,10 +215,16 @@ const getemail=asynchandler(async(req,res)=>{
     
 const pendingrequests=asynchandler(async(req,res)=>{
 
+<<<<<<< HEAD
     const {data,docname,patientcondn}=req.body
 console.log(data)
 console.log(docname)
 
+=======
+    const {data,docname}=req.body
+console.log(data)
+console.log(docname)
+>>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
     if(!docname){
         console.log("-----no doctor name provided--------")
         res.json({message:"failure"})

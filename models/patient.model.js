@@ -80,7 +80,11 @@ patientschema.methods.generateaccesstoken=function () {
         email:this.email,
         name:this.name
     },process.env.ACCESS_TOKEN_SECRET,{
+<<<<<<< HEAD
         expiresIn:'1d'
+=======
+        expiresIn:process.env.ACCESS_TOKEN_EXPIRY
+>>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
     })
 }
 patientschema.methods.generaterefreshtoken=function () {

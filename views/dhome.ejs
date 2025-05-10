@@ -82,7 +82,11 @@ Check back later for updates.</p>
                             </div>
                             <div class="request-info">
                                 <h3 class="name"><%= patientdetails.pname %></h3>
+<<<<<<< HEAD
                                 <p><span class="bbold"><em class="pid"><%= patientdetails.psocketid %></em>Description:</span> <span class="condn"><%=patientdetails.pcondition %></span></p>
+=======
+                                <p><span class="bbold"><em class="pid"><%= patientdetails.psocketid %></em>Description:</span> <span class="condn"><%=patientdetails.condition %></span><%=patientdetails.condition %></p>
+>>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
                             </div>
                             <div class="actions">
                                 <button class="accept" onclick="accept(this)">Accept</button>
@@ -209,7 +213,11 @@ socket.on('patient', (patientdetails) => {
 
 
 
+<<<<<<< HEAD
     async function pendingrequests(data,docname,patientcondn){
+=======
+    async function pendingrequests(data,docname){
+>>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
 
 
 
@@ -221,8 +229,12 @@ socket.on('patient', (patientdetails) => {
   },
             body:JSON.stringify({
                 "data":data,
+<<<<<<< HEAD
                 "docname":docname,
                 "patientcondn":patientcondn
+=======
+                "docname":docname
+>>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
             })
         })
         const msg=await response.json()

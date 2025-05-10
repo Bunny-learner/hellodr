@@ -8,8 +8,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
         integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
+<<<<<<< HEAD
          
   </head>
+=======
+>>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
     <style>
         body {
@@ -143,10 +146,13 @@
             margin-left: 5px;
         }
 
+<<<<<<< HEAD
 
         .status,strong{
             font-size: 18px;
         }
+=======
+>>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
         .card-textarea {
             display: flex;
             width: 100%;
@@ -176,6 +182,7 @@
 .roomid,.email,.uname,em{
     display: none;
 }
+<<<<<<< HEAD
 
 
 .btn{
@@ -214,6 +221,8 @@ font-size: 17px;
     display: flex;
     align-items: center;
 }
+=======
+>>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
         .consult-form {
             display: none;
             margin-top: 20px;
@@ -223,6 +232,7 @@ font-size: 17px;
         .consult-form.active {
             display: block;
         }
+<<<<<<< HEAD
          select{
     background-color:black;
     color:white;
@@ -236,6 +246,8 @@ font-size: 17px;
     left:600px;
     border-radius: 4px;
 }
+=======
+>>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
     </style>
 </head>
 <script src="/socket.io/socket.io.js"></script>
@@ -254,6 +266,7 @@ font-size: 17px;
             </ul>
         </nav>
     </header>
+<<<<<<< HEAD
     <span id="category">
 
   <select id="dropdown" name="options">
@@ -302,6 +315,38 @@ font-size: 17px;
                 <% }); %>
             </h1>
             
+=======
+
+    <div class="container">
+        <h1 class="category"><h3 class="email"><%=email%></h3><h4 class="uname"><%=username%></h4>
+        </h1>
+        <% doctors.forEach(function(doctor) { %>
+        <div class="card" >
+            <div class="profile-pic">
+                <img src="<%= doctor.profilepic || '/dp.png' %>" alt="Doctor's profile picture">
+            </div>
+            <div class="card-content">
+                <span class="roomid"></span>
+                <em></em>
+                <h3 class="nameofdoc"><%= doctor.Username %></h3> 
+                <span class="status"><%=doctor.status%> </span> 
+                <span class="rating">Rating: <%= doctor.info[0].Rating %>/10</span><br/>
+                <strong>Experience:</strong><p class="info"> <%= doctor.info[0].experience %> of Experience</p>
+                <strong>Description:</strong><p><%= doctor.description %></p>
+                <button class="consult-button">Consult <i class="fas fa-chevron-down"></i></button>
+                <div class="consult-form">
+                    <div class="card-textarea">
+                        <input class="textbox" type="text" placeholder="Mention your condition here:" />
+                        <button class="send-button" onclick="consult(this)">Consult</button>
+                        <!-- <button onclick="consult(this)">Consult</button> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <% }); %>
+
+    </div>
+>>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
 
 
    
@@ -321,6 +366,7 @@ font-size: 17px;
         <% }); %>
     </div> -->
 </body>
+<<<<<<< HEAD
 
 <script>
 
@@ -353,10 +399,16 @@ document.addEventListener('click', function (e) {
 });
 
 
+=======
+<script>
+
+
+>>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
  // Assuming the URL is stored in window.lca.href
  const url = window.location.href;
 
     // Extract the specialty from the URL
+<<<<<<< HEAD
 const specialty = url.split('/').pop();
 // Splits the URL at each "/" and takes the last part
 
@@ -367,6 +419,11 @@ specialtySpan.textContent = specialty; // Set the content of the span
 // Insert the new span as the first child of the category element
 category.insertBefore(specialtySpan, category.firstChild);
 
+=======
+const specialty = url.split('/').pop(); // Splits the URL at each "/" and takes the last part
+    
+    document.querySelector('.category').textContent=`${specialty}`
+>>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
     
         const consultButtons = document.querySelectorAll('.consult-button');
 
@@ -388,9 +445,13 @@ category.insertBefore(specialtySpan, category.firstChild);
     </script>
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 <script>
+<<<<<<< HEAD
    
 // Call the function to sort cards when the page loads
 
+=======
+    
+>>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
 // async function decode() {
 //         try {
 //             const response = await fetch('/doctor/getemail', {
@@ -443,6 +504,7 @@ socket.on('online',(msg)=>{
 console.log(msg)
 const ele=document.querySelector(".container")
 const docs=ele.getElementsByClassName('card')
+<<<<<<< HEAD
 
 for(let i=0;i<docs.length;i++){
     if(msg.docname==docs[i].getElementsByClassName('nameofdoc')[0].textContent){
@@ -452,6 +514,20 @@ for(let i=0;i<docs.length;i++){
     }
 }
 
+=======
+let username;
+
+for(let i=0;i<docs.length;i++){
+username=docs[i].querySelector(".nameofdoc").textContent
+
+    if(username==msg.docname){
+        
+    docs[i].getElementsByClassName('status')[0].textContent="Online"
+    docs[i].getElementsByClassName('status')[0].style.color="green"
+}
+
+}
+>>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
 
 })
 async function consult(ele) {
@@ -524,10 +600,13 @@ socket.on('rejected', (rejected) => {
 // const shortmsg=await response.json()
 // alert('roomid stored successfully!!')}
 
+<<<<<<< HEAD
 
 
 
 
+=======
+>>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
 socket.on('patientjoined', (joined) => {
     const name = joined.name;
     console.log("...............",name)
@@ -546,8 +625,11 @@ socket.on('patientjoined', (joined) => {
     });
 });
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
 socket.on('bye',(msg)=>{
 console.log(msg)
 const ele=document.getElementsByClassName('container')[0]
@@ -557,10 +639,16 @@ let username;
 for(let i=0;i<docs.length;i++){
 username=docs[i].getElementsByClassName('nameofdoc')[0].textContent
 
+<<<<<<< HEAD
     if(username==msg.docname){
     docs[i].getElementsByClassName('status')[0].textContent="Offline"
     docs[i].getElementsByClassName('status')[0].style.color="red"
 }
+=======
+    if(username==msg.docname)
+    docs[i].getElementsByClassName('status')[0].textContent="Offline"
+    docs[i].getElementsByClassName('status')[0].style.color="red"
+>>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
 
 
 }
@@ -568,6 +656,7 @@ username=docs[i].getElementsByClassName('nameofdoc')[0].textContent
 })
 
 </script>
+<<<<<<< HEAD
 <script>const dropdown = document.getElementsByTagName("select");
 console.log(dropdown[0]);
 
@@ -610,6 +699,8 @@ dropdown[0].addEventListener("change", function() {
 });
 
    </script>
+=======
+>>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
 
 
 <script src="/sendalert.js"></script>
