@@ -139,7 +139,7 @@ const callback = (req, res, next) => {
         }
 
         try {
-            // ✅ Ensure user is fetched properly
+            
             const doesuser = await chat.findOne({ email: user.emails[0].value });
             if (!doesuser) {
                 console.log("❌ User Not Found in Database");

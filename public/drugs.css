@@ -100,6 +100,43 @@
             justify-content: space-between; /* Ensures space between elements */
         }
 
+        nav {
+            width: 450px;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+        }
+
+        nav li {
+            margin-left: 20px;
+        }
+
+        nav li i {
+            font-size: 25px;
+            height: 25px;
+            width: 25px;
+            cursor: pointer;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 450;
+            font-size: 22px;
+        }
+
+        nav li a:hover {
+            border-bottom: 2px solid #2b2b2b;
+            padding-bottom: 10px;
+        }
+
+
         .search-form {
             display: flex;
             flex: 1;
@@ -154,8 +191,9 @@
         }
 
         .drugs {
-            width: 90vw;
+            margin:0 20px 0 20px;
             display: flex;
+            justify-content: center;
             flex-wrap: wrap;
             gap:50px;
         }

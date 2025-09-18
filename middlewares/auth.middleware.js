@@ -10,13 +10,10 @@ export const verifyJWT = asynchandler(async (req, res, next) => {
     try {
         const token = req.cookies?.accesstoken || req.header("Authorization")?.replace("Bearer ", "");
        
-<<<<<<< HEAD
 
         if(token==undefined){
             res.redirect('/?alert=YOUR session has been expired!!')
         }
-=======
->>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
         let who = req.cookies.who;
         if(req.header.who=="doctor")
             who=req.header.who

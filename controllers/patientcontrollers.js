@@ -55,10 +55,14 @@ const login_details = asynchandler(async (req, res) => {
     const { email,password } = req.body
     console.log(email,password)
     const doesuser = await patient.findOne({ email: email })
-    const id = doesuser._id
-    if (!doesuser) {
+
+if (!doesuser) {
+
+
         return res.redirect('/patient/signup?alert=Please signup, account not found!');
     }
+    const id = doesuser._id
+    
     const ans=await doesuser.isPasswordcorrect(password)
     
     
@@ -86,20 +90,14 @@ const login_details = asynchandler(async (req, res) => {
 const signup_details = asynchandler(async (req, res) => {
 
     const {Username,email, password ,age} = req.body
-<<<<<<< HEAD
     try {
-        const output = await patient.findOne({ email: email })
-    console.log(output)
-    if (output){
-=======
-
-    const output = await patient.findOne({ email: email })
-    console.log(output)
-    if (output) {
->>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
-        console.log('already there')
-        res.redirect('/patient/signup?User already Present!!')
-    }
+        const temp1 = await patient.findOne({ email: email})
+        const temp2 = await patient.findOne({ Username: Username})
+    
+    if (temp1) 
+        return    res.redirect('/patient/login?alert=please change your Email,Email already registered!!')
+    if(temp2)
+        return    res.redirect('/patient/login?alert=please change your Username, Username already registered!!')
 
     const newuser = new patient({
         email: email,
@@ -110,16 +108,9 @@ const signup_details = asynchandler(async (req, res) => {
     await newuser.save()
     res.redirect('/patient/login?alert=SignUp was succesfull!\n please Login')
 
-<<<<<<< HEAD
     } catch (error) {
         console.log(error)
     }
-=======
-
-
-
-
->>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
 })
 
 const logoutuser=asynchandler(async(req,res)=>{

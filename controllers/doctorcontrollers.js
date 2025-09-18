@@ -18,7 +18,7 @@ const login = asynchandler(async (req, res) => {
 
 
 const lookdb = asynchandler(async (req, res) => {
-    console.log("came to lookdb");
+ 
     const email = req.user?.email; // Safe check for email
     if (email) {
         console.log(email);
@@ -104,11 +104,13 @@ const logindata=asynchandler( async(req,res)=>{
     const currentuser=await doctor.findOne({email:email
     })
     if(!currentuser){
-        res.redirect('/doctor/login?alert=please enter correct credentials')
+        console.log("no user found with this email")
+       return res.redirect('/doctor/login?alert=please enter correct credentials')
     }
     const passwordcheck=currentuser.password
     if(passwordcheck!==password){
-        res.redirect('/doctor/login?alert=Invalid password,please enter correct credentials')
+        console.log("password incorrect")
+       return res.redirect('/doctor/login?alert=Invalid password,please enter correct credentials')
     }
     else{
     const options={
@@ -215,16 +217,10 @@ const getemail=asynchandler(async(req,res)=>{
     
 const pendingrequests=asynchandler(async(req,res)=>{
 
-<<<<<<< HEAD
     const {data,docname,patientcondn}=req.body
 console.log(data)
 console.log(docname)
 
-=======
-    const {data,docname}=req.body
-console.log(data)
-console.log(docname)
->>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
     if(!docname){
         console.log("-----no doctor name provided--------")
         res.json({message:"failure"})

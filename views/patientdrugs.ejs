@@ -11,299 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
         rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
-<<<<<<< HEAD
     <link rel="stylesheet" href="/drugs.css">
-=======
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
-
-        body {
-            align-items: center;
-            align-content: center;
-            background: url('/homepage.png');
-            background-repeat: no-repeat;
-            background-size: cover;
-            background-position: top;
-            display: flex;
-            flex-direction: column;
-            height: 100vh; /* Ensure full viewport height */
-        }
-
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow-x: hidden;
-        }
-
-        .overlay {
-            position: absolute;
-            width: 100vw;
-            height: 100%;
-            backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.4);
-            z-index: -1;
-        }
-
-        header {
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .newheader {
-            display: none;
-        }
-
-        .logo {
-            font-size: 1.5em;
-            font-weight: bold;
-        }
-
-        nav {
-            width: 450px;
-        }
-
-        nav ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: space-evenly;
-            align-items: center;
-        }
-
-        nav li {
-            margin-left: 20px;
-        }
-
-        nav a {
-            text-decoration: none;
-            color: #333;
-            font-weight: 450;
-            font-size: 22px;
-        }
-
-        nav li a:hover {
-            border-bottom: 2px solid #2b2b2b;
-            padding-bottom: 10px;
-        }
-
-        img {
-            width: 250px;
-            height: 250px;
-        }
-
-        .search-container {
-            width: 60%;
-            max-width: 800px;
-            margin: 20px 0;
-            display: flex;
-            align-items: center;
-            background: white;
-            border-radius: 30px;
-            padding: 10px 20px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            justify-content: space-between; /* Ensures space between elements */
-        }
-
-        .search-form {
-            display: flex;
-            flex: 1;
-            align-items: center;
-        }
-
-        .search-bar {
-            flex: 1;
-            border: none;
-            font-size: 18px;
-            background-color: transparent;
-            outline: none;
-        }
-
-        .search-btn {
-            border: none;
-            background-color: #007bff;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        .translate-btn {
-            background: black;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            cursor: pointer;
-            border: none;
-        }
-
-        .dark-mode-toggle {
-            background: white;
-            border: 2px solid black;
-            border-radius: 50%;
-            padding: 6px;
-            font-size: 18px;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        .drugs {
-            width: 90vw;
-            display: flex;
-            gap: 140px;
-            flex-wrap: wrap;
-            min-height: calc(100vh - 200px); /* Ensure drugs section takes up space but leaves room for pagination */
-            padding-bottom: 20px; /* Added padding to create space before pagination */
-            margin-bottom: auto; /* Push pagination to bottom */
-        }
-
-        .flip-card {
-            width: 350px;
-            height: 400px;
-            perspective: 1000px;
-            cursor: pointer;
-            margin-top: 30px;
-        }
-
-        .flip-card-inner {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.6s;
-        }
-
-        .flip-card:hover .flip-card-inner {
-            transform: rotateY(180deg);
-        }
-
-        .flip-card-front,
-        .flip-card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 10px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-        }
-
-        .flip-card-front {
-            background-color: #fff;
-            padding: 15px;
-            border: 1px solid #ccc;
-        }
-
-        .flip-card-back {
-            background-color: #f1f1f1;
-            transform: rotateY(180deg);
-            padding: 15px;
-            border: 1px solid #ccc;
-        }
-
-        .drug-info {
-            color: red;
-            font-size: 14px;
-        }
-
-        .read-more {
-            color: blue;
-            text-decoration: underline;
-            cursor: pointer;
-        }
-
-        .dark-mode {
-            background-color: #121212;
-            color: white;
-        }
-
-        .dark-mode .search-container {
-            background: #333;
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0;
-            margin-top: 20px;
-        }
-
-        .pagination a {
-            margin: 0 5px;
-            padding: 8px 12px;
-            text-decoration: none;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            color: #333;
-        }
-
-        .pagination a.active {
-            background: #333;
-            color: white;
-        }
-
-        .pagination a:hover {
-            background: #ddd;
-        }
-
-        .dark-mode a {
-            color: #ddd;
-        }
-
-        .dark-mode .search-bar {
-            color: white !important;
-            background-color: #333 !important;
-            border: none;
-        }
-
-        .dark-mode .flip-card-front,
-        .dark-mode .flip-card-back {
-            background-color: #222;
-            color: white;
-            border: 1px solid #444;
-        }
-
-        h3,
-        .des {
-            position: absolute;
-            top: 10px;
-            font-size: 22px;
-        }
-
-        .flip-card-back>p {
-            font-size: 18px;
-            letter-spacing: 0.1rem;
-        }
-
-        #b {
-            position: absolute;
-            top: 80px;
-            font-size: 18px;
-        }
-    </style>
->>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
 </head>
 
 <body>
@@ -327,17 +35,10 @@
             </div>
             <div class="menu">
                 <i class="ri-close-line"></i>
-<<<<<<< HEAD
                 <h3><a class="hola" href="/patient/main">Home</a></h3>
                 <h3><a class="hola" href="/patient/main/consult">Consult</a></h3>
                 <h3><a class="hola" href="" style="border-bottom: 2px solid #2b2b2b; padding-bottom: 10px;">Pharmacy</a></h3>
                 <h3><a href="" class="hola">Search</a></h3>
-=======
-                <h3><a href="/patient/main">Home</a></h3>
-                <h3><a href="/patient/main/consult">Consult</a></h3>
-                <h3><a href="" style="border-bottom: 2px solid #2b2b2b; padding-bottom: 10px;">Pharmacy</a></h3>
-                <h3><a href="">Search</a></h3>
->>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
             </div>
         </div>
     </header>
@@ -351,10 +52,6 @@
             <button type="submit" class="search-btn">Search</button>
         </form>
         <div class="button-group">
-<<<<<<< HEAD
-=======
-            <button class="translate-btn">Translate ▼</button>
->>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
             <button id="toggle-mode" class="dark-mode-toggle">☀</button>
         </div>
     </div>
@@ -380,11 +77,7 @@
                     <div class="flip-card-front">
                         <h3><%= medicine.drug_name %></h3>
                         <p id="b"><%= medicine.medical_condition %></p>
-<<<<<<< HEAD
                         <img  class="imagio" src="<%= medicine.src %>" alt="Pills" width="100">
-=======
-                        <img src="<%= medicine.src %>" alt="Pills" width="100">
->>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
                         <p>Rating: <%= medicine.rating %></p>
                         <p class="drug-info"><%= medicine.pregnancy_category %></p>
                         <a href="<%= medicine.drug_link %>" class="read-more">read more</a>
@@ -414,21 +107,10 @@
             // Load theme from local storage
             if (localStorage.getItem("theme") === "dark") {
                 body.classList.add("dark-mode");
-<<<<<<< HEAD
-=======
-                document.querySelector('.search-bar').style.color = "black";
->>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
             }
 
             toggleButton.addEventListener("click", () => {
                 body.classList.toggle("dark-mode");
-<<<<<<< HEAD
-
-=======
-                document.querySelector('.search-bar').style.color = "white";
-
-                // Save the preference
->>>>>>> 19a8a3ff58c4aeca85ef2101a65f30388bf42d5c
                 if (body.classList.contains("dark-mode")) {
                     localStorage.setItem("theme", "dark");
                 } else {
