@@ -11,6 +11,7 @@ import PageSkeleton from '../components/LoadingSkeleton/PageSkeleton';
 import ForgotPassword from './pages/forgotpass';
 import Resetpassword from './pages/resetpass'
 import Payment from './pages/payment';
+import Doctorlogin from './pages/doctorlogin';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
          <Route path="/patient/forgot" element={<ForgotPassword />} />
          <Route path="/patient/reset" element={<Resetpassword />} />
          <Route path="/pay" element={<Payment />} />
+         <Route path="/doctor/login" element={<Doctorlogin />} />
       </Routes>
     </Suspense>
       

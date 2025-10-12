@@ -12,6 +12,19 @@
   box-sizing: border-box;
 }
 
+
+
+.dregistration-card {
+  background-color: var(--white);
+  padding: 2.5rem 2.75rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 900px;
+  text-align: center;
+}
+
+
 .forgot-card,
 .registration-card {
   background-color: var(--white);
@@ -92,16 +105,28 @@
   position: relative;
   margin-bottom: 1rem;
 }
+.personal-info,.professional-info,.practice-info,.qualify-info{
 
-.form-input {
+  display:flex;
+  gap:10px;
+  flex-wrap: wrap;
+}
+
+h3{
+  text-align: left;
+}
+.form-input ,.dform-input{
   width: 100%;
   padding: 1rem;
   border: 1px solid var(--border-color);
   border-radius: 0.75rem;
   font-size: 1rem;
   box-sizing: border-box;
+   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   transition: border-color 0.2s;
 }
+
+
 
 .form-input::placeholder {
   color: var(--gray-text);
@@ -119,8 +144,6 @@
 .password-toggle-icon,
 .icon {
   position: absolute;
-  top: 50%;
-  right: 1rem;
   transform: translateY(-50%);
   cursor: pointer;
   color: var(--gray-text);
@@ -172,6 +195,7 @@
   color: var(--gray-text);
 }
 
+
 .login-prompt a {
   color: var(--primary-teal);
   font-weight: 600;
@@ -180,9 +204,54 @@
   margin-left: 0.25rem;
 }
 
+
+.input-group{
+  position: relative;
+}
+
+.input-group svg{
+  position: absolute;
+  right:16px;
+  width:22px;
+  height:22px;
+  top:15px;
+}
 .forgot {
   font-weight: 500;
 }
+
+.password-toggle-icon{
+  margin:0px;
+}
+.file-upload {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.file-upload input[type="file"] {
+  display: none; 
+}
+
+.file-label {
+  display: inline-block;
+  padding: 12px 25px;
+  background-color: #007c7c;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: 0.3s all ease;
+  text-align: center;
+}
+
+
+
+.error-message {
+  color: #007c7c;
+  margin-top: 5px;
+  font-size: 14px;
+}
+
 
 .back {
   position: fixed;
@@ -223,6 +292,34 @@
     padding: 0.9rem;
   }
 }
+
+
+@media (max-width: 768px) {
+  .personal-info,
+  .professional-info,
+  .practice-info,
+  .qualify-info {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .file-label,
+  .custom-select select {
+    width: 80%;
+    text-align: center;
+  }
+
+  .social-login-buttons {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .signup-btn {
+    font-size: 1rem;
+    padding: 0.9rem;
+  }
+}
+
 
 @media (max-width: 600px) {
   .forgot-page,
@@ -284,3 +381,47 @@
     font-size: 0.8rem;
   }
 }
+
+
+
+@media (max-width: 480px) {
+  .form-body {
+    gap: 0.5rem;
+  }
+
+  h3{
+    font-size: 1rem;
+  }
+
+
+  .form-input,
+  .dform-input {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .file-label {
+    padding: 10px 20px;
+    font-size: 0.9rem;
+  }
+
+  .custom-select select {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+
+  .signup-btn {
+    font-size: 0.95rem;
+    padding: 0.8rem;
+  }
+
+  .social-btn {
+    font-size: 0.9rem;
+    padding: 0.65rem;
+  }
+
+  .terms-agreement {
+    font-size: 0.8rem;
+  }
+}
+
