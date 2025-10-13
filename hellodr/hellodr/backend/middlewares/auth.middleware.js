@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { user } from "../models/schema.js"; // Make sure this path is correct
+
 
 export const verifyJWT = async (req, res, next) => {
 

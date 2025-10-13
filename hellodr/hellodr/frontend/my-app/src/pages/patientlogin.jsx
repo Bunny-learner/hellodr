@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
+import toast, { Toaster } from 'react-hot-toast';
 import '../css/signup.css';
 
 export default function patientlogin() {
@@ -14,14 +15,39 @@ export default function patientlogin() {
     setPasswordVisible(!passwordVisible);
   };
 
-  const onSubmit = (data) => {
-    console.log("Patient form submitted:", data);
-    alert("Patient Login successful!");
+  const onSubmit = async(data) => {
+    
+    const response = await fetch("http://localhost:8000/patient/logindata", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: data.email,
+        password: data.password
+      })
+    })
+      .then((res) => {
+
+        if(res.status===201){
+            navigate('/patient/signup')
+          toast.error("Patient Login failed!");}
+          
+        if(res.status===202){
+          toast.success("Patient Login successful!");
+          navigate('/patient/home')
+            }
+      
+      })
+      .catch((err) => console.log(err))
+
+    
   };
 
   return (
     <div className="registration-page">
 
+  <Toaster position="top-right" reverseOrder={false} />
 
      <div className='back'><svg onClick={back} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="#044141ff" class="size-6">
   <path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
@@ -48,16 +74,18 @@ export default function patientlogin() {
           <div className="input-group">
             <input
               type="text"
-              placeholder="Username"
+              placeholder="Email Address"
+              name="email"
               className={`form-input ${errors.username ? 'input-error' : ''}`}
-              {...register("username", { required: "Username is required" })}
+              {...register("email", { required: "Email Address is required" })}
             />
-            {errors.username && <p className="error-message">{errors.username.message}</p>}
+            {errors.email && <p className="error-message">{errors.email.message}</p>}
           </div>
 
     
           <div className="input-group">
             <input
+            name="password"
               type={passwordVisible ? 'text' : 'password'}
               placeholder="Password"
               className={`form-input ${errors.password ? 'input-error' : ''}`}

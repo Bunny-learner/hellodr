@@ -84,7 +84,13 @@
   color: var(--text-color);
   transition: background-color 0.2s;
 }
-
+.resend{
+  cursor:pointer;
+  color:blue;
+  font-size: 1.05rem;
+  background-color: transparent;
+  border:0px;
+}
 .social-btn:hover {
   background-color: #f7f7f7;
 }
@@ -247,7 +253,7 @@ h3{
 
 
 .error-message {
-  color: #007c7c;
+  color: blue;
   margin-top: 5px;
   font-size: 14px;
 }
@@ -265,6 +271,8 @@ h3{
 .back:hover {
   transform: scale(1.1);
 }
+
+
 
 @media (max-width: 992px) {
   .forgot-page,
@@ -400,6 +408,7 @@ h3{
     font-size: 0.9rem;
   }
 
+  
   .file-label {
     padding: 10px 20px;
     font-size: 0.9rem;
@@ -424,4 +433,8 @@ h3{
     font-size: 0.8rem;
   }
 }
+
+.input-group [type="date"],select{
+    cursor: pointer;
+  }
 

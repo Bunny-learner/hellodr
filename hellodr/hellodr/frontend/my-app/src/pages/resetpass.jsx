@@ -1,23 +1,48 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import "../css/signup.css";
-import { Link } from "react-router-dom";
+import toast, { Toaster } from 'react-hot-toast';
+import { Link,useNavigate } from "react-router-dom";
 
 export default function ResetPass() {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const { register, handleSubmit, formState: { errors }, watch } = useForm();
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
 
-  const onSubmit = (data) => {
-    console.log("Reset password data:", data);
-    alert("Password has been successfully reset!");
+  const navigate=useNavigate()
+  const onSubmit = async(data) => {
+  console.log(data)
+    await fetch("http://localhost:8000/patient/reset",{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email:sessionStorage.getItem('email'),
+        newpassword:data.newpassword
+      })
+    })
+      .then(async (res) => {
+
+        const msg = await res.json()
+
+        if (res.status === 201) {
+          toast.success("Password has succesfully changed")
+          navigate('/patient/login')
+        }
+        else toast.error(msg.message);
+        
+      })
+      .catch((err) => console.log(err))
+    toast.success("Password has been successfully reset!");
   };
 
   return (
     <div className="forgot-page">
+      <Toaster position="top-right" reverseOrder={false} />
       <div className="forgot-card">
         {/* Header */}
         <div className="form-header">
@@ -57,6 +82,7 @@ export default function ResetPass() {
           <div className="input-group">
             <input
               type={passwordVisible ? "text" : "password"}
+              name="password"
               placeholder="New Password"
               className={`form-input ${errors.newpassword ? "input-error" : ""}`}
               {...register("newpassword", {
@@ -90,11 +116,14 @@ export default function ResetPass() {
               className={`form-input ${errors.confirmpassword ? "input-error" : ""}`}
               {...register("confirmpassword", {
                 required: "Please confirm your password",
+                validate: (value) =>
+                  value === watch("newpassword") || "Passwords do not match"
               })}
             />
-            {errors.confirmpassword && (
-              <p className="error-message">{errors.confirmpassword.message}</p>
-            )}
+           {watch("confirmpassword") && watch("confirmpassword") !== watch("newpassword") && (
+  <p className="error-message">Passwords do not match</p>
+)}
+
           </div>
 
           <button type="submit" className="signup-btn">

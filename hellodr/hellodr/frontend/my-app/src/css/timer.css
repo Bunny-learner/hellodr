@@ -1,0 +1,31 @@
+.timer-container {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 20px auto;
+}
+
+.progress-ring {
+  transform: rotate(-90deg);
+}
+
+.progress-ring__circle {
+  transition: stroke-dashoffset 0.3s linear;
+  transform: rotate(0deg);
+  transform-origin: 50% 50%;
+}
+
+.progress-ring__background {
+  stroke-linecap: round;
+}
+
+.timer-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: "Montserrat", sans-serif;
+  font-weight: bold;
+  font-size: 1rem;
+  color: #07d9ad;
+}

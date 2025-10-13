@@ -30,7 +30,6 @@ const userSchema = new mongoose.Schema({
     },
     address: {
         type: String,
-        required: true
     },
     profilePic: {
         type: String,
@@ -41,6 +40,8 @@ const userSchema = new mongoose.Schema({
         ref: 'Doctor'
     }]
     ,
+    resetCode: String,
+    resetCodeExpires: Date,
     refreshtoken: {
         type: String,
         default: null
@@ -57,8 +58,8 @@ userSchema.pre("save", async function (next) {
     }
 })
 
-userSchema.methods.isPasswordcorrect = function (passwd) {
-    return bcrypt.compare(passwd, this.password)
+userSchema.methods.isPasswordCorrect = function (password) {
+    return bcrypt.compare(password, this.password)
 }
 
 userSchema.methods.generateaccesstoken = function () {
