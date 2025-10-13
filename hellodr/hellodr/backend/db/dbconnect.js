@@ -6,12 +6,14 @@ let db;
 
 const dbconnection = async () => {
     try {
-        db = await mongoose.connect(process.env.database_url);
+        db = await mongoose.connect(process.env.mongoURI);
         console.log("Successfully connected to MongoDB!");
     } catch (error) {
         console.error("Connection failed to MongoDB!!", error);
         process.exit(1); 
     }
 };
+
+dbconnection();
 
 export { dbconnection, db };
