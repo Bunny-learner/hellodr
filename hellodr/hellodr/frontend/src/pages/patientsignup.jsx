@@ -22,7 +22,7 @@ export default function Patientsignup() {
   const onSubmit = async (data) => {
 
 
-    const response = await fetch("http://localhost:8000/patient/signdata", {
+    const response = await fetch("https://hellodr-server.onrender.com/patient/signdata", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
