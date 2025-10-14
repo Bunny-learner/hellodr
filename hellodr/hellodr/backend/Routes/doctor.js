@@ -1,5 +1,5 @@
 import express,{Router} from "express"
-import {doc_login,doc_signup} from "../controllers/usercontrollers.js"
+import {doc_login,doc_signup} from "../controllers/doctorcontrollers.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js"
 const doctor=Router()
 

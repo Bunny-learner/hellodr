@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema({
         required: true
     },
     experience: {
-        type: Double,
+        type: Number,
         required: true
     },
     fee: {
