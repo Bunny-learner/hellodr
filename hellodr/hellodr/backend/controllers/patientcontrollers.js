@@ -244,14 +244,14 @@ const pat_back = asynchandler(async (req, res) => {
                 maxAge: 60 * 60 * 1000,
                 sameSite: IS_PRODUCTION ? "None" : "Lax"
             })
-            res.redirect('http://localhost:5173/patient/home?alert=Login was Successful')
+            res.redirect('https://hello-dr.onrender.com/patient/home?alert=Login was Successful')
         }
-        else res.redirect('http://localhost:5173/patient/login')
+        else res.redirect('https://hello-dr.onrender.com/patient/login')
     }
     else {
 
         if (!user) {
-            return res.redirect('http://localhost:5173/patient/signup');
+            return res.redirect('https://hello-dr.onrender.com/patient/signup');
         }
 
         const { accesstoken, refreshtoken } = await generate(user._id, "patient")
@@ -268,7 +268,7 @@ const pat_back = asynchandler(async (req, res) => {
             maxAge: 60 * 60 * 1000,
             sameSite: IS_PRODUCTION ? "None" : "Lax"
         })
-        res.redirect('http://localhost:5173/patient/home?alert=Login was Successful')
+        res.redirect('https://hello-dr.onrender.com/patient/home?alert=Login was Successful')
     }
 
 
@@ -316,14 +316,14 @@ const face_back = asynchandler(async (req, res) => {
                 maxAge: 60 * 60 * 1000,
                 sameSite: IS_PRODUCTION ? "None" : "Lax"
             })
-            res.redirect('http://localhost:5173/patient/home?alert=Login was Successful')
+            res.redirect('https://hello-dr.onrender.com/patient/home?alert=Login was Successful')
         }
-        else res.redirect('http://localhost:5173/patient/login')
+        else res.redirect('https://hello-dr.onrender.com/patient/login')
     }
     else {
 
         if (!user) {
-            return res.redirect('http://localhost:5173/patient/signup');
+            return res.redirect('https://hello-dr.onrender.com/patient/signup');
         }
 
         const { accesstoken, refreshtoken } = await generate(user._id, "patient")
@@ -340,7 +340,7 @@ const face_back = asynchandler(async (req, res) => {
             maxAge: 60 * 60 * 1000,
             sameSite: IS_PRODUCTION ? "None" : "Lax"
         })
-        res.redirect('http://localhost:5173/patient/home?alert=Login was Successful')
+        res.redirect('https://hello-dr.onrender.com/patient/home?alert=Login was Successful')
     }
 
 
