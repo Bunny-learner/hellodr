@@ -40,13 +40,13 @@ const pat_signup = asynchandler(async (req, res) => {
             maxAge: 60 * 60 * 1000,
             sameSite: IS_PRODUCTION ? "None" : "Lax"
         })
-        res.redirect("http:localhost:5173//patient/home")
+        res.redirect("https://hello-dr.onrender.com/patient/home")
     }
     else {
         console.log(user)
         console.log("User already exists redirecting him to login page")
 
-        res.redirect("http:localhost:5173//patient/login")
+        res.redirect("https://hello-dr.onrender.com/patient/login")
     }
 })
 
