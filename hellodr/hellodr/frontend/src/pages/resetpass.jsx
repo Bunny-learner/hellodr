@@ -15,7 +15,7 @@ export default function ResetPass() {
   const navigate=useNavigate()
   const onSubmit = async(data) => {
   console.log(data)
-    await fetch("http://localhost:8000/patient/reset",{
+    await fetch("https://hellodr-server.onrender.com/patient/reset",{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
