@@ -11,11 +11,32 @@ const AppointmentSchema = new mongoose.Schema({
         ref: 'Doctor',
         required: true
     },
+    name:{
+        type: String,
+        required: true
+    },
+    age:{
+        type: Number,
+        required: true
+    },
+    gender:{
+        type: String,
+        enum: ['Male', 'Female', 'Other'],
+        required: true
+    },
+    phone:{
+        type: String,
+        required: true
+    },
+    email:{
+        type: String,
+        required: true
+    },
     Date: {
         type: Date,
         required: true
     },
-    patientDisease: {
+    symptoms: {
         type: String
     },
     status: {

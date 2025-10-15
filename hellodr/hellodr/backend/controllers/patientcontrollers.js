@@ -4,10 +4,11 @@ import { cloudinary } from "../utils/cloudinary.js"
 import { Patient } from "../models/patient.js"
 import nodemailer from "nodemailer"
 import bcrypt from "bcrypt"
-dotenv.config()
+dotenv.config({ quiet: true })
 import { generate } from "./generate_tokens.js"
 
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+
 const pat_signup = asynchandler(async (req, res) => {
 
     const { name, password, email, phone, gender, dob } = req.body;
@@ -50,8 +51,6 @@ const pat_signup = asynchandler(async (req, res) => {
     }
 })
 
-
-
 const pat_login = asynchandler(async (req, res) => {
 
     const { password, email } = req.body;
@@ -86,9 +85,6 @@ const pat_login = asynchandler(async (req, res) => {
     }
 
 })
-
-
-
 
 const sendingcode = async (user, res) => {
 
@@ -166,8 +162,6 @@ const pat_send = asynchandler(async (req, res) => {
     }
 })
 
-
-
 const pat_verify = asynchandler(async (req, res) => {
 
     const { email, code } = req.body;
@@ -207,7 +201,6 @@ const pat_reset = asynchandler(async (req, res) => {
 
 }
 )
-
 
 const pat_back = asynchandler(async (req, res) => {
 
@@ -279,8 +272,6 @@ const pat_back = asynchandler(async (req, res) => {
 
 })
 
-
-
 const face_back = asynchandler(async (req, res) => {
 
 
@@ -350,6 +341,8 @@ const face_back = asynchandler(async (req, res) => {
 
 
 })
+
+
 
 
 

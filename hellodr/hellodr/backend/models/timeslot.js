@@ -18,16 +18,16 @@ const TimeSlotSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    isavailable: {
-        type: Boolean,
-        default: true
+    fee: {
+        type: Number,
+        required: true
     },
     status: {
         type: String,
-        enum: ['Scheduled', 'Completed', 'Cancelled'],
-        default: 'Scheduled'
+        enum: ['avaliable','Scheduled', 'Cancelled'],
+        default: 'avaliable'
     },
 }, { timestamps: true });
 
 
-export const Appointment=mongoose.model('TimeSlot', TimeSlotSchema);
+export const TimeSlot=mongoose.model('TimeSlot', TimeSlotSchema);

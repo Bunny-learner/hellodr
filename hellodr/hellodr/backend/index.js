@@ -1,7 +1,7 @@
 import express from "express"
 import server from "./app.js"
 import dotenv from "dotenv"
-dotenv.config()
+dotenv.config({ quiet: true })
 import {dbconnection} from "./db/dbconnect.js"
 
 
