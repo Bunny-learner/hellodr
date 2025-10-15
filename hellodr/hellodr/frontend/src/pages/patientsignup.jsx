@@ -3,11 +3,14 @@ import { useForm } from 'react-hook-form';
 import '../css/signup.css';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import { LinearProgress, Button } from '@mui/material';
 import toast, { Toaster } from 'react-hot-toast';
 
 export default function Patientsignup() {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [loading,setLoading]=useState(false)
+  
   const navigate = useNavigate();
   const back = () => {
     navigate('/');
@@ -20,9 +23,13 @@ export default function Patientsignup() {
 
 
   const onSubmit = async (data) => {
+    const ele=document.querySelector('.form-body')
+    const btn=ele.getElementsByTagName('button')[0]
+    btn.disabled=true;
+    btn.backgroundColor="darkgreen"
+    setLoading(true)
 
-
-    const response = await fetch("http://localhost:8000/patient/signdata", {
+     await fetch("http://localhost:8000/patient/signdata", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -39,12 +46,15 @@ export default function Patientsignup() {
       .then((res) => {
 
         if(res.status===201){
-          toast.error("Patient Login failed!");
-            navigate('/patient/home')}
-          
+            setLoading(false)
+            btn.disabled=false;
+            toast.error("Signup failed, This Mail Has already been Registered")
+            
+}
+  
         if(res.status===202){
-          toast.success("Patient Login successful!");
-            navigate('/patient/login?alert=Login was Successful')}
+            setLoading(false)
+            navigate('/patient/home?alert=Signup was Successful')}
       
       })
       .catch((err) => console.log(err))
@@ -53,8 +63,16 @@ export default function Patientsignup() {
   };
 
   return (
-    <div className="registration-page">
-  <Toaster position="top-right" reverseOrder={false} />
+
+    <div className="main">
+       {loading && (
+              <LinearProgress
+                color="primary"
+                className="progress"
+              />
+            )}
+      <div className="registration-page">
+  <Toaster position="top-left" toastOptions={{className:"my-toast"}} reverseOrder={false} />
 
       <div className='back'><svg onClick={back} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="#044141ff" class="size-6">
         <path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
@@ -194,5 +212,7 @@ export default function Patientsignup() {
         </p>
       </div>
     </div>
+    </div>
+    
   );
 }

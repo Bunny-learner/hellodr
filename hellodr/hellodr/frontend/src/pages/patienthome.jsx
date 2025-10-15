@@ -1,21 +1,22 @@
 import React from 'react'
 import { useEffect } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
+import { useLocation } from 'react-router-dom';
 
 export default function patienthome() {
 
+    const location = useLocation();
 
-  useEffect(()=>{
-  
-    const urlobj=new URL(window.location.href)
-    const params = new URLSearchParams(urlobj.search);
-    const msg=params.get('alert')
-    if(msg) toast.success(msg);
-    
-  },[window.location.search])
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const msg = params.get('alert');
+    console.log(msg)
+    if (msg) toast.success(msg);
+  }, [location.search]); 
+
   return (
     <div>
-       <Toaster position="top-right"  reverseOrder={false} />
+       <Toaster position="top-right" toastOptions={{className:"my-toast"}}  reverseOrder={false} />
     </div>
   )
 }

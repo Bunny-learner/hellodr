@@ -1,10 +1,23 @@
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useState,useEffect } from 'react';
+import { set, useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import { LinearProgress, Button } from '@mui/material';
 import toast, { Toaster } from 'react-hot-toast';
 import '../css/signup.css';
 
+
 export default function patientlogin() {
+
+     const location = useLocation();
+     const [loading,setLoading]=useState(false)
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const msg = params.get('alert');
+    if (msg) toast.success(msg);
+  }, [location.search]); 
+
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [passwordVisible, setPasswordVisible] = useState(false);
   const navigate = useNavigate();
@@ -16,8 +29,13 @@ export default function patientlogin() {
   };
 
   const onSubmit = async (data) => {
-
-    const response = await fetch("http://localhost:8000/patient/logindata", {
+    
+    const ele=document.querySelector('.form-body')
+    const btn=ele.getElementsByTagName('button')[0]
+    btn.disabled=true;
+    btn.backgroundColor="darkgreen"
+    setLoading(true)
+    await fetch("http://localhost:8000/patient/logindata", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -30,11 +48,13 @@ export default function patientlogin() {
       .then((res) => {
 
         if (res.status === 201) {
+          setLoading(false)
           toast.error("Patient Login failed!");
+          btn.disabled=false
         }
 
         if (res.status === 202) {
-          toast.success("Patient Login successful!");
+          setLoading(false)
           navigate('/patient/home?alert=Login was Successful')
         }
 
@@ -45,15 +65,26 @@ export default function patientlogin() {
   };
 
   return (
-    <div className="registration-page">
+    <div className="main">
+      {loading && (
+        <LinearProgress
+          color="primary"
+          className="progress"
+        />
+      )}
+      <div className="registration-page">
 
-      <Toaster position="top-right" reverseOrder={false} />
+      <Toaster position="top-left" toastOptions={{className: 'my-toast'}}  reverseOrder={false} />
+      
 
       <div className='back'><svg onClick={back} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="#044141ff" class="size-6">
         <path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
       </svg>
       </div>
       <div className="registration-card">
+        
+      
+
         <div className="form-header">
           <svg width="70" height="70" className="logo-svg" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
@@ -67,6 +98,8 @@ export default function patientlogin() {
               </linearGradient>
             </defs>
           </svg>
+
+         
           <h1>Patient Login</h1>
         </div>
          <div className="social-login-buttons">
@@ -126,5 +159,7 @@ export default function patientlogin() {
         </p>
       </div>
     </div>
+    </div>
+    
   );
 }

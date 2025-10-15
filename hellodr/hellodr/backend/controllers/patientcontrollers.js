@@ -16,7 +16,7 @@ const pat_signup = asynchandler(async (req, res) => {
 
     if (user.length == 0) {
 
-        const newuser = Patient.create({
+        const newuser = await Patient.create({
             name: name,
             email: email,
             password: password,
@@ -27,6 +27,7 @@ const pat_signup = asynchandler(async (req, res) => {
 
         console.log("New User has been added to the patients list")
         const { accesstoken, refreshtoken } = await generate(newuser._id, "patient")
+        console.log(accesstoken,refreshtoken)
         res.cookie("refreshtoken", refreshtoken, {
             httpOnly: true,
             secure: IS_PRODUCTION,
@@ -40,13 +41,12 @@ const pat_signup = asynchandler(async (req, res) => {
             maxAge: 60 * 60 * 1000,
             sameSite: IS_PRODUCTION ? "None" : "Lax"
         })
-        res.redirect("http:localhost:5173//patient/home")
+        res.status(202).json({"message":"success"})
     }
     else {
         console.log(user)
         console.log("User already exists redirecting him to login page")
-
-        res.redirect("http:localhost:5173//patient/login")
+        res.status(201).json({"message":"success"})
     }
 })
 
@@ -135,7 +135,7 @@ const sendingcode = async (user, res) => {
             </p>
 
             <!-- Reset Button -->
-            <a href="https://hellodr.com/reset-password" 
+            <a href="http://localhost:8000/patient/reset" 
                style="display: inline-block; margin-top: 20px; padding: 12px 25px; background-color: #007c7c; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
                Reset Password
             </a>
@@ -246,12 +246,12 @@ const pat_back = asynchandler(async (req, res) => {
             })
             res.redirect('http://localhost:5173/patient/home?alert=Login was Successful')
         }
-        else res.redirect('http://localhost:5173/patient/login')
+        else res.redirect('http://localhost:5173/patient/login?alert= This Mail Has already been Registered, Please Login')
     }
     else {
 
         if (!user) {
-            return res.redirect('http://localhost:5173/patient/signup');
+            return res.redirect('http://localhost:5173/patient/signup?alert= This Mail has not been Registered Please SignUp');
         }
 
         const { accesstoken, refreshtoken } = await generate(user._id, "patient")

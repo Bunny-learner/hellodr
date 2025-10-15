@@ -1,20 +1,25 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import "../css/signup.css";
+import { LinearProgress, Button } from '@mui/material';
 import toast, { Toaster } from 'react-hot-toast';
 import { Link,useNavigate } from "react-router-dom";
 
 export default function ResetPass() {
   const { register, handleSubmit, formState: { errors }, watch } = useForm();
   const [passwordVisible, setPasswordVisible] = useState(false);
-
+  const [loading,setLoading]=useState(false)
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
 
   const navigate=useNavigate()
   const onSubmit = async(data) => {
-  console.log(data)
+  const ele=document.querySelector('.form-body')
+    const btn=ele.getElementsByTagName('button')[0]
+    btn.disabled=true;
+    btn.backgroundColor="darkgreen"
+    setLoading(true)
     await fetch("http://localhost:8000/patient/reset",{
       method: 'POST',
       headers: {
@@ -30,19 +35,29 @@ export default function ResetPass() {
         const msg = await res.json()
 
         if (res.status === 201) {
-          toast.success("Password has succesfully changed")
+          setLoading(false)
+          toast.success("Password has been successfully reset!");
           navigate('/patient/login')
         }
-        else toast.error(msg.message);
+        else {
+          setLoading(false)
+          toast.error(msg.message);}
         
       })
       .catch((err) => console.log(err))
-    toast.success("Password has been successfully reset!");
+    
   };
 
   return (
+    <div className="main">
+    {loading && (
+                  <LinearProgress
+                    color="primary"
+                    className="progress"
+                  />
+                )}
     <div className="forgot-page">
-      <Toaster position="top-right" reverseOrder={false} />
+      <Toaster position="top-left" toastOptions={{className:"my-toast"}} reverseOrder={false} />
       <div className="forgot-card">
         {/* Header */}
         <div className="form-header">
@@ -135,6 +150,7 @@ export default function ResetPass() {
           Don’t have an account? <Link to="#">Join us</Link>
         </p>
       </div>
+    </div>
     </div>
   );
 }

@@ -3,12 +3,14 @@ import { useForm } from "react-hook-form";
 import "../css/signup.css";
 import Timer from './timer';
 import toast, { Toaster } from 'react-hot-toast';
+import { LinearProgress, Button } from '@mui/material';
 import { Link, useNavigate } from "react-router-dom";
 
 export default function ForgotPassword() {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [process, setProcess] = useState("Send Code")
   const [endpoint, setEndpoint] = useState("sendcode")
+  const [loading,setLoading]=useState(false)
   const [ms, setMs] = useState(0);
   const navigate = useNavigate()
 
@@ -47,7 +49,11 @@ export default function ForgotPassword() {
   }
 
   const onSubmit = async (data) => {
-
+    const ele=document.querySelector('.form-body')
+    const btn=ele.getElementsByTagName('button')[0]
+    btn.disabled=true;
+    btn.backgroundColor="darkgreen"
+    setLoading(true)
     if (endpoint === 'sendcode') bodyData = { email: data.email };
     else if (endpoint === 'verifycode') bodyData = { email: data.email, code: data.code };
 
@@ -67,6 +73,8 @@ export default function ForgotPassword() {
           sessionStorage.setItem("email", data.email)
           setProcess("Verify")
           setEndpoint("verifycode")
+          setLoading(false)
+          btn.disabled=false
           toast.success("Verification code sent to your email!");
           timer();
         }
@@ -75,10 +83,11 @@ export default function ForgotPassword() {
           toast.error(msg.message)
         }
         else if (res.status === 201 && msg.message == "verified") {
+          toast.success("Successfully verified, please reset your password")
           navigate('/patient/reset')
         }
         else
-          toast.error("Invalid ! Please SignUp.");
+          toast.error("This Mail is not registered , Please SignUp.");
 
 
       })
@@ -88,8 +97,15 @@ export default function ForgotPassword() {
   };
 
   return (
-    <div className="forgot-page">
-      <Toaster position="top-right" reverseOrder={false} />
+    <div className="main">
+      {loading && (
+                    <LinearProgress
+                      color="primary"
+                      className="progress"
+                    />
+                  )}
+      <div className="forgot-page">
+     <Toaster position="top-left" toastOptions={{className:"my-toast"}} reverseOrder={false} />
       <div className="forgot-card">
         <div className="forgot-form-header">
           <div className="header-content">
@@ -196,5 +212,7 @@ export default function ForgotPassword() {
         </p>
       </div>
     </div>
+    </div>
+    
   );
 }
