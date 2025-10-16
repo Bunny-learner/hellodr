@@ -4,10 +4,11 @@ import { cloudinary } from "../utils/cloudinary.js"
 import { Patient } from "../models/patient.js"
 import nodemailer from "nodemailer"
 import bcrypt from "bcrypt"
-dotenv.config()
+dotenv.config({ quiet: true })
 import { generate } from "./generate_tokens.js"
 
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+
 const pat_signup = asynchandler(async (req, res) => {
 
     const { name, password, email, phone, gender, dob } = req.body;
@@ -50,8 +51,6 @@ const pat_signup = asynchandler(async (req, res) => {
     }
 })
 
-
-
 const pat_login = asynchandler(async (req, res) => {
 
     const { password, email } = req.body;
@@ -86,9 +85,6 @@ const pat_login = asynchandler(async (req, res) => {
     }
 
 })
-
-
-
 
 const sendingcode = async (user, res) => {
 
@@ -166,8 +162,6 @@ const pat_send = asynchandler(async (req, res) => {
     }
 })
 
-
-
 const pat_verify = asynchandler(async (req, res) => {
 
     const { email, code } = req.body;
@@ -208,7 +202,6 @@ const pat_reset = asynchandler(async (req, res) => {
 }
 )
 
-
 const pat_back = asynchandler(async (req, res) => {
 
 
@@ -244,7 +237,7 @@ const pat_back = asynchandler(async (req, res) => {
                 maxAge: 60 * 60 * 1000,
                 sameSite: IS_PRODUCTION ? "None" : "Lax"
             })
-            res.redirect('http://localhost:5173/patient/home?alert=Login was Successful')
+            res.redirect('https://hello-dr.onrender.com/patient/home?alert=Login was Successful')
         }
         else res.redirect('http://localhost:5173/patient/login?alert= This Mail Has already been Registered, Please Login')
     }
@@ -268,7 +261,7 @@ const pat_back = asynchandler(async (req, res) => {
             maxAge: 60 * 60 * 1000,
             sameSite: IS_PRODUCTION ? "None" : "Lax"
         })
-        res.redirect('http://localhost:5173/patient/home?alert=Login was Successful')
+        res.redirect('https://hello-dr.onrender.com/patient/home?alert=Login was Successful')
     }
 
 
@@ -278,8 +271,6 @@ const pat_back = asynchandler(async (req, res) => {
 
 
 })
-
-
 
 const face_back = asynchandler(async (req, res) => {
 
@@ -316,14 +307,14 @@ const face_back = asynchandler(async (req, res) => {
                 maxAge: 60 * 60 * 1000,
                 sameSite: IS_PRODUCTION ? "None" : "Lax"
             })
-            res.redirect('http://localhost:5173/patient/home?alert=Login was Successful')
+            res.redirect('https://hello-dr.onrender.com/patient/home?alert=Login was Successful')
         }
-        else res.redirect('http://localhost:5173/patient/login')
+        else res.redirect('https://hello-dr.onrender.com/patient/login')
     }
     else {
 
         if (!user) {
-            return res.redirect('http://localhost:5173/patient/signup');
+            return res.redirect('https://hello-dr.onrender.com/patient/signup');
         }
 
         const { accesstoken, refreshtoken } = await generate(user._id, "patient")
@@ -340,7 +331,7 @@ const face_back = asynchandler(async (req, res) => {
             maxAge: 60 * 60 * 1000,
             sameSite: IS_PRODUCTION ? "None" : "Lax"
         })
-        res.redirect('http://localhost:5173/patient/home?alert=Login was Successful')
+        res.redirect('https://hello-dr.onrender.com/patient/home?alert=Login was Successful')
     }
 
 
@@ -350,6 +341,8 @@ const face_back = asynchandler(async (req, res) => {
 
 
 })
+
+
 
 
 

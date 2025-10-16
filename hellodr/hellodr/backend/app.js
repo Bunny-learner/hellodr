@@ -1,5 +1,5 @@
 import dotenv from "dotenv"
-dotenv.config()
+dotenv.config({ quiet: true })
 import path from "path"
 import cookieParser from "cookie-parser";
 import express from "express"
@@ -17,7 +17,7 @@ import passport from "./middlewares/auth.google.js"
 
 
 app.use(cors({
-  origin: "http://localhost:5173", 
+  origin: "https://hello-dr.onrender.com", 
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -49,10 +49,12 @@ import doctor from "./Routes/doctor.js"
 import patient from "./Routes/patient.js"
 import google_auth from "./Routes/google_auth.js"
 import face_auth from "./Routes/facebook_auth.js"
+import appointment from "./Routes/appointment.route.js"
 app.use('/doctor',doctor);
 app.use('/patient',patient);
 app.use('/auth/google',google_auth)
 app.use('/auth/faceboook',face_auth)
+app.use('/appointment',appointment)
 
 export default server;;
 

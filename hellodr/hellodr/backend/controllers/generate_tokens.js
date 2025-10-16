@@ -4,7 +4,7 @@ import { Patient } from "../models/patient.js"
 import { Doctor } from "../models/doctor.js"
 import { cloudinary } from "../utils/cloudinary.js"
 
-dotenv.config()
+dotenv.config({ quiet: true })
 
 const generate = async (userid, role) => {
   try {
