@@ -40,13 +40,13 @@ const pat_signup = asynchandler(async (req, res) => {
             maxAge: 60 * 60 * 1000,
             sameSite: IS_PRODUCTION ? "None" : "Lax"
         })
-        res.redirect("https://hello-dr.onrender.com/patient/home")
+        res.redirect("http://localhost:5173/patient/home")
     }
     else {
         console.log(user)
         console.log("User already exists redirecting him to login page")
 
-        res.redirect("https://hello-dr.onrender.com/patient/login")
+        res.redirect("http://localhost:5173/patient/login")
     }
 })
 
@@ -135,7 +135,7 @@ const sendingcode = async (user, res) => {
             </p>
 
             <!-- Reset Button -->
-            <a href="https://hellodr.com/reset-password" 
+            <a href="http://localhost:5173/patient/reset" 
                style="display: inline-block; margin-top: 20px; padding: 12px 25px; background-color: #007c7c; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
                Reset Password
             </a>
@@ -244,14 +244,14 @@ const pat_back = asynchandler(async (req, res) => {
                 maxAge: 60 * 60 * 1000,
                 sameSite: IS_PRODUCTION ? "None" : "Lax"
             })
-            res.redirect('https://hello-dr.onrender.com/patient/home?alert=Login was Successful')
+            res.redirect('http://localhost:5173/patient/home?alert=Login was Successful')
         }
-        else res.redirect('https://hello-dr.onrender.com/patient/login')
+        else res.redirect('http://localhost:5173/patient/login')
     }
     else {
 
         if (!user) {
-            return res.redirect('https://hello-dr.onrender.com/patient/signup');
+            return res.redirect('http://localhost:5173/patient/signup');
         }
 
         const { accesstoken, refreshtoken } = await generate(user._id, "patient")
@@ -268,7 +268,7 @@ const pat_back = asynchandler(async (req, res) => {
             maxAge: 60 * 60 * 1000,
             sameSite: IS_PRODUCTION ? "None" : "Lax"
         })
-        res.redirect('https://hello-dr.onrender.com/patient/home?alert=Login was Successful')
+        res.redirect('http://localhost:5173/patient/home?alert=Login was Successful')
     }
 
 
@@ -316,14 +316,14 @@ const face_back = asynchandler(async (req, res) => {
                 maxAge: 60 * 60 * 1000,
                 sameSite: IS_PRODUCTION ? "None" : "Lax"
             })
-            res.redirect('https://hello-dr.onrender.com/patient/home?alert=Login was Successful')
+            res.redirect('http://localhost:5173/patient/home?alert=Login was Successful')
         }
-        else res.redirect('https://hello-dr.onrender.com/patient/login')
+        else res.redirect('http://localhost:5173/patient/login')
     }
     else {
 
         if (!user) {
-            return res.redirect('https://hello-dr.onrender.com/patient/signup');
+            return res.redirect('http://localhost:5173/patient/signup');
         }
 
         const { accesstoken, refreshtoken } = await generate(user._id, "patient")
@@ -340,7 +340,7 @@ const face_back = asynchandler(async (req, res) => {
             maxAge: 60 * 60 * 1000,
             sameSite: IS_PRODUCTION ? "None" : "Lax"
         })
-        res.redirect('https://hello-dr.onrender.com/patient/home?alert=Login was Successful')
+        res.redirect('http://localhost:5173/patient/home?alert=Login was Successful')
     }
 
 
