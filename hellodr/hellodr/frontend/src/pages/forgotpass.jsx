@@ -29,7 +29,7 @@ export default function ForgotPassword() {
 
   const reset = async () => {
     //resending new verification code
-    await fetch("https://hellodr-server.onrender.com/patient/resendcode", {
+    await fetch("http://localhost:8000/patient/resendcode", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -52,7 +52,7 @@ export default function ForgotPassword() {
     else if (endpoint === 'verifycode') bodyData = { email: data.email, code: data.code };
 
 
-    await fetch(`https://hellodr-server.onrender.com/patient/${endpoint}`, {
+    await fetch(`http://localhost:8000/patient/${endpoint}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
