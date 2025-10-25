@@ -1,0 +1,239 @@
+
+.welcome-container {
+  background: white;
+  padding: 60px 40px;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+ /* This is the code you want */
+background: linear-gradient(to right, #34C9E3, #f8fcff 25%, #f8fcff 75%, #34C9E3);
+  box-sizing: border-box;
+  gap: 40px;
+}
+
+
+.w-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 45%;
+  text-align: center;
+}
+
+ .doc{
+  position:relative;
+ }
+.bg{
+ z-index: -1;
+position:absolute;
+left:-64px;
+top:-15px;
+} 
+.w-image {
+  width: 320px;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.w-image img {
+  width: 100%;
+  border-radius: 50%;
+  height: auto;
+  object-fit: contain;
+}
+
+.w-text {
+  margin-top: 25px;
+}
+
+.w-text h2 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.w-text p {
+  font-size: 1rem;
+  color: #666;
+  margin-top: 8px;
+  line-height: 1.5;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+
+.w-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 45%;
+  text-align: center;
+}
+
+.w-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.logo-text h1 {
+  font-size: 5rem;
+  font-weight: 800;
+  color: #222;
+  margin: 0;
+  line-height: 1;
+}
+
+
+.w-logo svg{
+  margin-bottom: 20px;
+}
+.logo-text h1 span {
+  color: #007aff;
+}
+
+.logo-text p {
+  font-size: 1.3rem;
+  color: #007aff;
+  font-weight: 500;
+  margin-top: -4px;
+}
+
+
+.w-buttons {
+  display: flex;
+  gap: 25px;
+  margin-top: 40px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.w-buttons button {
+  background-color:#007aff;;
+  color: white;
+  font-weight: 600;
+  padding: 20px 80px;
+  border: none;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: 0.3s ease;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.w-buttons button:hover {
+  background-color: #00008b;
+  transform: translateY(-2px);
+}
+
+.w-buttons svg {
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  right: 25px;
+}
+
+
+@media (max-width: 992px) {
+  .welcome-container {
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 30px;
+    gap: 60px;
+  }
+
+  .w-left, .w-right {
+    width: 90%;
+  }
+
+  .bg{left:-40px;}
+  .w-image {
+    width: 250px;
+  }
+
+  .logo-text h1 {
+    font-size: 4rem;
+  }
+
+  .logo-text h1 span {
+    font-size: 4rem;
+  }
+
+  .w-buttons button {
+    font-size: 1.1rem;
+    padding: 18px 72px;
+  }
+}
+
+
+@media (max-width: 600px) {
+  .welcome-container {
+    padding: 25px 15px;
+  }
+
+  .w-left, .w-right {
+    width: 100%;
+  }
+
+  .w-image {
+    width: 180px;
+  }
+  .bg{
+  left:-33px;
+  top:-10px;}
+
+  .w-text h2 {
+    font-size: 1.3rem;
+  }
+
+  .w-text p {
+    font-size: 0.9rem;
+    max-width: 90%;
+  }
+
+  .logo-text h1 {
+    font-size: 2.8rem;
+  }
+
+  .logo-text h1 span {
+    font-size: 2.8rem;
+  }
+
+  .logo-text p {
+    font-size: 1rem;
+  }
+
+  .w-buttons {
+    flex-direction: column;
+    width: 100%;
+    gap: 15px;
+  }
+
+  .w-buttons button {
+    width: 100%;
+    padding: 14px 0px;
+    font-size: 1.1rem;
+  }
+
+  .w-buttons svg {
+    margin-left: 10px;
+    width: 30px;
+    height: 30px;
+  }
+  .w-logo svg{
+    width:125px;
+  }
+}

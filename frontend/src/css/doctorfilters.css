@@ -1,0 +1,144 @@
+
+.doctor-filters-modern {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 20px 25px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.doctor-filters-modern h4 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+
+.filter-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-section label {
+  font-weight: 500;
+  color: #555;
+  font-size: 14px;
+}
+
+/* --- Chips --- */
+.filter-chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-chip {
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  background-color: #f7f7f7;
+  color: #333;
+  padding: 6px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.filter-chip:hover {
+  background-color: #e0f7fa;
+  border-color: #00bcd4;
+  color: #007b8e;
+}
+
+
+.filter-chip.active {
+  background-color: #00bcd4;
+  border-color: #00bcd4;
+  color: #fff;
+  font-weight: 500;
+  transform: scale(1.05);
+}
+
+/* --- Dropdown (Sort By) --- */
+.sort-dropdown {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  font-size: 14px;
+  color: #333;
+  outline: none;
+  transition: border 0.2s ease;
+}
+
+.sort-dropdown:focus {
+  border-color: #00bcd4;
+}
+
+/* --- Buttons --- */
+.filter-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  gap: 10px;
+}
+
+.apply-btn,
+.reset-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  font-size: 14px;
+}
+
+/* Apply button */
+.apply-btn {
+  background-color: #00bcd4;
+  color: #fff;
+}
+
+.apply-btn:hover {
+  background-color: #009bb3;
+}
+
+/* Reset button */
+.reset-btn {
+  background-color: #f1f1f1;
+  color: #333;
+}
+
+.reset-btn:hover {
+  background-color: #e0e0e0;
+}
+
+
+@media (max-width: 600px) {
+  .doctor-filters-modern {
+    max-width: 100%;
+    padding: 16px;
+    border-radius: 16px;
+  }
+
+  .filter-chip {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+
+  .filter-buttons {
+    flex-direction: column;
+  }
+
+  .apply-btn,
+  .reset-btn {
+    width: 100%;
+  }
+}

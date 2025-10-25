@@ -1,0 +1,194 @@
+.hospital-appointment-card {
+  width: 70%;
+  margin: 50px auto;
+  background: #f5faff; 
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  padding: 30px 25px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+.hospital-appointment-card h1 {
+  text-align: center;
+  color: #044141;
+  font-size: 2rem;
+  margin-bottom: 30px;
+}
+
+/* Sections */
+.info-section, .final-doctor-info {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.info-section h3 {
+  color: #0a4d68;
+  border-bottom: 1px solid #b3d4fc;
+  padding-bottom: 5px;
+  margin-bottom: 15px;
+}
+
+/* Doctor Info */
+.final-doctor-info {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+.doctor-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #0a4d68;
+}
+.doctor-details h2 {
+  margin-bottom: 5px;
+  color: #044141;
+}
+.doctor-details p {
+  margin-bottom: 5px;
+  color: #0a4d68;
+}
+
+/* Stars */
+.doctor-rating {
+  color: #f5c518; 
+  font-size: 1.1rem;
+}
+.star.empty {
+  color: #ccc;
+}
+
+/* Info Grid */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+.info-grid label {
+  display: block;
+  font-weight: 600;
+  color: #0a4d68;
+  margin-bottom: 5px;
+}
+.info-grid input, .info-grid textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #a3c1e1;
+  background: #e6f0ff;
+  font-size: 0.95rem;
+  color: #044141;
+}
+.info-grid textarea {
+  resize: vertical;
+  height: 70px;
+}
+
+/* Buttons */
+/* Buttons */
+.btn-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 25px;
+}
+
+.btn-back, .btn-confirm {
+  flex: 1;
+  padding: 12px 0;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s;
+}
+
+/* Back button style (optional: lighter version) */
+.btn-back {
+  background: #e0f0ff;
+  color: #044141;
+}
+.btn-back:hover {
+  background: #cce4ff;
+  transform: translateY(-2px);
+}
+
+/* Confirm button style updated */
+.btn-confirm {
+  background: #349ce3;
+  color: #fff;
+}
+.btn-confirm:hover {
+  background: #00008b;
+  transform: translateY(-2px);
+}
+
+
+/* No Appointment */
+.no-appointment {
+  width: 70%;
+  margin: 50px auto;
+  text-align: center;
+  font-size: 1.2rem;
+  color: #044141;
+  padding: 20px;
+  background: #e6f0ff;
+  border-radius: 10px;
+}
+
+
+@media (max-width: 650px) {
+  .hospital-appointment-card, .no-appointment {
+    width: 90%;
+    padding: 20px;
+  }
+  .final-doctor-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr; 
+  gap: 20px; 
+}
+
+
+@media (min-width: 800px) {
+  .info-grid {
+    grid-template-columns: 1fr 1fr; /* two columns */
+  }
+}
+
+
+.info-grid label {
+  display: block;
+  font-weight: 600;
+  color: #0a4d68;
+  margin-bottom: 8px;
+}
+
+.info-grid input,
+.info-grid textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #a3c1e1;
+  background: #e6f0ff;
+  font-size: 0.95rem;
+  color: #044141;
+  box-sizing: border-box;
+}
+
+/* Textarea specific */
+.info-grid textarea {
+  resize: vertical;
+  min-height: 70px;
+}

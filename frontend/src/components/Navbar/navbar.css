@@ -1,0 +1,190 @@
+/* Global Font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* =========================================== */
+/* NAVBAR STYLES                               */
+/* =========================================== */
+.main-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2.5rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Navbar Left */
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+}
+.navbar-logo {
+  font-size: 1.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap:0.5rem;
+  color: #34495e;
+  text-decoration: none;
+}
+.navbar-logo span {
+  color: #3498db;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 1.75rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.navbar-links a {
+  text-decoration: none;
+  color: #555;
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 0.5rem 0;
+  position: relative;
+  transition: color 0.2s ease;
+}
+.navbar-links a:hover {
+  color: #3498db;
+}
+.navbar-links a.active {
+  color: #3498db;
+  font-weight: 600;
+}
+.navbar-links a.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #3498db;
+}
+
+/* Navbar Right */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+.icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #555;
+  font-size: 1.3rem;
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+.icon-button:hover {
+  background-color: #f0f0f0;
+  color: #111;
+}
+
+.profile-pic {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #3498db;
+  transition: transform 0.2s ease;
+}
+.profile-pic:hover {
+  transform: scale(1.05);
+}
+.profile-link {
+  line-height: 0;
+}
+
+/* =========================================== */
+/* RESPONSIVE STYLES                            */
+/* =========================================== */
+
+/* Tablet: <= 992px */
+@media (max-width: 992px) {
+  .navbar-left {
+    gap: 1.5rem;
+  }
+  .navbar-links {
+    gap: 1rem;
+  }
+  .navbar-logo {
+    font-size: 1.5rem;
+  }
+}
+
+/* Mobile: <= 768px */
+@media (max-width: 768px) {
+  .main-navbar {
+    padding: 0.75rem 1rem;
+  }
+
+  .navbar-links {
+    display: none; /* hide links initially on mobile */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    flex-direction: column;
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 1rem 0;
+    z-index: 999;
+  }
+
+  .navbar-links.show {
+    display: flex;
+  }
+
+  .navbar-links a {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  .navbar-right {
+    gap: 0.75rem;
+  }
+
+  .navbar-logo {
+    font-size: 1.25rem;
+  }
+}
+
+/* Hamburger button */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 25px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.hamburger span {
+  display: block;
+  height: 3px;
+  width: 100%;
+  background-color: #555;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+}

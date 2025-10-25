@@ -1,0 +1,212 @@
+/* --- Main Page Layout (2-Column) --- */
+.timeslots-page {
+    display: grid;
+    grid-template-columns: 320px 1fr; /* Form on left, list on right */
+    gap: 30px;
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Responsive layout for smaller screens */
+@media (max-width: 900px) {
+    .timeslots-page {
+        grid-template-columns: 1fr; /* Stack columns */
+    }
+}
+
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* --- Column 1: Time Slot Form Card --- */
+.timeslot-form-card {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    height: fit-content; /* Make card only as tall as its content */
+}
+
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box; /* Important for 100% width */
+}
+
+.submit-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.submit-button:hover {
+    background-color: #0056b3;
+}
+
+.submit-button:disabled {
+    background-color: #cce0ff;
+    cursor: not-allowed;
+}
+
+/* Small bubbles for loading button */
+.submit-button .bubbles-loader {
+    transform: scale(0.5);
+    margin: -10px; /* Adjust layout */
+}
+
+
+/* --- Column 2: Schedule Container --- */
+.schedule-container {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.day-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.day-card {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    background-color: #fcfcfc;
+}
+
+.day-card h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    padding: 12px 15px;
+    margin: 0;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    border-radius: 8px 8px 0 0;
+}
+
+.slots-list {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 50px;
+}
+
+.no-slots {
+    font-size: 0.9rem;
+    color: #888;
+    text-align: center;
+    padding: 10px 0;
+}
+
+/* --- Individual Time Slot Item --- */
+.timeslot-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+}
+
+.timeslot-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.timeslot-info .time {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #333;
+}
+.timeslot-info .fee {
+    font-size: 0.85rem;
+    color: #555;
+}
+
+/* Slot Status Styling */
+.timeslot-item.status-cancelled {
+    background-color: #fff8f8;
+    border-color: #fbe0e0;
+}
+.timeslot-item.status-cancelled .timeslot-info {
+    opacity: 0.6;
+    text-decoration: line-through;
+}
+
+/* Action Buttons (Cancel/Activate) */
+.timeslot-actions .btn-action-slot {
+    background: none;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.btn-action-slot.btn-cancel-slot {
+    color: #dc3545; /* Red */
+}
+.btn-action-slot.btn-cancel-slot:hover {
+    background-color: #fdeeee;
+}
+
+.btn-action-slot.btn-activate-slot {
+    color: #28a745; /* Green */
+}
+.btn-action-slot.btn-activate-slot:hover {
+    background-color: #eaf7ed;
+}
+
+/* Error/Loading States */
+.error-message,
+.no-appointments { /* Reusing styles from appointments */
+    text-align: center;
+    padding: 50px;
+    color: #888;
+}
+.error-message h3,
+.no-appointments h3 {
+    color: #555;
+    margin-bottom: 10px;
+}

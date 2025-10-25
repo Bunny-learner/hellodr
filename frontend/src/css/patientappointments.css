@@ -1,0 +1,360 @@
+/* Container for the entire section */
+.review-section {
+  margin-top: 1rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #eee;
+}
+
+.beauty{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.no {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  padding: 20px;
+  max-width: 400px;
+  border: 2px dashed #87cefa; /* sky-blue dashed border */
+  border-radius: 12px;
+  text-align: center;
+  color: #4682b4; /* steel blue text */
+  font-size: 1.1rem;
+  font-weight: 500;
+  background: #f0f8ff; /* very light blue background */
+}
+
+.no::before {
+  content: "ℹ️"; /* info emoji or icon */
+  font-size: 2rem;
+  margin-bottom: 10px;
+  display: block;
+}
+
+
+
+/* Container for rating input */
+.rating-input {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  gap: 8px;
+}
+
+/* Star icon */
+.rating-input span {
+  color: #f5c518; /* Gold star */
+  font-size: 1.2rem;
+}
+
+/* Number input field */
+.rating-input input[type="number"] {
+  width: 50px;
+  padding: 0.2rem 0.4rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+.rating-stars {
+  display: flex;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.rating-stars span {
+  font-size: 1.5rem;
+  color: #ccc;
+  transition: color 0.2s;
+}
+
+.rating-stars span:hover,
+.rating-stars span.active {
+  color: #f5c518; /* Gold on hover/active */
+}
+
+.review-textarea {
+  min-height: 80px;
+  border-radius: 8px;
+  border: 1.5px solid #349ce3;
+  padding: 0.6rem;
+  font-size: 0.9rem;
+  resize: vertical;
+  margin-bottom: 0.6rem;
+  transition: border-color 0.2s ease;
+}
+
+.review-textarea:focus {
+  outline: none;
+  border-color: #0057b8;
+}
+
+.submit-review-btn {
+  background: linear-gradient(135deg, #1e90ff, #0057b8);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.submit-review-btn:hover {
+  background: linear-gradient(135deg, #0057b8, #0041a3);
+  transform: translateY(-2px);
+}
+
+/* When modal is open, blur the background */
+.pcontent-section {
+  position: relative;
+  transition: filter 0.3s ease;
+}
+
+.pcontent-section.blur {
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+/* Overlay */
+.review-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 10, 10, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+}
+
+/* Modal box */
+.review-modal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  width: 90%;
+  max-width: 480px;
+  position: relative;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  animation: popIn 0.25s ease;
+}
+
+/* Close button */
+.close-modal-btn {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: 1.5rem;
+  background: transparent;
+  border: none;
+  color: #333;
+  cursor: pointer;
+}
+
+.add-review-btn {
+  background: linear-gradient(135deg, #1e90ff, #0057b8);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-review-btn:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #0057b8, #0041a3);
+}
+
+/* Animation */
+@keyframes popIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.pcontent-section {
+  padding: 25px;
+  background-color: #eef6fb; /* soft light blue background */
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+.choices{
+  display: flex;
+  align-items: center;
+}
+
+.choice {
+  background: #f8faff;
+  border: 2px solid #349ce3;
+  color: #349ce3;
+  border-radius: 10px;
+  padding: 0.5rem 1.1rem;
+  font-size: 0.95rem;
+  margin-right: 16px;
+  cursor: pointer;
+  flex: 0 0 auto;
+  transition: all 0.25s ease;
+  font-weight: 500;
+  box-shadow: 0 0 0 transparent;
+}
+
+.choice:hover {
+  background: #349ce3;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(52, 156, 227, 0.3);
+}
+
+.choice:active {
+  transform: scale(0.97);
+}
+
+/* Active (selected) button style */
+.act {
+  background: linear-gradient(135deg, #1e90ff, #0057b8);
+  color: #fff;
+  border: 2px solid #0057b8;
+  box-shadow: 0 4px 12px rgba(0, 87, 184, 0.4);
+  transform: translateY(-2px);
+}
+
+.choices {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+
+/* Section header */
+.section-header h3 ,.hehe{
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 25px;
+  color: #1a73e8; /* richer blue */
+  border-left: 5px solid #1a73e8;
+  padding-left: 10px;
+}
+
+/* Appointments grid */
+.appointments-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 22px;
+}
+
+/* Single appointment card */
+.appointment-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 6px 15px rgba(26, 115, 232, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.appointment-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 25px rgba(26, 115, 232, 0.15);
+}
+
+/* Appointment header with image and doctor info */
+.appointment-header {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 12px;
+}
+
+.doctor-image {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #1a73e8;
+  box-shadow: 0 2px 8px rgba(26, 115, 232, 0.2);
+}
+
+.doctor-info h4 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 600;
+  color: #0b3c91;
+}
+
+.status {
+  font-size: 13px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 14px;
+  text-transform: capitalize;
+  margin-top: 5px;
+  display: inline-block;
+  font-family: 'Segoe UI', sans-serif;
+  letter-spacing: 0.5px;
+}
+
+/* Status colors */
+.status.pending {
+  background-color: #dbe9ff;
+  color: #1a73e8;
+}
+
+.doctor-info{
+  width:100%;
+  display: flex;
+  justify-content: space-around;
+}
+
+.status.completed {
+  background-color: #d0f0fd;
+  color: #0b8457;
+}
+
+.status.rejected {
+  background-color: rgb(184, 41, 41);
+  color:white;
+}
+
+.status.accepted {
+  background-color: #349ce3;
+  color: white;
+}
+
+/* Appointment details */
+.appointment-card p {
+  margin: 6px 0;
+  font-size: 15px;
+  color: #333333;
+}
+
+.appointment-card strong {
+  color: #1a73e8;
+}
+
+/* No appointments message */
+.no-appointments {
+  text-align: center;
+  margin-top: 60px;
+  font-size: 20px;
+  color: #5b8bd5;
+  font-weight: 500;
+}
