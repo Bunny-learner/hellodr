@@ -10,6 +10,7 @@ import { dbconnection } from "./db/dbconnect.js"
 import cors from "cors"
 import { Server } from 'socket.io';
 import router from "./Routes/doctor.js"
+import hooker from "./Routes/webhook.js";
 import passport from "./middlewares/auth.google.js"
 
 
@@ -28,6 +29,7 @@ app.use(cors({
 
 app.use(express.static('public'));
 app.use(express.urlencoded({extended:true,limit:'100mb'}))
+app.use('/stripe',hooker)
 app.use(express.json({limit:'100mb'}));
 
 app.use(
@@ -56,11 +58,13 @@ import patient from "./Routes/patient.js"
 import google_auth from "./Routes/google_auth.js"
 import face_auth from "./Routes/facebook_auth.js"
 import appointment from "./Routes/appointment.route.js"
+
 app.use('/doctor',doctor);
 app.use('/patient',patient);
 app.use('/auth/google',google_auth)
 app.use('/auth/faceboook',face_auth)
 app.use('/appointment',appointment)
+
 
 export default server;;
 

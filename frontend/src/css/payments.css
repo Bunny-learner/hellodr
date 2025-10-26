@@ -1,0 +1,36 @@
+.payments-container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+.transactions-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.transactions-table th,
+.transactions-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: left;
+}
+
+.transactions-table th {
+  background-color: #f5f5f5;
+}
+
+.status.paid {
+  color: green;
+  font-weight: bold;
+}
+
+.status.failed {
+  color: red;
+  font-weight: bold;
+}
+
+.status.pending {
+  color: orange;
+  font-weight: bold;
+}

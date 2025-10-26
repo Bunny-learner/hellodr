@@ -9,6 +9,7 @@ export default function PatientAppointments() {
   const [loading, setLoading] = useState(false);
   const [appointments, setAppointments] = useState([]);
   const [rejected,setRejected]=useState([])
+  const [accepted,setAccepted]=useState([])
   const [pending,setPending]=useState([])
   const navigate=useNavigate()
   const [page,setPage]=useState('rejected')
@@ -77,10 +78,12 @@ export default function PatientAppointments() {
           let rejected=data.data.filter(doc=>doc.status=="rejected")
           let completed=data.data.filter(doc=>doc.status=="completed")
           let pending=data.data.filter(doc=>doc.status=="pending")
+          let accepted=data.data.filter(doc=>doc.status=="accepted")
 
           setPending(pending)
           setRejected(rejected)
           setCompleted(completed)
+          setAccepted(accepted)
         }
         if(res.status==401)
           navigate('/patient/login?alert=Session expired please login again !')
@@ -104,6 +107,9 @@ export default function PatientAppointments() {
         <h3>My Appointments</h3>
 
         <div className='choices'>
+           <button  onClick={goto}  className={`choice ${
+                      page === "accepted"? "act" : ""
+                    }`}>Accepted</button>
           <button  onClick={goto}  className={`choice ${
                       page === "rejected"? "act" : ""
                     }`}>Rejected</button>
@@ -126,6 +132,39 @@ export default function PatientAppointments() {
       <div className='no'>No Rejected appointments</div>
     ) : (
       rejected.map((app) => (
+        <div key={app._id} className="appointment-card">
+          <div className="appointment-header">
+            <img
+              src={app.doctor.profilePic || "/default-doctor.png"}
+              alt={app.doctor.name}
+              className="doctor-image"
+            />
+            <div className="doctor-info">
+              <h4>Dr. {app.doctor.name}</h4>
+              <span className={`status ${app.status.toLowerCase()}`}>
+                {app.status}
+              </span>
+            </div>
+          </div>
+          <p><strong>Speciality:</strong> {app.doctor.speciality || "-"}</p>
+          <p><strong>Date:</strong> {new Date(app.date).toLocaleDateString()}</p>
+          <p><strong>Time:</strong> {app.TimeSlot ? `${app.TimeSlot.StartTime} - ${app.TimeSlot.EndTime}` : "-"}</p>
+          <p><strong>Fee:</strong> ₹{app.TimeSlot?.fee || app.doctor.fee || "-"}</p>
+          <p><strong>Symptoms:</strong> {app.symptoms || "N/A"}</p>
+          <p><strong>Day:</strong> {app.TimeSlot?.Day || "-"}</p>
+        </div>
+      ))
+    )}
+  </>
+)}
+
+
+{page === "accepted" && (
+  <>
+    {rejected.length === 0 ? (
+      <div className='no'>No Rejected appointments</div>
+    ) : (
+      accepted.map((app) => (
         <div key={app._id} className="appointment-card">
           <div className="appointment-header">
             <img

@@ -123,6 +123,7 @@
     overflow: hidden;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     display: flex;
+    margin-bottom: 20px;
     flex-direction: column;
 }
 
@@ -236,12 +237,18 @@
 
 .btn-action {
     padding: 6px 12px;
-    font-size: 0.85rem;
+    font-size: 1rem;
     font-weight: 500;
     border-radius: 6px;
     border: none;
     cursor: pointer;
     transition: all 0.2s ease;
+}
+
+
+.btn-action:hover{
+   background: #00008b;
+   color: white;
 }
 .btn-action.btn-complete {
     background-color: #28a745;

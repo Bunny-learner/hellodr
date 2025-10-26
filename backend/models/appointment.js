@@ -41,7 +41,7 @@ const AppointmentSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['pending','accepted','rejected','completed'],
+        enum: ['pending','accepted','cancelled','completed'],
         default: 'pending'
     },
     TimeSlot: {

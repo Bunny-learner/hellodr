@@ -13,6 +13,7 @@ export default function Navbar({ src, usertype = "patient" }) {
   else if (location.pathname.includes(`${basePath}/appointments`)) activePage = "appointments";
   else if (location.pathname.includes(`${basePath}/getdoctors`)) activePage = "finddoctor";
   else if (location.pathname.includes(`${basePath}/timeslots`)) activePage = "timeslots";
+  else if (location.pathname.includes(`${basePath}/payments`)) activePage = "Payments";
 
   const renderLinks = () => {
     if (usertype === "doctor") {
@@ -53,6 +54,11 @@ export default function Navbar({ src, usertype = "patient" }) {
               Find a Doctor
             </Link>
           </li>
+          <li>
+            <Link to={`${basePath}/payments`} className={activePage === "Payments" ? "active" : ""}>
+              Payments
+            </Link>
+          </li>
         </ul>
       );
     }
@@ -78,3 +84,4 @@ export default function Navbar({ src, usertype = "patient" }) {
     </nav>
   );
 }
+

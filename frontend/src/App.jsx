@@ -12,10 +12,13 @@ import Resetpassword from './pages/patient/resetpass';
 import Doctorlogin from './pages/doctor/doctorlogin';
 import PatientLayout from './pages/patient/patientlayout';
 import DoctorLayout from './pages/doctor/doctorlayout'
+import Success from './pages/patient/sucess'
+import Failure from './pages/patient/failure'
 
 const AppointmentReview =lazy(()=>import('./pages/patient/appointmentreview'))
 const DoctorHome = lazy(() => import('./pages/doctor/doctorhome'));
 const BookingForm= lazy(() => import('./pages/patient/bookingform'));
+const Payments= lazy(() => import('./pages/patient/payments'));
 const DoctorProfile = lazy(() => import('./pages/doctor/doctorprofile'));
 const DoctorTimeSlots = lazy(() => import('./pages/doctor/doctortimeslots'));
 const Patienthome = lazy(() => import('./pages/patient/patienthome'));
@@ -53,12 +56,16 @@ function App() {
           <Route path="/patient/getdoctors" element={<Patientgetdoctors />} />
           <Route path="/patient/appointments" element={<Patientappointments />} />
           <Route path="/patient/appointment/:id" element={<SlotBooking />} />
+          <Route path="/patient/payments" element={<Payments/>}/>
 
         </Route>
          <Route path="/patient/appointment/form" element={<BookingForm/>} />
          <Route path="/patient/appointment/review" element={<AppointmentReview/>} />
 
         <Route path="/patient/profile" element={<PatientProfile />} />
+        <Route path="/patient/success" element={<Success/>}/>
+        <Route path="/patient/failure" element={<Failure/>}/>
+        
       </Routes>
     </Suspense>
   );

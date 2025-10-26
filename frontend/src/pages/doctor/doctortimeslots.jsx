@@ -231,10 +231,10 @@ export default function DoctorTimeSlots() {
                                                         <span className="fee">Fee: ₹{slot.fee}</span>
                                                     </div>
                                                     <div className="timeslot-actions">
-                                                        {slot.status === 'avaliable' || slot.status === 'Scheduled' ? (
+                                                        {slot.status === 'available' || slot.status === 'scheduled' ? (
                                                             <button
                                                                 className="btn-action-slot btn-cancel-slot"
-                                                                onClick={() => handleStatusChange(slot._id, 'Cancelled')}
+                                                                onClick={() => handleStatusChange(slot._id, 'cancelled')}
                                                                 title="Cancel this slot"
                                                             >
                                                                 <FiXCircle />
@@ -242,7 +242,7 @@ export default function DoctorTimeSlots() {
                                                         ) : (
                                                             <button
                                                                 className="btn-action-slot btn-activate-slot"
-                                                                onClick={() => handleStatusChange(slot._id, 'avaliable')}
+                                                                onClick={() => handleStatusChange(slot._id, 'available')}
                                                                 title="Re-activate this slot"
                                                             >
                                                                 <FiCheckCircle />

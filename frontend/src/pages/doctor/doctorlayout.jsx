@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import NavBar from "../../components/Navbar/navbar";
 import { Toaster } from "react-hot-toast";
 import Bubbles from "../../components/Loaders/bubbles";
@@ -10,6 +10,7 @@ export default function PatientLayout() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [doctors, setDoctors] = useState([]);
+  const navigate=useNavigate()
 
   useEffect(() => {
    
@@ -21,6 +22,8 @@ export default function PatientLayout() {
           credentials: "include",
         });
         const data = await res.json();
+        if(res.status==401)
+                    navigate("/doctor/login?Session has expired please login again")
         if (res.status === 200) {
           setProfile(data.profile);
         }
