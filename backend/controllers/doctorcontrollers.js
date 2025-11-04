@@ -51,11 +51,7 @@ const doc_signup = asynchandler(async (req, res) => {
 })
 
 const add_timeslot = asynchandler(async (req, res) => {
-<<<<<<< Updated upstream
     const { Day, StartTime, EndTime, fee,mode } = req.body
-=======
-    const { Day, StartTime, EndTime, fee,limit } = req.body
->>>>>>> Stashed changes
     const doctorID = req.user.id
     if (!Day || !StartTime || !EndTime || !fee) {
         res.status(400)
@@ -67,11 +63,7 @@ const add_timeslot = asynchandler(async (req, res) => {
         StartTime,
         EndTime,
         fee,
-<<<<<<< Updated upstream
         mode
-=======
-        limit
->>>>>>> Stashed changes
     })
     await timeslot.save()
     res.status(201).json(new ApiResponse("Time slot added successfully", timeslot))

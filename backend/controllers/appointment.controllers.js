@@ -33,11 +33,7 @@ const book_appointment = asynchandler(async (req, res) => {
     email,
     phoneNumber,
     symptoms,
-<<<<<<< Updated upstream
     mode
-=======
-    fee
->>>>>>> Stashed changes
   } = req.body;
   
 
@@ -111,18 +107,11 @@ const book_appointment = asynchandler(async (req, res) => {
     age: Number(age),
     gender,
     phone: phoneNumber,
-<<<<<<< Updated upstream
     email: email || patientEmail, 
     date: appointmentDate, 
     TimeSlot: timeslot[0]._id,
     symptoms: symptoms || "Not specified", 
     mode
-=======
-    email: email || patientEmail,
-    date: appointmentDate,
-    TimeSlot: timeslot._id,
-    symptoms: symptoms || "Not specified",
->>>>>>> Stashed changes
   });
 
   await appointment.save();
