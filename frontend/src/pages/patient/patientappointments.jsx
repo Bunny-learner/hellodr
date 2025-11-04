@@ -12,7 +12,7 @@ export default function PatientAppointments() {
   const [accepted,setAccepted]=useState([])
   const [pending,setPending]=useState([])
   const navigate=useNavigate()
-  const [page,setPage]=useState('rejected')
+  const [page,setPage]=useState('accepted')
   const [completed,setCompleted]=useState([])
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
@@ -75,7 +75,7 @@ export default function PatientAppointments() {
         const data = await res.json();
         if (res.status === 200) {
           setAppointments(data.data);
-          let rejected=data.data.filter(doc=>doc.status=="rejected")
+          let rejected=data.data.filter(doc=>doc.status=="cancelled")
           let completed=data.data.filter(doc=>doc.status=="completed")
           let pending=data.data.filter(doc=>doc.status=="pending")
           let accepted=data.data.filter(doc=>doc.status=="accepted")
@@ -161,8 +161,8 @@ export default function PatientAppointments() {
 
 {page === "accepted" && (
   <>
-    {rejected.length === 0 ? (
-      <div className='no'>No Rejected appointments</div>
+    {accepted.length === 0 ? (
+      <div className='no'> No Accepted Appointments</div>
     ) : (
       accepted.map((app) => (
         <div key={app._id} className="appointment-card">

@@ -23,6 +23,9 @@ export default function PatientLayout() {
   }, [location.search]);
 
 
+  
+
+
   useEffect(() => {
     async function fetchDoctors() {
       try {

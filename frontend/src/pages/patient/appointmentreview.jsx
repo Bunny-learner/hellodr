@@ -32,7 +32,7 @@ export default function AppointmentReview() {
 
   const bookNow = async () => {
     if (!appointment) return;
-
+ 
    
     const result = await Swal.fire({
       title: "Confirm Booking?",
@@ -57,6 +57,7 @@ export default function AppointmentReview() {
       });
 
       const response = await res.json();
+      console.log(response.appointment)
 
       if (res.status === 201) {
         const sessionRes = await fetch("http://localhost:8000/appointment/getsession", {
@@ -65,8 +66,8 @@ export default function AppointmentReview() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             amount: appointment.fee * 100,
-            appointmentId: response.data._id,
-            customerEmail: response.data.email,
+            appointmentId: response.appointment._id,
+            customerEmail: response.appointment.email,
             currency: "inr",
           }),
         });
@@ -107,7 +108,7 @@ export default function AppointmentReview() {
           />
           <div className="doctor-details">
             <h2>{appointment.doctorName}</h2>
-            <p>Speciality: {appointment.speciality || "-"}</p>
+            {/* <p>Speciality: {appointment.speciality || "-"}</p> */}
             <p>Consultation Fee: ₹{appointment.fee}</p>
             {appointment.rating && renderStars(appointment.rating)}
           </div>

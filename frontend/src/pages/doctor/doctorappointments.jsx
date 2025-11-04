@@ -62,7 +62,7 @@ export default function DoctorAppointments() {
         fetchAppointments();
     }, []);
 
-    // Filter and sort
+  
     const filteredAppointments = useMemo(() => {
         const today = getTodayString();
         return allAppointments
@@ -85,7 +85,7 @@ export default function DoctorAppointments() {
                         statusMatch = status === "completed";
                         break;
                     case "rejected":
-                        statusMatch = status === "rejected";
+                        statusMatch = status === "rejected"||status=="cancelled";
                         break;
                     case "all":
                     default:
@@ -153,9 +153,8 @@ export default function DoctorAppointments() {
 
              if(response.status==201 && info)
                 toast.success(`Funds transferred to ${who} account successfully`)
-             else
+             if(response.status!=201)
                 toast.error(response.message)
-    
 
         } catch (err) {
             console.error("Update error:", err);
@@ -239,7 +238,7 @@ export default function DoctorAppointments() {
                                         {app.status.toLowerCase() === 'pending' && (
                                             <div className="action-buttons">
                                                 <button className="btn-action btn-accept" onClick={() => handleUpdateStatus(app._id, 'accepted')}>Accept</button>
-                                                <button className="btn-action btn-reject" onClick={() => handleUpdateStatus(app._id, 'rejected')}>Reject</button>
+                                                <button className="btn-action btn-reject" onClick={() => handleUpdateStatus(app._id, 'cancelled')}>Reject</button>
                                             </div>
                                         )}
                                         {app.status.toLowerCase() === 'accepted' && (

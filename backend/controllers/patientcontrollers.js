@@ -98,7 +98,7 @@ const pat_login = asynchandler(async (req, res) => {
                 maxAge: 60 * 60 * 1000,
                 sameSite: IS_PRODUCTION ? "None" : "Lax"
             })
-            .json({ "success": true });
+            .json({ "success": true,user:req.user});
 
     }
 

@@ -27,9 +27,17 @@ const TimeSlotSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    limit:{
+        type:Number,
+        default:10
+    },
+    booked:{
+        type:Number,
+        default:0
+    },
     status: {
         type: String,
-        enum: ['available','scheduled', 'cancelled'],
+        enum: ['available', 'full','cancelled'],
         default: 'available'
     },
 }, { timestamps: true });

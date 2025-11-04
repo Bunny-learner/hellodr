@@ -8,6 +8,7 @@ export const verifyJWT = (userType) => {
   return async (req, res, next) => {
     try {
       // Get token from cookies
+      console.log("Inside the verifyJWT<----->")
       const token = req.cookies?.accesstoken;
       console.log(token,"accesstoken from cookies");
 

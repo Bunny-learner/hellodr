@@ -11,38 +11,44 @@ import mongoose from "mongoose"
 
 
 /**
- * Helper function to parse "DD-MM-YYYY" string into a Date object.
- * new Date() does not support this format directly.
+ 
  * @param {string} dateString - The date string in "DD-MM-YYYY" format.
  * @returns {Date} 
  */
 
 const parseDMY = (dateString) => {
   const [day, month, year] = dateString.split('-').map(Number);
-  // JavaScript Date months are 0-indexed (0=Jan, 1=Feb, etc.)
   return new Date(year, month - 1, day);
 };
 
 const book_appointment = asynchandler(async (req, res) => {
   const {
     doctorId,
-    date, // This is "27-10-2025"
+    date, // "27-10-2025"
     dayName,
     timeSlot,
     patientName,
-    age, // This is "19" (string)
+    age, // "19" (string)
     gender,
     email,
     phoneNumber,
     symptoms,
+<<<<<<< Updated upstream
     mode
+=======
+    fee
+>>>>>>> Stashed changes
   } = req.body;
+  
 
-  // 2. Get patientID from the authenticated user
+
+
+
   const patientID = req.user._id;
-  const patientEmail = req.user.email; // Fallback email
+  const patientEmail = req.user.email; // fallback email
 
-  // 3. Validation
+
+
   if (
     !doctorId ||
     !date ||
@@ -57,75 +63,100 @@ const book_appointment = asynchandler(async (req, res) => {
     throw new ApiError("All fields are required");
   }
 
-  // 4. Find the doctor
+
   const doctor = await Doctor.findById(doctorId);
   if (!doctor) {
     res.status(404);
     throw new ApiError("Doctor not found");
   }
 
-  // 5. Find the time slot
-  const timeslot = await TimeSlot.find({
+
+  const timeslot = await TimeSlot.findOne({
     doctor: doctorId,
     Day: dayName,
+    fee:fee,
     StartTime: timeSlot,
   });
-
-  // 6. Check if the time slot is valid and available
-  if (timeslot.length === 0) {
+  console.log("🧩 Found timeslot:", timeslot);
+  if (!timeslot) {
     res.status(400);
     throw new ApiError("Time slot not found for this doctor and day.");
   }
 
-  if (timeslot[0].status !== "available") {
+
+  if (timeslot.status !== "available") {
     res.status(400);
     throw new ApiError("This time slot is no longer available");
   }
 
+  if (typeof timeslot.booked !== "number") timeslot.booked = 0;
+  if (typeof timeslot.limit !== "number") timeslot.limit = 1; 
+
+  if (timeslot.booked >= timeslot.limit) {
+    timeslot.status = "full";
+    await timeslot.save();
+    console.log("step7")
+    res.status(400);
+    throw new ApiError("This time slot is fully booked");
+  }
+
+
   const appointmentDate = parseDMY(date);
 
- 
+
   const appointment = new Appointment({
     doctor: doctorId,
     patient: patientID,
     name: patientName,
-    age: Number(age), 
-    gender: gender, 
+    age: Number(age),
+    gender,
     phone: phoneNumber,
+<<<<<<< Updated upstream
     email: email || patientEmail, 
     date: appointmentDate, 
     TimeSlot: timeslot[0]._id,
     symptoms: symptoms || "Not specified", 
     mode
+=======
+    email: email || patientEmail,
+    date: appointmentDate,
+    TimeSlot: timeslot._id,
+    symptoms: symptoms || "Not specified",
+>>>>>>> Stashed changes
   });
 
   await appointment.save();
 
-
-timeslot[0].status = "scheduled";
-await timeslot[0].save();
-
-console.log(appointment)
-const populatedAppointment = await Appointment.findById(appointment._id)
-  .populate("TimeSlot");
-console.log("populated appointment: ",populatedAppointment) 
-
-res.status(201).json(
-  new ApiResponse("Appointment booked successfully", populatedAppointment)
-);
-})
+  console.log(timeslot.booked,typeof timeslot.booked)
+  timeslot.booked += 1;
 
 
+  if (timeslot.booked >= timeslot.limit) {
+    timeslot.status = "full";
+  } 
+
+  await timeslot.save();
+
+
+  const populatedAppointment = await Appointment.findById(appointment._id)
+    .populate("TimeSlot");
+
+  console.log("populated appointment:", populatedAppointment);
+
+  res.status(201).json({
+    message: "Appointment booked successfully",
+    appointment: populatedAppointment,
+  });
+});
 
 
 
-// module.exports = { book_appointment };
 
 const get_all_appointments = asynchandler(async (req, res) => {
     const userID = req.user.id;
     const userType = req.userType;
 
-    // Populate both doctor and timeslot
+    
     const appointments = await Appointment.find({ [userType]: userID })
         .populate('doctor', 'name speciality fee profilePic') // get doctor info
         .populate('TimeSlot'); // populate the timeslot details
@@ -135,56 +166,83 @@ const get_all_appointments = asynchandler(async (req, res) => {
 
 
 const update_appointment_status = asynchandler(async (req, res) => {
-    const { appointmentID, status } = req.body;
-    const { info } = req.query; // read from query string
-    console.log("info:", info);
+  const { appointmentID, status } = req.body;
+  const { info } = req.query; 
+  console.log("info:", info);
 
-    if (!status) {
-        res.status(400);
-        throw new ApiError("Status is required");
-    }
+  if (!status) {
+    res.status(400);
+    throw new ApiError("Status is required");
+  }
 
-    // Find appointment
-    const appointment = await Appointment.findById(appointmentID);
-    if (!appointment) {
-        res.status(404);
-        throw new ApiError("Appointment not found");
-    }
 
-    // Update status normally
-    appointment.status = status;
-    await appointment.save();
+  const appointment = await Appointment.findById(appointmentID).populate("TimeSlot");
+  if (!appointment) {
+    res.status(404);
+    throw new ApiError("Appointment not found");
+  }
 
-    // Only process payment if info exists
-    if (info) {
-        const transaction = await Transaction.findOne({ appointment: appointmentID, paymentStatus: "authorized" });
+  
+  appointment.status = status;
+  await appointment.save();
 
-        if (transaction && transaction.stripePaymentIntentId) {
-            try {
-                let stripeResult;
-
-                if (info === "proceed") {
-                  console.log("---------------------------------------------")
-                    stripeResult = await stripe.paymentIntents.capture(transaction.stripePaymentIntentId);
-                    transaction.paymentStatus = "paid";
-                } else if (info === "cancel") {
-                    stripeResult = await stripe.paymentIntents.cancel(transaction.stripePaymentIntentId);
-                    transaction.paymentStatus = "failed";
-                }
-
-                await transaction.save();
-                console.log("Stripe processed:", stripeResult);
-            } catch (err) {
-                console.error("Stripe processing error:", err);
-            }
-        }
-    }
-
-    res.status(201).json({
-        message: "Appointment status updated successfully",
-        appointment,
+  
+  if (info) {
+    const transaction = await Transaction.findOne({
+      appointment: appointmentID,
+      paymentStatus: "authorized",
     });
+
+    if (transaction && transaction.stripePaymentIntentId) {
+      try {
+        let stripeResult;
+
+        if (info === "proceed") {
+          console.log("---------------------------------------------");
+          stripeResult = await stripe.paymentIntents.capture(transaction.stripePaymentIntentId);
+          transaction.paymentStatus = "paid";
+        } else if (info === "cancel") {
+          stripeResult = await stripe.paymentIntents.cancel(transaction.stripePaymentIntentId);
+          transaction.paymentStatus = "failed";
+        }
+
+        await transaction.save();
+        console.log("Stripe processed:", stripeResult);
+      } catch (err) {
+        console.error("Stripe processing error:", err);
+      }
+    }
+  }
+
+ 
+  if (status.toLowerCase() === "cancelled") {
+    try {
+      const slot = await TimeSlot.findById(appointment.TimeSlot._id);
+
+      if (slot) {
+        slot.booked = Math.max(0, slot.booked - 1);
+
+        if (slot.booked < slot.limit) {
+          slot.status = "available";
+        }
+
+        await slot.save();
+        console.log(`Slot ${slot._id} updated: booked=${slot.booked}, status=${slot.status}`);
+      } else {
+        console.warn(`TimeSlot not found for appointment ${appointmentID}`);
+      }
+    } catch (err) {
+      console.error("Error updating timeslot after cancellation:", err);
+    }
+  }
+
+  
+  res.status(201).json({
+    message: "Appointment status updated successfully",
+    appointment,
+  });
 });
+
 
 
 
@@ -296,4 +354,9 @@ const gettransactions = asynchandler(async (req, res) => {
   );
 });
 
-export { book_appointment,gettransactions,getsession ,get_all_appointments, update_appointment_status, get_appiontment }
+
+const authorize=asynchandler(async(req,res)=>{
+  console.log("inside the authorize handler------->::::::")
+  res.status(200).json({message:"User is authenticated",role:req.role})})
+
+export { book_appointment,authorize,gettransactions,getsession ,get_all_appointments, update_appointment_status, get_appiontment }

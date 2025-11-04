@@ -15,7 +15,9 @@ import DoctorLayout from './pages/doctor/doctorlayout'
 import Success from './pages/patient/sucess'
 import Failure from './pages/patient/failure'
 
+
 const AppointmentReview =lazy(()=>import('./pages/patient/appointmentreview'))
+const AboutDoctor = lazy(() => import('./pages/patient/viewdoctorprofile'));
 const DoctorHome = lazy(() => import('./pages/doctor/doctorhome'));
 const BookingForm= lazy(() => import('./pages/patient/bookingform'));
 const Payments= lazy(() => import('./pages/patient/payments'));
@@ -40,7 +42,9 @@ function App() {
         <Route path="/doctor/signup" element={<Doctorsignup />} />
         <Route path="/doctor/login" element={<Doctorlogin />} />
 
-       <Route element={<DoctorLayout />}>
+        
+
+          <Route element={<DoctorLayout />}>
 
         <Route path="/doctor/home" element={<DoctorHome />} />
         <Route path="/doctor/appointments" element={<DoctorAppointments />} />
@@ -51,14 +55,14 @@ function App() {
         <Route path="/doctor/profile" element={<DoctorProfile />} />
 
         <Route element={<PatientLayout />}>
-
           <Route path="/patient/home" element={<Patienthome />} />
           <Route path="/patient/getdoctors" element={<Patientgetdoctors />} />
           <Route path="/patient/appointments" element={<Patientappointments />} />
           <Route path="/patient/appointment/:id" element={<SlotBooking />} />
           <Route path="/patient/payments" element={<Payments/>}/>
-
+          <Route path="/patient/:id" element={<AboutDoctor />} />
         </Route>
+
          <Route path="/patient/appointment/form" element={<BookingForm/>} />
          <Route path="/patient/appointment/review" element={<AppointmentReview/>} />
 
@@ -66,6 +70,8 @@ function App() {
         <Route path="/patient/success" element={<Success/>}/>
         <Route path="/patient/failure" element={<Failure/>}/>
         
+        
+       
       </Routes>
     </Suspense>
   );

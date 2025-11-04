@@ -5,10 +5,11 @@ import { useLocation } from 'react-router-dom';
 import { LinearProgress, Button } from '@mui/material';
 import toast, { Toaster } from 'react-hot-toast';
 import '../../css/signup.css';
+import { useAuth } from '../../pages/AuthContext';
 
 
 export default function doctorlogin() {
-
+    const { setUser, setIsAuthenticated } = useAuth();
      const location = useLocation();
      const [loading,setLoading]=useState(false)
 
@@ -47,8 +48,9 @@ const onSubmit = async (data) => {
         credentials: 'include'
       });
       const responseData = await response.json();
-      console.log(responseData)
       
+     setUser(data.user);
+     setIsAuthenticated(true);
       setLoading(false);
 
       if (response.status === 202) {

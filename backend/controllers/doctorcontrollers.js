@@ -41,7 +41,7 @@ const doc_login = asynchandler(async (req, res) => {
         const { accesstoken, refreshtoken } = await generate(doctor._id, "doctor")
         res.cookie("refreshtoken", refreshtoken, getCookieOptions(15 * 24 * 60 * 60 * 1000));
         res.cookie("accesstoken", accesstoken, getCookieOptions(60 * 60 * 1000))
-        res.status(202).json({ "message": "Redirect to Home","accesstoken":accesstoken })
+        res.status(202).json({ "message": "Redirect to Home",user:req.user })
     }
 })
 
@@ -51,7 +51,11 @@ const doc_signup = asynchandler(async (req, res) => {
 })
 
 const add_timeslot = asynchandler(async (req, res) => {
+<<<<<<< Updated upstream
     const { Day, StartTime, EndTime, fee,mode } = req.body
+=======
+    const { Day, StartTime, EndTime, fee,limit } = req.body
+>>>>>>> Stashed changes
     const doctorID = req.user.id
     if (!Day || !StartTime || !EndTime || !fee) {
         res.status(400)
@@ -63,7 +67,11 @@ const add_timeslot = asynchandler(async (req, res) => {
         StartTime,
         EndTime,
         fee,
+<<<<<<< Updated upstream
         mode
+=======
+        limit
+>>>>>>> Stashed changes
     })
     await timeslot.save()
     res.status(201).json(new ApiResponse("Time slot added successfully", timeslot))

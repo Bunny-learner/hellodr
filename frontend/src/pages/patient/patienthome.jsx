@@ -138,6 +138,8 @@ export default function PatientHome() {
                 rating={doc.rating}
                 experience={doc.experience}
                 fee={doc.fee}
+                _id={doc._id}
+                hospital={doc.hospital}
                 imgSrc={doc.profilePic}
               />
             ))}
@@ -161,6 +163,7 @@ export default function PatientHome() {
                 experience={doc.experience}
                 fee={doc.fee}
                 _id={doc._id}
+                hospital={doc.hospital}
                 imgSrc={doc.profilePic}
               />
             ))}

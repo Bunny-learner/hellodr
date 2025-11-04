@@ -11,6 +11,10 @@
   justify-content: center;
 }
 
+.cancelled{
+  background-color: rgb(236, 116, 116);
+}
+
 .no {
   display: flex;
   flex-direction: column;
@@ -318,7 +322,7 @@
 }
 
 .doctor-info{
-  width:100%;
+
   display: flex;
   justify-content: space-around;
 }

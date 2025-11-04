@@ -27,8 +27,8 @@ const navigate=useNavigate();
  const goto=(event)=>{
     const role=event.currentTarget.textContent.trim().toLowerCase();
     if(role==="doctor"){
-        navigate('/doctor/signup');
-    }else navigate('/patient/signup');
+        navigate('/doctor/login');
+    }else navigate('/patient/login');
   }
 
   return (
