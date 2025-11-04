@@ -10,6 +10,11 @@ const TimeSlotSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    mode: {
+        type: String,
+        enum: ['online', 'offline'],
+        default: 'offline'
+    },
     StartTime: {
         type: String,
         required: true

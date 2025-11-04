@@ -11,6 +11,11 @@ const AppointmentSchema = new mongoose.Schema({
         ref: 'Doctor',
         required: true
     },
+    mode: {
+        type: String,
+        enum: ['online', 'offline'],
+        default: 'offline'
+    },
     name:{
         type: String,
         required: true

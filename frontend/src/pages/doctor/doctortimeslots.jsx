@@ -4,15 +4,18 @@ import {
     FiCalendar,
     FiClock,
     FiPlus,
-    FiDollarSign,
     FiXCircle,
     FiCheckCircle,
+    FiWifi,
+    FiWifiOff,
+    FiFilter,
 } from 'react-icons/fi';
 import { FaRupeeSign } from "react-icons/fa";
-import "../../css/doctortimeslots.css";
-import Bubbles from '../../components/Loaders/bubbles';
+import "../../css/doctortimeslots.css"; 
+
 import HeartLoader from '../../components/Loaders/heartloader';
-import NavBar from '../../components/Navbar/navbar';
+// Assuming you have a NavBar component
+// import NavBar from '../../components/Navbar/navbar'; 
 
 
 const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -34,13 +37,14 @@ export default function DoctorTimeSlots() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [filterMode, setFilterMode] = useState('all'); 
 
-    
     const [formData, setFormData] = useState({
         Day: 'Monday',
         StartTime: '',
         EndTime: '',
         fee: '',
+        mode: 'offline', 
     });
 
     
@@ -69,92 +73,125 @@ export default function DoctorTimeSlots() {
         }
     };
 
-    // --- Fetch data on component mount ---
+    // Fetch data on component mount
     useEffect(() => {
         fetchTimeSlots();
     }, []);
 
-    // --- Group time slots by day ---
+    // Filter and Group time slots
     const groupedTimeSlots = useMemo(() => {
-        const groups = {};
-        DAYS_OF_WEEK.forEach(day => { groups[day] = []; }); // Initialize all days
+        const filteredSlots = allTimeSlots.filter(slot => {
+            if (filterMode === 'all') return true;
+            return slot.mode === filterMode;
+        });
 
-        allTimeSlots.forEach(slot => {
+        const groups = {};
+        DAYS_OF_WEEK.forEach(day => { groups[day] = []; }); 
+
+        filteredSlots.forEach(slot => {
             if (groups[slot.Day]) {
                 groups[slot.Day].push(slot);
             }
         });
 
-        
         for (const day in groups) {
             groups[day].sort((a, b) => a.StartTime.localeCompare(b.StartTime));
         }
 
         return groups;
-    }, [allTimeSlots]);
+    }, [allTimeSlots, filterMode]); 
 
-    
+    // Handles changes for all form fields
     const handleFormChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
+    // Handles the sliding mode toggle for the Add New Slot form
+    const handleFormModeToggle = (modeValue) => {
+        setFormData(prev => ({ ...prev, mode: modeValue }));
+    };
     
+    // Handles Add New Slot form submission
     const handleAddSlot = async (e) => {
         e.preventDefault();
         if (!formData.StartTime || !formData.EndTime || !formData.fee) {
             toast.error("Please fill out all fields.");
             return;
         }
-        setIsLoading(true);
+        setIsSubmitting(true); 
         
         try {
             const response = await fetch('http://localhost:8000/doctor/addtimeslot', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
-                body: JSON.stringify(formData),
+                body: JSON.stringify(formData), 
             });
             if (!response.ok) throw new Error("Failed to add slot.");
 
             toast.success("Time slot added successfully!");
-            setFormData({ Day: 'Monday', StartTime: '', EndTime: '', fee: '' }); // Reset form
-            fetchTimeSlots(); // Refetch all slots to show the new one
+            setFormData({ Day: 'Monday', StartTime: '', EndTime: '', fee: '', mode: 'offline' }); 
+            fetchTimeSlots(); 
         } catch (err) {
             console.error("Submit error:", err);
             toast.error(err.message || "Failed to add time slot.");
         } finally {
-            setIsLoading(false);
+            setIsSubmitting(false);
         }
     };
 
-    
-    const handleStatusChange = async (timeslotID, newStatus) => {
+    // --- NEW: Unified Update Function ---
+    // This single function handles all updates (status, mode, etc.)
+    const handleUpdateSlot = async (timeslotID, updatePayload) => {
         try {
             const response = await fetch('http://localhost:8000/doctor/changestatus', {
                 method: 'PUT', 
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
-                body: JSON.stringify({ timeslotID, status: newStatus }),
+                // Send the ID and the specific fields to update
+                body: JSON.stringify({ timeslotID, ...updatePayload }),
             });
-            if (!response.ok) throw new Error("Failed to update status.");
+            if (!response.ok) throw new Error("Failed to update slot.");
 
-            toast.success(`Slot has been ${newStatus}.`);
-
-            
+            // Optimistically update the UI
             setAllTimeSlots(prevSlots =>
                 prevSlots.map(slot =>
-                    slot._id === timeslotID ? { ...slot, status: newStatus } : slot
+                    slot._id === timeslotID ? { ...slot, ...updatePayload } : slot
                 )
             );
+            
+            // Show a specific toast based on what was updated
+            if (updatePayload.status) {
+                toast.success(`Slot has been ${updatePayload.status}.`);
+            } else if (updatePayload.mode) {
+                toast.success(`Slot mode changed to ${updatePayload.mode}.`);
+            } else {
+                toast.success("Slot updated.");
+            }
+
         } catch (err) {
-            console.error("Status change error:", err);
-            toast.error("Failed to update status.");
+            console.error("Update error:", err);
+            toast.error("Failed to update slot.");
         }
     };
 
+    // --- Wrapper function for changing status ---
+    const handleStatusChange = (timeslotID, newStatus) => {
+        handleUpdateSlot(timeslotID, { status: newStatus });
+    };
+
+    // --- Wrapper function for changing mode ---
+    const handleModeChange = (timeslotID, currentMode) => {
+        const newMode = currentMode === 'online' ? 'offline' : 'online';
+        handleUpdateSlot(timeslotID, { mode: newMode });
+    };
+
+
     return (
         <>
+            {/* <NavBar /> */}
+            <Toaster position="top-right" reverseOrder={false} />
             <section className="timeslots-page">
                 {/* --- Column 1: Add Time Slot Form --- */}
                 <div className="timeslot-form-card">
@@ -168,6 +205,26 @@ export default function DoctorTimeSlots() {
                                 ))}
                             </select>
                         </div>
+                        
+                        {/* --- Sliding Mode Toggle Button --- */}
+                        <div className="form-group">
+                            <label>Mode</label>
+                            <div className="mode-toggle-container">
+                                <div 
+                                    className={`mode-option ${formData.mode === 'offline' ? 'active' : ''}`}
+                                    onClick={() => handleFormModeToggle('offline')}
+                                >
+                                    Offline
+                                </div>
+                                <div 
+                                    className={`mode-option ${formData.mode === 'online' ? 'active' : ''}`}
+                                    onClick={() => handleFormModeToggle('online')}
+                                >
+                                    Online
+                                </div>
+                            </div>
+                        </div>
+
                         <div className="form-group">
                             <label htmlFor="StartTime"><FiClock /> Start Time</label>
                             <input
@@ -175,6 +232,7 @@ export default function DoctorTimeSlots() {
                                 name="StartTime"
                                 value={formData.StartTime}
                                 onChange={handleFormChange}
+                                required
                             />
                         </div>
                         <div className="form-group">
@@ -184,6 +242,7 @@ export default function DoctorTimeSlots() {
                                 name="EndTime"
                                 value={formData.EndTime}
                                 onChange={handleFormChange}
+                                required
                             />
                         </div>
                         <div className="form-group">
@@ -194,19 +253,37 @@ export default function DoctorTimeSlots() {
                                 placeholder="e.g., 400"
                                 value={formData.fee}
                                 onChange={handleFormChange}
+                                required
                             />
                         </div>
                         <button type="submit" className="submit-button" disabled={isSubmitting}>
-                             <><FiPlus /> Add Slot</>
+                             {isSubmitting ? "Adding..." : <><FiPlus /> Add Slot</>}
                         </button>
                     </form>
                 </div>
 
-                
+                {/* --- Column 2: Schedule Display --- */}
                 <div className="schedule-container">
-                    <h2 className="section-title">Your Weekly Schedule</h2>
+                    <div className="schedule-header">
+                        <h2 className="section-title">Your Weekly Schedule</h2>
+                        <div className="filter-group">
+                            <label htmlFor="mode-filter"><FiFilter /> Show Mode</label>
+                            <select 
+                                id="mode-filter" 
+                                value={filterMode} 
+                                onChange={(e) => setFilterMode(e.target.value)}
+                            >
+                                <option value="all">All</option>
+                                <option value="online">Online</option>
+                                <option value="offline">Offline</option>
+                            </select>
+                        </div>
+                    </div>
+
                     {isLoading ? (
-                        <HeartLoader />
+                        <div className="loader-container">
+                            <HeartLoader />
+                        </div>
                     ) : error ? (
                         <div className="error-message">
                             <h3>Oops! Something went wrong.</h3>
@@ -229,6 +306,14 @@ export default function DoctorTimeSlots() {
                                                             {formatDisplayTime(slot.StartTime)} - {formatDisplayTime(slot.EndTime)}
                                                         </span>
                                                         <span className="fee">Fee: ₹{slot.fee}</span>
+                                                        <span 
+                                                            className={`mode mode-${slot.mode} clickable`}
+                                                            onClick={() => handleModeChange(slot._id, slot.mode)}
+                                                            title={`Click to change to ${slot.mode === 'online' ? 'Offline' : 'Online'}`}
+                                                        >
+                                                            {slot.mode === 'online' ? <FiWifi /> : <FiWifiOff />}
+                                                            {slot.mode.charAt(0).toUpperCase() + slot.mode.slice(1)}
+                                                        </span>
                                                     </div>
                                                     <div className="timeslot-actions">
                                                         {slot.status === 'available' || slot.status === 'scheduled' ? (

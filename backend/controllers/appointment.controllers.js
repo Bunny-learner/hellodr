@@ -35,6 +35,7 @@ const book_appointment = asynchandler(async (req, res) => {
     email,
     phoneNumber,
     symptoms,
+    mode
   } = req.body;
 
   // 2. Get patientID from the authenticated user
@@ -95,6 +96,7 @@ const book_appointment = asynchandler(async (req, res) => {
     date: appointmentDate, 
     TimeSlot: timeslot[0]._id,
     symptoms: symptoms || "Not specified", 
+    mode
   });
 
   await appointment.save();

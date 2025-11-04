@@ -51,7 +51,7 @@ const doc_signup = asynchandler(async (req, res) => {
 })
 
 const add_timeslot = asynchandler(async (req, res) => {
-    const { Day, StartTime, EndTime, fee } = req.body
+    const { Day, StartTime, EndTime, fee,mode } = req.body
     const doctorID = req.user.id
     if (!Day || !StartTime || !EndTime || !fee) {
         res.status(400)
@@ -62,7 +62,8 @@ const add_timeslot = asynchandler(async (req, res) => {
         Day,
         StartTime,
         EndTime,
-        fee
+        fee,
+        mode
     })
     await timeslot.save()
     res.status(201).json(new ApiResponse("Time slot added successfully", timeslot))
@@ -75,17 +76,18 @@ const get_timeslots = asynchandler(async (req, res) => {
 })
 
 const change_timeslot_status = asynchandler(async (req, res) => {
-    const { timeslotID, status } = req.body
-    if (!timeslotID || !status) {
+    const { timeslotID, status,mode } = req.body
+    if (!timeslotID || (!status && !mode)) {
         res.status(400)
-        throw new ApiError("All fields are required")
+        throw new ApiError("fields are missing")
     }
     const timeslot = await TimeSlot.findById(timeslotID)
     if (!timeslot) {
         res.status(404)
         throw new ApiError("Time slot not found")
     }
-    timeslot.status = status
+    if(status)timeslot.status = status
+    if(mode)timeslot.mode = mode
     await timeslot.save()
     res.status(200).json(new ApiResponse("Time slot status updated successfully", timeslot))
 })
