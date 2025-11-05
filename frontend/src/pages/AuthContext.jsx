@@ -4,7 +4,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
+  const [userID, setUserID] = useState(null);
   const [role,setrole]=useState(null)
 
   
@@ -21,6 +21,7 @@ export const AuthProvider = ({ children }) => {
           const data = await res.json();
           console.log(" Auth confirmed:", data);
           setrole(data.role);
+          setUserID(data.id)
           setIsAuthenticated(true);
         } else {
           console.log(" Not authenticated");
@@ -43,7 +44,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated,setUser, user,role, setIsAuthenticated, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated,setUserID, userID,role, setIsAuthenticated, logout }}>
       {children}
     </AuthContext.Provider>
   );

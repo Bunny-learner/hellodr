@@ -247,47 +247,86 @@
   transform: translateY(-1px);
 }
 
-
-/* ========== Date Tabs ========== */
+/* Container for all day tabs */
 .date-tabs {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: center;
-  margin-bottom: 2rem;
+  overflow-x: auto;
+  white-space: nowrap;
+  gap: 12px;
+  padding: 10px 5px;
+  scroll-behavior: smooth;
 }
 
+/* Hide ugly scrollbar for WebKit browsers */
+.date-tabs::-webkit-scrollbar {
+  height: 6px;
+}
+.date-tabs::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 3px;
+}
+.date-tabs::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Each day tab card */
 .tab {
-  min-width: 120px;
-  background: white;
-  border-radius: 12px;
-  padding: 0.8rem 1rem;
-  text-align: center;
-  border: 1.5px solid #e0eaff;
+  flex: 0 0 auto;
+  min-width: 110px;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #fff;
   cursor: pointer;
-  transition: all 0.25s ease;
-}
-
-.tab strong {
-  display: block;
-  font-size: 0.95rem;
-
-}
-
-.tab span {
-  font-size: 0.8rem;
+  text-align: center;
+  transition: all 0.25s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .tab:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 14px rgba(26, 115, 232, 0.1);
+  background-color: #f7f7f7;
+  transform: translateY(-2px);
 }
 
-.tab.selected {
-  background: #1a73e8;
-  color: #fff;
-  border-color: #1a73e8;
+
+.tab .day-date {
+  display: block;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 4px;
 }
+
+/* Selected (active) tab */
+.tab.selected {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+  box-shadow: 0 3px 6px rgba(0, 123, 255, 0.3);
+}
+
+.tab.selected .day-date{
+  color:white;
+}
+
+
+
+
+/* Day name (Mon, Tue, etc.) */
+.tab strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+/* Slots count */
+.tab span:last-child {
+  display: block;
+  font-size: 12px;
+}
+
+
+
 
 /* ========== Slot Section ========== */
 .availability-details {

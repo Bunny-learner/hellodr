@@ -14,6 +14,7 @@ import PatientLayout from './pages/patient/patientlayout';
 import DoctorLayout from './pages/doctor/doctorlayout'
 import Success from './pages/patient/sucess'
 import Failure from './pages/patient/failure'
+import ChatPage from './pages/chatpage';
 
 
 const AppointmentReview =lazy(()=>import('./pages/patient/appointmentreview'))
@@ -29,6 +30,7 @@ const Patientappointments = lazy(() => import('./pages/patient/patientappointmen
 const DoctorAppointments = lazy(() => import('./pages/doctor/doctorappointments'));
 const SlotBooking = lazy(() => import('./pages/patient/slotbooking'));
 const PatientProfile = lazy(() => import('./pages/patient/patientprofile'));
+const Settings = lazy(() => import('./pages/settings'));
 
 function App() {
   return (
@@ -41,6 +43,8 @@ function App() {
         <Route path="/patient/reset" element={<Resetpassword />} />
         <Route path="/doctor/signup" element={<Doctorsignup />} />
         <Route path="/doctor/login" element={<Doctorlogin />} />
+        <Route path="/patient/chat" element={<ChatPage />} />
+        
 
         
 
@@ -49,6 +53,7 @@ function App() {
         <Route path="/doctor/home" element={<DoctorHome />} />
         <Route path="/doctor/appointments" element={<DoctorAppointments />} />
         <Route path='/doctor/timeslots' element={<DoctorTimeSlots/>}/>
+        <Route path='/doctor/settings' element={<Settings/>}/>
         
         </Route>
 
@@ -61,6 +66,7 @@ function App() {
           <Route path="/patient/appointment/:id" element={<SlotBooking />} />
           <Route path="/patient/payments" element={<Payments/>}/>
           <Route path="/patient/:id" element={<AboutDoctor />} />
+          <Route path='/patient/settings' element={<Settings/>}/>
         </Route>
 
          <Route path="/patient/appointment/form" element={<BookingForm/>} />

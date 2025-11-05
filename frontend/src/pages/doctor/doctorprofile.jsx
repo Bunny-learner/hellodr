@@ -188,11 +188,11 @@ export default function DoctorProfile() {
                         <Link to="/doctor/home" className="sidebar-home-link">
                             <FaArrowLeft /> <span>Back to Home</span>
                         </Link>
-                        <Link to="#settings">
+                        <Link to="/doctor/settings">
                             <IoMdSettings />
                             <span>Settings</span>
                         </Link>
-                        <Link to="#help">
+                        <Link to="/doctor/help">
                             <IoMdHelpCircleOutline />
                             <span>Help center</span>
                         </Link>

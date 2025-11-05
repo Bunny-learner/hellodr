@@ -40,6 +40,9 @@ const userSchema = new mongoose.Schema({
         ref: 'Doctor'
     }]
     ,
+    socketid:{
+        type:String
+    },
     resetCode: String,
     resetCodeExpires: Date,
     refreshtoken: {

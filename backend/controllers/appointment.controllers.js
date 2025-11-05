@@ -7,6 +7,7 @@ import { Doctor } from "../models/doctor.js"
 import { TimeSlot } from "../models/timeslot.js"
 import { Transaction } from "../models/transactions.js"
 import mongoose from "mongoose"
+import notificationQueue from '../queue/notification.queue.js';
 
 
 
@@ -15,9 +16,13 @@ import mongoose from "mongoose"
  * @param {string} dateString - The date string in "DD-MM-YYYY" format.
  * @returns {Date} 
  */
-
 const parseDMY = (dateString) => {
-  const [day, month, year] = dateString.split('-').map(Number);
+  
+  const [day, month, year] = dateString.replace(/\//g, '-').split('-').map(Number);
+  if (!day || !month || !year) {
+    throw new Error(`Invalid date format: ${dateString}`);
+  }
+
   return new Date(year, month - 1, day);
 };
 
@@ -30,6 +35,7 @@ const book_appointment = asynchandler(async (req, res) => {
     patientName,
     age, // "19" (string)
     gender,
+    fee,
     email,
     phoneNumber,
     symptoms,
@@ -37,11 +43,11 @@ const book_appointment = asynchandler(async (req, res) => {
   } = req.body;
   
 
-
+  
 
 
   const patientID = req.user._id;
-  const patientEmail = req.user.email; // fallback email
+  const patientEmail = req.user.email; 
 
 
 
@@ -91,14 +97,12 @@ const book_appointment = asynchandler(async (req, res) => {
   if (timeslot.booked >= timeslot.limit) {
     timeslot.status = "full";
     await timeslot.save();
-    console.log("step7")
     res.status(400);
     throw new ApiError("This time slot is fully booked");
   }
 
 
   const appointmentDate = parseDMY(date);
-
 
   const appointment = new Appointment({
     doctor: doctorId,
@@ -109,14 +113,13 @@ const book_appointment = asynchandler(async (req, res) => {
     phone: phoneNumber,
     email: email || patientEmail, 
     date: appointmentDate, 
-    TimeSlot: timeslot[0]._id,
+    TimeSlot: timeslot._id,
     symptoms: symptoms || "Not specified", 
-    mode
+    mode:mode.toLowerCase()
   });
+  
 
   await appointment.save();
-
-  console.log(timeslot.booked,typeof timeslot.booked)
   timeslot.booked += 1;
 
 
@@ -147,35 +150,95 @@ const get_all_appointments = asynchandler(async (req, res) => {
 
     
     const appointments = await Appointment.find({ [userType]: userID })
-        .populate('doctor', 'name speciality fee profilePic') // get doctor info
+        .populate('doctor', 'name speciality fee profilePic address') // get doctor info
         .populate('TimeSlot'); // populate the timeslot details
 
     res.status(200).json(new ApiResponse("Appointments fetched successfully", appointments));
 });
 
 
+
+
 const update_appointment_status = asynchandler(async (req, res) => {
   const { appointmentID, status } = req.body;
-  const { info } = req.query; 
-  console.log("info:", info);
+  const { info } = req.query;
 
   if (!status) {
     res.status(400);
     throw new ApiError("Status is required");
   }
 
-
+  // Good: You are populating the TimeSlot here.
   const appointment = await Appointment.findById(appointmentID).populate("TimeSlot");
+  console.log(appointment)
   if (!appointment) {
     res.status(404);
     throw new ApiError("Appointment not found");
   }
 
-  
   appointment.status = status;
   await appointment.save();
 
-  
+  // NO NEED for this line, data is already in appointment.TimeSlot
+  // const slot=await Timeslot.findOne({_id:appointment.TimeSlot}) 
+
+  if (status.toLowerCase() === "accepted") {
+    
+    // Use the populated time slot data
+    const timeSlot = appointment.TimeSlot;
+
+    if (!timeSlot || !timeSlot.Day || !timeSlot.StartTime) {
+      console.error(`[API] Appointment ${appointment.id} is missing TimeSlot data. Cannot schedule job.`);
+    } else {
+      
+      // --- START: NEW LOGIC ---
+
+      // 1. Construct the full appointment time from the slot's day and time
+      //    (This assumes startTime is a string like "10:00" or "17:30")
+      const [hours, minutes] = timeSlot.StartTime.split(':').map(Number);
+      const appointmentTime = new Date(appointment.date);
+      console.log("appointment time",appointmentTime)
+      
+      // Set the time on the correct date (in the server's local timezone)
+      appointmentTime.setHours(hours, minutes, 0, 0); // H, M, S, MS
+
+      // 2. Check if this appointment is for today
+      const now = new Date();
+      console.log("now",now)
+      const isToday = (appointmentTime.toDateString() === now.toDateString());
+      console.log("istoday->",isToday)
+
+      if (isToday) {
+        // 3. It's today. Calculate delay and schedule.
+        const delay = appointmentTime.getTime() - now.getTime();
+
+        if (delay > 0) {
+          await notificationQueue.add(
+            `notify-job:${appointment.id}`, // Job name
+            {
+              
+              appointmentId: appointment.id,
+              doctorId: appointment.doctor, 
+              patientId: appointment.patient
+            },
+            {
+              delay: delay // Tell BullMQ when to run this job
+            }
+          );
+          console.log(`[API] Job scheduled for appointment ${appointment.id}. Will run in ${delay}ms.`);
+        } else {
+          // It's today but in the past.
+          console.log(`[API] Appointment ${appointment.id} is for today but already in the past. No job scheduled.`);
+        }
+      } else {
+        // 4. It's not today. Do not schedule.
+        console.log(`[API] Appointment ${appointment.id} is for a future date (${appointmentTime.toDateString()}). No job scheduled.`);
+      }
+      // --- END: NEW LOGIC ---
+    }
+  }
+
+  // ... (rest of your logic for Stripe) ...
   if (info) {
     const transaction = await Transaction.findOne({
       appointment: appointmentID,
@@ -187,7 +250,6 @@ const update_appointment_status = asynchandler(async (req, res) => {
         let stripeResult;
 
         if (info === "proceed") {
-          console.log("---------------------------------------------");
           stripeResult = await stripe.paymentIntents.capture(transaction.stripePaymentIntentId);
           transaction.paymentStatus = "paid";
         } else if (info === "cancel") {
@@ -203,9 +265,10 @@ const update_appointment_status = asynchandler(async (req, res) => {
     }
   }
 
- 
+  // ... (rest of your logic for cancellation) ...
   if (status.toLowerCase() === "cancelled") {
     try {
+      // Use the populated ID directly
       const slot = await TimeSlot.findById(appointment.TimeSlot._id);
 
       if (slot) {
@@ -225,13 +288,11 @@ const update_appointment_status = asynchandler(async (req, res) => {
     }
   }
 
-  
   res.status(201).json({
     message: "Appointment status updated successfully",
     appointment,
   });
 });
-
 
 
 
@@ -346,6 +407,6 @@ const gettransactions = asynchandler(async (req, res) => {
 
 const authorize=asynchandler(async(req,res)=>{
   console.log("inside the authorize handler------->::::::")
-  res.status(200).json({message:"User is authenticated",role:req.role})})
+  res.status(200).json({message:"User is authenticated",role:req.role,id:req.userId})})
 
 export { book_appointment,authorize,gettransactions,getsession ,get_all_appointments, update_appointment_status, get_appiontment }

@@ -51,7 +51,7 @@ const doc_signup = asynchandler(async (req, res) => {
 })
 
 const add_timeslot = asynchandler(async (req, res) => {
-    const { Day, StartTime, EndTime, fee,mode } = req.body
+    const { Day, StartTime, EndTime, fee,mode,limit } = req.body
     const doctorID = req.user.id
     if (!Day || !StartTime || !EndTime || !fee) {
         res.status(400)
@@ -63,7 +63,8 @@ const add_timeslot = asynchandler(async (req, res) => {
         StartTime,
         EndTime,
         fee,
-        mode
+        mode,
+        limit:mode.toLowerCase()=="online"?1:limit
     })
     await timeslot.save()
     res.status(201).json(new ApiResponse("Time slot added successfully", timeslot))
@@ -86,6 +87,7 @@ const change_timeslot_status = asynchandler(async (req, res) => {
         res.status(404)
         throw new ApiError("Time slot not found")
     }
+    console.log(status)
     if(status)timeslot.status = status
     if(mode)timeslot.mode = mode
     await timeslot.save()

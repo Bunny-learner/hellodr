@@ -32,7 +32,8 @@
     "slick-carousel": "^1.8.1",
     "socket.io-client": "^4.8.1",
     "stripe": "^19.1.0",
-    "sweetalert2": "^11.26.3"
+    "sweetalert2": "^11.26.3",
+    "swiper": "^12.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",

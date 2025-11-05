@@ -9,7 +9,7 @@ import { useAuth } from '../../pages/AuthContext';
 
 
 export default function doctorlogin() {
-    const { setUser, setIsAuthenticated } = useAuth();
+    const { setUserID, setIsAuthenticated } = useAuth();
      const location = useLocation();
      const [loading,setLoading]=useState(false)
 
@@ -49,7 +49,6 @@ const onSubmit = async (data) => {
       });
       const responseData = await response.json();
       
-     setUser(data.user);
      setIsAuthenticated(true);
       setLoading(false);
 

@@ -193,11 +193,11 @@ const PatientProfile = () => {
                         <Link to="/patient/home" className="sidebar-home-link">
                             <FaArrowLeft /> <span>Back to Home</span>
                         </Link>
-                        <Link href="#settings">
+                        <Link to="/patient/settings">
                             <IoMdSettings />
                             <span>Settings</span>
                         </Link>
-                        <Link href="#help">
+                        <Link to="/patient/help">
                             <IoMdHelpCircleOutline />
                             <span>Help center</span>
                         </Link>

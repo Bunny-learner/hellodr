@@ -1,363 +1,381 @@
-/* Container for the entire section */
-.review-section {
-  margin-top: 1rem;
-  padding-top: 0.5rem;
-  border-top: 1px solid #eee;
+/* src/css/patientappointments.css */
+
+/* ======================================= */
+/* === BASE & PAGE LAYOUT === */
+/* ======================================= */
+.pa-page-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    font-family: 'Inter', sans-serif;
+    color: #333;
 }
 
-.beauty{
-  width: 100%;
-  display: flex;
-  justify-content: center;
+.pa-header {
+    margin-bottom: 1rem; /* Reduced margin */
 }
 
-.cancelled{
-  background-color: rgb(236, 116, 116);
+.pa-header h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 1rem;
 }
 
-.no {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 150px;
-  padding: 20px;
-  max-width: 400px;
-  border: 2px dashed #87cefa; /* sky-blue dashed border */
-  border-radius: 12px;
-  text-align: center;
-  color: #4682b4; /* steel blue text */
-  font-size: 1.1rem;
-  font-weight: 500;
-  background: #f0f8ff; /* very light blue background */
+/* ======================================= */
+/* === STATUS FILTER CHIPS (TABS) === */
+/* ======================================= */
+.pa-filter-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    border-bottom: 2px solid #e2e8f0;
 }
 
-.no::before {
-  content: "ℹ️"; /* info emoji or icon */
-  font-size: 2rem;
-  margin-bottom: 10px;
-  display: block;
+.pa-chip {
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #4a5568;
+    background-color: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: -2px; /* Pulls chip down to overlap border */
 }
 
-
-
-/* Container for rating input */
-.rating-input {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1rem;
-  font-size: 1rem;
-  gap: 8px;
+.pa-chip:hover {
+    color: #1a202c;
+    background-color: #f8f9fa;
 }
 
-/* Star icon */
-.rating-input span {
-  color: #f5c518; /* Gold star */
-  font-size: 1.2rem;
+.pa-chip.active {
+    color: #007bff;
+    border-bottom-color: #007bff;
 }
 
-/* Number input field */
-.rating-input input[type="number"] {
-  width: 50px;
-  padding: 0.2rem 0.4rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
-}
-.rating-stars {
-  display: flex;
-  gap: 5px;
-  cursor: pointer;
+/* ======================================= */
+/* === NEW: MODE FILTERS === */
+/* ======================================= */
+.pa-mode-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 0;
+    margin-bottom: 1rem;
 }
 
-.rating-stars span {
-  font-size: 1.5rem;
-  color: #ccc;
-  transition: color 0.2s;
+.pa-filter-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #495057;
+    margin-right: 0.5rem;
 }
 
-.rating-stars span:hover,
-.rating-stars span.active {
-  color: #f5c518; /* Gold on hover/active */
+.pa-mode-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    border: 1px solid #ced4da;
+    background-color: #fff;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-.review-textarea {
-  min-height: 80px;
-  border-radius: 8px;
-  border: 1.5px solid #349ce3;
-  padding: 0.6rem;
-  font-size: 0.9rem;
-  resize: vertical;
-  margin-bottom: 0.6rem;
-  transition: border-color 0.2s ease;
+.pa-mode-chip:hover {
+    background-color: #f8f9fa;
+    border-color: #adb5bd;
 }
 
-.review-textarea:focus {
-  outline: none;
-  border-color: #0057b8;
+.pa-mode-chip.active {
+    color: #fff;
+    border-color: #5a67d8; /* Purple-ish */
+    background-color: #5a67d8;
 }
 
-.submit-review-btn {
-  background: linear-gradient(135deg, #1e90ff, #0057b8);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 0.4rem 0.9rem;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
+/* =Ff mode-specific active colors were needed */
+/* .pa-mode-chip.active[onClick*="offline"] { ... } */
+/* .pa-mode-chip.active[onClick*="online"] { ... } */
+
+
+/* ======================================= */
+/* === APPOINTMENTS GRID === */
+/* ======================================= */
+.pa-appointments-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
 }
 
-.submit-review-btn:hover {
-  background: linear-gradient(135deg, #0057b8, #0041a3);
-  transform: translateY(-2px);
+.pa-no-appointments {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #718096;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 500;
 }
 
-/* When modal is open, blur the background */
-.pcontent-section {
-  position: relative;
-  transition: filter 0.3s ease;
+/* ======================================= */
+/* === APPOINTMENT CARDS (BASE) === */
+/* ======================================= */
+.pa-card {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: all 0.2s ease;
 }
 
-.pcontent-section.blur {
-  filter: blur(4px);
-  pointer-events: none;
+.pa-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.05);
 }
 
-/* Overlay */
-.review-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(10, 10, 10, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  backdrop-filter: blur(4px);
+.pa-card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #f1f5f9;
 }
 
-/* Modal box */
-.review-modal {
-  background: #fff;
-  border-radius: 12px;
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  align-content: center;
-  width: 90%;
-  max-width: 480px;
-  position: relative;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  animation: popIn 0.25s ease;
+.pa-doctor-image {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #f1f5f9;
 }
 
-/* Close button */
-.close-modal-btn {
-  position: absolute;
-  top: 10px;
-  right: 14px;
-  font-size: 1.5rem;
-  background: transparent;
-  border: none;
-  color: #333;
-  cursor: pointer;
+.pa-doctor-info {
+    flex-grow: 1;
+}
+.pa-doctor-info h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2d3748;
+}
+.pa-doctor-info span {
+    font-size: 0.9rem;
+    color: #718096;
 }
 
-.add-review-btn {
-  background: linear-gradient(135deg, #1e90ff, #0057b8);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 0.4rem 0.9rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
+.pa-card-body {
+    padding: 1.25rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
-.add-review-btn:hover {
-  transform: translateY(-2px);
-  background: linear-gradient(135deg, #0057b8, #0041a3);
+.pa-card-detail {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+    color: #4a5568;
+}
+.pa-card-detail svg {
+    color: #718096;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+.pa-card-body p {
+    margin: 0.5rem 0 0;
+    color: #4a5568;
+    font-size: 0.9rem;
+    line-height: 1.5;
 }
 
-/* Animation */
-@keyframes popIn {
-  from {
-    transform: scale(0.9);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
+.pa-card-footer {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    background-color: #f8f9fa;
+    border-top: 1px solid #f1f5f9;
 }
 
-.pcontent-section {
-  padding: 25px;
-  background-color: #eef6fb; /* soft light blue background */
-  min-height: 100vh;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+/* ======================================= */
+/* === CARD MODIFIERS === */
+/* ======================================= */
+
+/* --- Status Badges --- */
+.pa-status-badge {
+    padding: 0.25rem 0.6rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+.status-pending { background-color: #fefcbf; color: #b7791f; }
+.status-accepted { background-color: #ebf8ff; color: #2b6cb0; }
+.status-completed { background-color: #f0fff4; color: #2f855a; }
+.status-cancelled, .status-rejected { background-color: #fff5f5; color: #c53030; }
+
+/* --- Today Card Tags --- */
+.pa-card-tag-online,
+.pa-card-tag-offline {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+.pa-card-tag-online { background-color: #e6fffa; color: #2c7a7b; }
+.pa-card-tag-offline { background-color: #e9d8fd; color: #5a3e8d; }
+
+/* --- Today Card Specifics --- */
+.today-card {
+    border-left: 4px solid #007bff;
 }
 
-
-.choices{
-  display: flex;
-  align-items: center;
+/* ======================================= */
+/* === BUTTONS === */
+/* ======================================= */
+.pa-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.6rem 1rem;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex: 1;
 }
 
-.choice {
-  background: #f8faff;
-  border: 2px solid #349ce3;
-  color: #349ce3;
-  border-radius: 10px;
-  padding: 0.5rem 1.1rem;
-  font-size: 0.95rem;
-  cursor: pointer;
-  flex: 0 0 auto;
-  transition: all 0.25s ease;
-  font-weight: 500;
-  box-shadow: 0 0 0 transparent;
+.pa-btn-primary {
+    background-color: #007bff;
+    color: #fff;
+}
+.pa-btn-primary:hover {
+    background-color: #0056b3;
 }
 
-.choice:hover {
-  background: #349ce3;
-  color: #fff;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(52, 156, 227, 0.3);
+.pa-btn-secondary {
+    background-color: #fff;
+    color: #4a5568;
+    border-color: #ced4da;
+}
+.pa-btn-secondary:hover {
+    background-color: #f8f9fa;
+    border-color: #adb5bd;
 }
 
-.choice:active {
-  transform: scale(0.97);
+/* ======================================= */
+/* === REVIEW MODAL === */
+/* ======================================= */
+.pa-review-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
 }
 
-/* Active (selected) button style */
-.act {
-  background: linear-gradient(135deg, #1e90ff, #0057b8);
-  color: #fff;
-  border: 2px solid #0057b8;
-  box-shadow: 0 4px 12px rgba(0, 87, 184, 0.4);
-  transform: translateY(-2px);
+.pa-review-modal {
+    background: #fff;
+    border-radius: 12px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
-.choices {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+.pa-review-modal h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #2d3748;
+    text-align: center;
 }
 
-
-/* Section header */
-.section-header h3 ,.hehe{
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 25px;
-  color: #1a73e8; /* richer blue */
-  border-left: 5px solid #1a73e8;
-  padding-left: 10px;
+.pa-close-modal-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: transparent;
+    border: none;
+    font-size: 1.75rem;
+    color: #adb5bd;
+    cursor: pointer;
+    line-height: 1;
+}
+.pa-close-modal-btn:hover {
+    color: #4a5568;
 }
 
-/* Appointments grid */
-.appointments-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 22px;
+.pa-rating-input {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+}
+.pa-rating-input label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #4a5568;
+}
+.pa-star-rating {
+    display: flex;
+    gap: 0.25rem;
+}
+.pa-star-rating svg {
+    font-size: 1.75rem;
+    color: #e2e8f0;
+    cursor: pointer;
+    transition: all 0.1s;
+}
+.pa-star-rating svg.filled {
+    color: #f59e0b; /* Amber/Yellow */
 }
 
-/* Single appointment card */
-.appointment-card {
-  background-color: #ffffff;
-  border-radius: 16px;
-  padding: 20px;
-  box-shadow: 0 6px 15px rgba(26, 115, 232, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+.pa-review-textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 0.75rem 1rem;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem;
+    resize: vertical;
+}
+.pa-review-textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px #007bff33;
 }
 
-.appointment-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 25px rgba(26, 115, 232, 0.15);
-}
-
-/* Appointment header with image and doctor info */
-.appointment-header {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  margin-bottom: 12px;
-}
-
-.doctor-image {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #1a73e8;
-  box-shadow: 0 2px 8px rgba(26, 115, 232, 0.2);
-}
-
-.doctor-info h4 {
-  margin: 0;
-  font-size: 19px;
-  font-weight: 600;
-  color: #0b3c91;
-}
-
-.status {
-  font-size: 13px;
-  font-weight: 500;
-  padding: 4px 10px;
-  border-radius: 14px;
-  text-transform: capitalize;
-  margin-top: 5px;
-  display: inline-block;
-  font-family: 'Segoe UI', sans-serif;
-  letter-spacing: 0.5px;
-}
-
-/* Status colors */
-.status.pending {
-  background-color: #dbe9ff;
-  color: #1a73e8;
-}
-
-.doctor-info{
-
-  display: flex;
-  justify-content: space-around;
-}
-
-.status.completed {
-  background-color: #d0f0fd;
-  color: #0b8457;
-}
-
-.status.rejected {
-  background-color: rgb(184, 41, 41);
-  color:white;
-}
-
-.status.accepted {
-  background-color: #349ce3;
-  color: white;
-}
-
-/* Appointment details */
-.appointment-card p {
-  margin: 6px 0;
-  font-size: 15px;
-  color: #333333;
-}
-
-.appointment-card strong {
-  color: #1a73e8;
-}
-
-/* No appointments message */
-.no-appointments {
-  text-align: center;
-  margin-top: 60px;
-  font-size: 20px;
-  color: #5b8bd5;
-  font-weight: 500;
+/* Modal submit button */
+.pa-review-modal .pa-btn-primary {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
 }

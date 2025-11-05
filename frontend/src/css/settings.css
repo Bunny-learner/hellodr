@@ -1,0 +1,243 @@
+/* --- Base Layout & Scoped Variables --- */
+/* All styles are nested under .settings-page */
+.settings-page {
+  /* Scoped CSS variables - will not affect other components */
+  --sp-primary-color: #0d6efd; /* Calming, professional blue */
+  --sp-primary-hover: #0b5ed7;
+  --sp-danger-color: #d92d20;
+  --sp-danger-bg: #fff0f0;
+  --sp-danger-border: #f9c5c5;
+  --sp-bg-page: #f8f9fa; /* Lighter page background */
+  --sp-bg-section: #ffffff;
+  --sp-text-primary: #212529;
+  --sp-text-secondary: #6c757d;
+  --sp-border-color: #dee2e6;
+  --sp-radius-md: 8px;
+  --sp-radius-lg: 12px;
+  --sp-shadow-sm: 0 2px 4px rgba(0,0,0,0.04);
+
+  /* Base styles for the component */
+  font-family: 'system-ui', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  color: var(--sp-text-primary);
+  background-color: var(--sp-bg-page);
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+@media (min-width: 768px) {
+  .settings-page {
+    padding: 2rem;
+  }
+}
+
+/* --- Section Styling --- */
+.settings-page .settings-section {
+  background-color: var(--sp-bg-section);
+  border-radius: var(--sp-radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  border: 1px solid var(--sp-border-color);
+  box-shadow: var(--sp-shadow-sm);
+}
+
+@media (min-width: 768px) {
+  .settings-page .settings-section {
+    padding: 2rem;
+  }
+}
+
+/* Scoped H3 */
+.settings-page h3 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--sp-border-color);
+  padding-bottom: 1rem;
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: var(--sp-text-primary);
+}
+
+/* --- Item Layouts (Row & Column) --- */
+.settings-page .setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+.settings-page .setting-item:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.settings-page .setting-item-col,
+.settings-page .setting-item-col-danger {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+}
+.settings-page .setting-item-col {
+  border-bottom: 1px solid #f0f0f0;
+}
+.settings-page .setting-item-col:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.settings-page .setting-item-col-danger {
+  gap: 1rem;
+}
+
+/* --- Form Element Styling --- */
+.settings-page .setting-label {
+  font-weight: 500;
+  font-size: 1rem;
+  color: var(--sp-text-primary);
+  margin-right: auto; /* Push button to the right */
+}
+
+.settings-page .setting-value {
+  color: var(--sp-text-secondary);
+  font-size: 0.95rem;
+  margin-right: 1rem;
+}
+
+/* Scoped Paragraphs */
+.settings-page p {
+  margin-top: -0.25rem;
+  margin-bottom: 0.75rem;
+  color: var(--sp-text-secondary);
+  font-size: 0.9rem;
+}
+
+.settings-page .radio-group,
+.settings-page .checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Scoped Labels */
+.settings-page .radio-group label,
+.settings-page .checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* More space for a cleaner look */
+  cursor: pointer;
+  color: var(--sp-text-primary);
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+/* Scoped Inputs */
+.settings-page input[type="radio"],
+.settings-page input[type="checkbox"] {
+  accent-color: var(--sp-primary-color); /* Modern way to style */
+  width: 1.15em;
+  height: 1.15em;
+  margin: 0;
+}
+
+/* --- Scoped Button Styling --- */
+/* This ensures *only* buttons inside .settings-page are styled */
+.settings-page button {
+  padding: 0.65rem 1.25rem;
+  border: none;
+  border-radius: var(--sp-radius-md);
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.5;
+  transition: all 0.2s ease;
+}
+
+.settings-page .btn-primary {
+  background-color: var(--sp-primary-color);
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 117, 255, 0.2);
+}
+.settings-page .btn-primary:hover {
+  background-color: var(--sp-primary-hover);
+  box-shadow: 0 4px 10px rgba(0, 117, 255, 0.25);
+}
+
+.settings-page .btn-secondary {
+  background-color: #f8f9fa;
+  color: var(--sp-text-primary);
+  border: 1px solid var(--sp-border-color);
+}
+.settings-page .btn-secondary:hover {
+  background-color: #f0f2f5;
+}
+
+.settings-page .btn-danger {
+  background-color: var(--sp-danger-bg);
+  color: var(--sp-danger-color);
+  border: 1px solid var(--sp-danger-border);
+}
+.settings-page .btn-danger:hover {
+  background-color: var(--sp-danger-color);
+  color: white;
+}
+
+.settings-page .btn-full {
+  width: 100%;
+}
+@media (min-width: 768px) {
+  .settings-page .btn-full {
+    width: auto;
+    max-width: 250px;
+  }
+}
+
+.settings-page .settings-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--sp-border-color);
+}
+
+/* --- Scoped Modern Toggle Switch --- */
+.settings-page .toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 28px;
+}
+.settings-page .toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.settings-page .toggle-switch label { /* The track */
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  border-radius: 34px;
+  transition: 0.3s;
+}
+.settings-page .toggle-switch label:before { /* The thumb */
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+.settings-page .toggle-switch input:checked + label {
+  background-color: var(--sp-primary-color);
+}
+.settings-page .toggle-switch input:checked + label:before {
+  transform: translateX(22px);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}

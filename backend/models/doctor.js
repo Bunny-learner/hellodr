@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { v4 as uuidv4 } from "uuid";
+
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -68,6 +70,13 @@ const userSchema = new mongoose.Schema({
         type:[String],
         default:["Hindi"]
     },
+    roomid:{
+        type:String,
+        required:true
+    },
+    sid:{
+        type:String
+    },
     refreshtoken: {
         type: String,
         default: null
@@ -77,11 +86,13 @@ const userSchema = new mongoose.Schema({
 userSchema.pre("save",async function (next) {
     if(this.isModified("password")){
         this.password=await bcrypt.hash(this.password,10)
-        next()
+    
     }
-    else{
-        next()
+  if (!this.roomid) {
+      this.roomid = uuidv4(); 
     }
+
+    next()
 })
 
 userSchema.methods.isPasswordCorrect=function(passwd){
