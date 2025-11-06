@@ -23,8 +23,10 @@ const worker = new Worker(
             type: 'APPOINTMENT_START',
             data: { 
                 appointmentId: appointmentId,
-                message: "Paitent Please be ready ,Your Consultation will start within few minutes.",
-                patient:patientId
+                message: "Patient Please be ready ,Your Consultation will start within few minutes.",
+                doctorid:doctorId,
+                isappointment:true,
+                from:"system"
             }
         });
 
@@ -32,7 +34,10 @@ const worker = new Worker(
             type: 'APPOINTMENT_START',
             data: { 
                 appointmentId: appointmentId,
-                message: "Doctor Please be ready, your Consulation will start within few minutes." 
+                patientid:patientId,
+                message: "Doctor Please be ready, your Consulation will start within few minutes.",
+                isappointment:true,
+                from:"system"
             }
         });
 

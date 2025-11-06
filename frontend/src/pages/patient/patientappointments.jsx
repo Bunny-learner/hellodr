@@ -1,13 +1,15 @@
 // src/components/PatientAppointments.jsx
-import React, { useState, useEffect } from 'react';
-import "../../css/patientappointments.css"; // We will use the new CSS
+import React, { useState, useEffect, useContext } from 'react'; // Added useContext
+import "../../css/patientappointments.css"; 
 import toast from 'react-hot-toast';
-import HeartLoader from '../../components/Loaders/heartloader'; // Using HeartLoader as in your code
+import HeartLoader from '../../components/Loaders/heartloader'; 
 import { useNavigate } from 'react-router-dom';
+import { useSocket } from "../../pages/SocketContext.jsx";
 import { 
     FiCalendar, FiClock, FiMapPin, FiVideo, FiStar, 
     FiMessageSquare, FiWifi, FiHome 
 } from 'react-icons/fi';
+import { PatientContext } from './patientcontext'; // --- IMPORTED CONTEXT ---
 
 // --- Helper Functions (No Change) ---
 const getTodayString = () => {
@@ -28,7 +30,9 @@ const formatTime = (timeString) => {
     return `${standardHours}:${minutes} ${ampm}`;
 };
 
-// --- Card Components (No Change) ---
+
+// --- UPDATED TodayOnlineCard ---
+// Changed onJoin(app._id) to onJoin(app)
 const TodayOnlineCard = ({ app, onJoin }) => (
     <div className="pa-card today-card today-online">
         <div className="pa-card-header">
@@ -41,14 +45,16 @@ const TodayOnlineCard = ({ app, onJoin }) => (
         </div>
         <div className="pa-card-body">
             <div className="pa-card-detail"><FiClock /><span>{formatTime(app.TimeSlot?.StartTime)} - {formatTime(app.TimeSlot?.EndTime)}</span></div>
-            <div className="pa-card-detail"><FiVideo /><span>Video Consultation</span></div>
         </div>
         <div className="pa-card-footer">
-            <button className="pa-btn pa-btn-primary" onClick={() => onJoin(app._id)}>Join Call</button>
-            <button className="pa-btn pa-btn-secondary"><FiMessageSquare /> Chat</button>
+            {/* --- THIS IS THE FIX: Pass the whole 'app' object --- */}
+            <button className="pa-btn pa-btn-primary" onClick={() => onJoin(app)}><FiMessageSquare />Join Chat</button>
+            <button className="pa-btn pa-btn-secondary"><FiVideo /> VideoCall</button>
         </div>
     </div>
 );
+
+// --- TodayOfflineCard (No Change) ---
 const TodayOfflineCard = ({ app }) => (
     <div className="pa-card today-card today-offline">
         <div className="pa-card-header">
@@ -68,6 +74,8 @@ const TodayOfflineCard = ({ app }) => (
         </div>
     </div>
 );
+
+// --- AppointmentCard (No Change) ---
 const AppointmentCard = ({ app }) => (
     <div className="pa-card status-card">
         <div className="pa-card-header">
@@ -86,6 +94,8 @@ const AppointmentCard = ({ app }) => (
         </div>
     </div>
 );
+
+// --- PastAppointmentCard (No Change) ---
 const PastAppointmentCard = ({ app, onAddReview }) => (
     <div className="pa-card status-card">
         <div className="pa-card-header">
@@ -113,9 +123,12 @@ const PastAppointmentCard = ({ app, onAddReview }) => (
 
 export default function PatientAppointments() {
     const [loading, setLoading] = useState(false);
-    const [page, setPage] = useState('today'); // Default to 'today'
-    const [modeFilter, setModeFilter] = useState('all'); // NEW: Mode filter state
+    const [page, setPage] = useState('today'); 
+    const [modeFilter, setModeFilter] = useState('all'); 
     const navigate = useNavigate();
+     const {socketId, socket}=useSocket()
+    // --- ACCESSED CONTEXT ---
+    const { doctors } = useContext(PatientContext); 
 
     // Store appointments by category
     const [todayAppointments, setTodayAppointments] = useState([]);
@@ -130,6 +143,7 @@ export default function PatientAppointments() {
     const [reviewRating, setReviewRating] = useState(5);
     const [reviewText, setReviewText] = useState("");
 
+    // --- fetchAppointments (No Change) ---
     useEffect(() => {
         const fetchAppointments = async () => {
             try {
@@ -219,13 +233,42 @@ export default function PatientAppointments() {
         }
     };
 
-    const handleJoinCall = (appId) => {
-        toast.success("Joining call...");
-        // navigate(`/patient/consultation/${appId}`);
+    // --- UPDATED handleJoinCall ---
+    // Now uses the context to find the roomid
+    const handleJoinCall = (appointment) => {
+
+
+       
+        if (!doctors || doctors.length === 0) {
+            toast.error("Doctor list not available. Please refresh the page.");
+            return;
+        }
+
+        // Get the doctor's ID from the appointment object
+        const doctorId = appointment.doctor._id; 
+        
+        // Find the full doctor profile from the context list
+        const fullDoctorProfile = doctors.find(doc => doc._id === doctorId);
+
+        if (!fullDoctorProfile) {
+            toast.error("Could not find complete doctor details.");
+            return;
+        }
+
+        if (!fullDoctorProfile.roomid) {
+            toast.error("This doctor's chat room is not available.");
+            return;
+        }
+        
+        socket.emit("join_room",{
+            roomid:fullDoctorProfile.roomid
+        })
+        toast.success("Joining the room...");
+        navigate(`/chat/${fullDoctorProfile.roomid}?consultationId=${appointment._id}`);
     };
 
-    // --- Render Logic (UPDATED) ---
 
+    // --- renderPageContent (No Change) ---
     const renderPageContent = () => {
         if (loading) return <HeartLoader />;
 
@@ -293,6 +336,7 @@ export default function PatientAppointments() {
         }
     };
 
+    // --- Return JSX (No Change) ---
     return (
         <section className="pa-page-container">
             <div className="pa-header">
@@ -349,7 +393,7 @@ export default function PatientAppointments() {
                             className="pa-review-textarea"
                             placeholder="Write your review here..."
                             value={reviewText}
-                            onChange={(e) => setReviewText(e.target.value)}
+                            onChange={(e) => setReviewText(e.default-doctor.png)}
                         ></textarea>
 
                         <button className="pa-btn pa-btn-primary" onClick={submitReview}>

@@ -1,3 +1,7 @@
+import mongoose,{Schema} from 'mongoose';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+
 const notificationSchema = new Schema({
   patientid: {
     type: Schema.Types.ObjectId,
@@ -15,10 +19,14 @@ const notificationSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Order'
   },
-  isdoctor: {
-    type: Boolean,
-    default: false
-  },
+ from:{
+  type:String,
+  required:true
+ },
+ to:{
+  type:String,
+  required:true
+ },
   message: {
     type: String,
     required: true
@@ -39,4 +47,4 @@ const notificationSchema = new Schema({
   timestamps: true
 });
 
-const Notification = mongoose.model('Notification', notificationSchema);
+export const Notification = mongoose.model('Notification', notificationSchema);

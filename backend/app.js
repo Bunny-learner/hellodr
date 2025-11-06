@@ -27,6 +27,7 @@ import face_auth from "./Routes/facebook_auth.js"
 import appointment from "./Routes/appointment.route.js"
 import authorizer from "./Routes/authorizer.js";
 import doctorSocketHandler from "./sockets/doctor.sockets.js";
+import notify from "./Routes/notification.js";
 import patientSocketHandler from "./sockets/patient.sockets.js";
 
 
@@ -50,9 +51,8 @@ createBullBoard({
   queues: [new BullMQAdapter(notificationQueue)],
   serverAdapter,
 });
-app.use('/admin/queues', serverAdapter.getRouter()); // <-- Matching path
+app.use('/admin/queues', serverAdapter.getRouter()); 
 
-// Auth Middleware
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "supersecretkey",
@@ -69,6 +69,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // API Routes
+app.use('/',notify)
 app.use('/doctor',doctor);
 app.use('/patient',patient);
 app.use('/auth/google',google_auth)
@@ -76,10 +77,11 @@ app.use('/auth/faceboook',face_auth)
 app.use('/appointment',appointment)
 app.use('/verify',authorizer)
 
-// Server Setup
+
+
 const server = createServer(app)
 
-// Socket.IO Setup
+
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:5173",
@@ -90,12 +92,12 @@ const io = new Server(server, {
 
 const userConnections = new Map();
 
-// --- FIX #2: Added Redis Error Handler ---
+
 redisSub.on('error', (err) => {
     console.error('[RedisSub Error]', err);
 });
 
-// Global Redis Listener (This is correct)
+
 redisSub.on('message', (channel, message) => {
     console.log(`[Redis] Message on channel ${channel}:`, message);
     const userId = channel.split(':')[1];

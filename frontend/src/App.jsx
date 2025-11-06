@@ -14,6 +14,7 @@ import PatientLayout from './pages/patient/patientlayout';
 import DoctorLayout from './pages/doctor/doctorlayout'
 import Success from './pages/patient/sucess'
 import Failure from './pages/patient/failure'
+import Notification from './pages/notifications';
 import ChatPage from './pages/chatpage';
 
 
@@ -43,7 +44,7 @@ function App() {
         <Route path="/patient/reset" element={<Resetpassword />} />
         <Route path="/doctor/signup" element={<Doctorsignup />} />
         <Route path="/doctor/login" element={<Doctorlogin />} />
-        <Route path="/patient/chat" element={<ChatPage />} />
+        <Route path="/chat/:roomid" element={<ChatPage />} />
         
 
         
@@ -54,6 +55,7 @@ function App() {
         <Route path="/doctor/appointments" element={<DoctorAppointments />} />
         <Route path='/doctor/timeslots' element={<DoctorTimeSlots/>}/>
         <Route path='/doctor/settings' element={<Settings/>}/>
+        <Route path="/doctor/notifications" element={<Notification/>}/>
         
         </Route>
 
@@ -67,6 +69,7 @@ function App() {
           <Route path="/patient/payments" element={<Payments/>}/>
           <Route path="/patient/:id" element={<AboutDoctor />} />
           <Route path='/patient/settings' element={<Settings/>}/>
+          <Route path="/patient/notifications" element={<Notification/>}/>
         </Route>
 
          <Route path="/patient/appointment/form" element={<BookingForm/>} />

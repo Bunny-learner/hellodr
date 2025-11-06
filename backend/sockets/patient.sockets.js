@@ -1,42 +1,84 @@
 import { Patient } from "../models/patient.js";
+import { Notification } from "../models/notification.js";
 
 export default async function patientSocketHandler(io, socket, id, userConnections, redisSub) {
-  console.log(`👨 patient connected: ${socket.id} (User ID: ${id})`);
+  console.log(`👨 Patient connected: ${socket.id} (User ID: ${id})`);
 
   userConnections.set(id, socket);
 
-  // 2. Subscribe to their *private* channel
   const userChannel = `user:${id}`;
-  redisSub.subscribe(userChannel, (err, count) => {
-    if (err) {
-      console.error(`[Redis] Failed to subscribe ${id}:`, err);
-      return;
+
+
+  const handleRedisMessage = async (channel, message) => {
+    try {
+      const parsed = JSON.parse(message);
+      console.log(`[Redis] Message received on ${channel}:`, parsed.data);
+
+      const userId = channel.split(":")[1];
+      const userSocket = userConnections.get(userId);
+
+      const notif = new Notification({
+        patientid: userId,
+        doctorid: parsed.data.doctorid,
+        appointmentid: parsed.appointmentid,
+        orderid: parsed.orderid,
+        message: parsed.data.message,
+        from: parsed.data.from,
+        to: "patient",
+        isappointment: parsed.isappointment || false,
+      });
+
+      await notif.save();
+      console.log(`💾 Notification saved for patient ${userId}`);
+
+      if (userSocket) {
+        userSocket.emit("notification", { msg: "got notification for patient" });
+        console.log(`📩 Sent notification to patient ${userId}`);
+      } else {
+        console.log(`⚠️ No active socket for patient ${userId}`);
+      }
+    } catch (err) {
+      console.error("[Redis] Failed to handle message:", err);
     }
-    console.log(`[Redis] Subscribed ${id} to ${userChannel}.`);
+  };
+
+  
+  redisSub.off("message", handleRedisMessage);
+
+
+  redisSub.subscribe(userChannel, (err) => {
+    if (err) console.error(`[Redis] Failed to subscribe ${id}:`, err);
+    else console.log(`[Redis] Subscribed ${id} to ${userChannel}.`);
   });
 
+  redisSub.on("message", handleRedisMessage);
 
- const pat = await Patient.findById(id);
+  
+  const pat = await Patient.findById(id);
+  if (!pat) return console.log("Patient not found in DB");
 
-    if (!pat) {
-      console.log("❌ Patient not found in DB");
-      return;
+  pat.socketid = socket.id;
+  await pat.save();
+  console.log(`Socket ID saved for patient: ${pat._id}`);
+
+  
+  socket.on("join_room", ({ roomid }) => {
+    if (roomid) {
+      socket.join(roomid);
+      console.log(`Socket ${socket.id} joined room ${roomid}`);
     }
+  });
 
-   
-    pat.socketid = socket.id;
-    await pat.save();
-    console.log(`✅ Socket ID saved for patient: ${pat._id}`);
+  socket.on("msg_frompat", ({ msg, roomid }) => {
+    console.log("patient sent:", msg, roomid);
+    socket.to(roomid).emit("send_todoc", msg);
+  });
 
-   
-  // 3. Clean up on disconnect
   socket.on("disconnect", () => {
     console.log(`[Handler] Patient ${id} disconnected: ${socket.id}`);
 
-    // Unsubscribe from their private channel
     redisSub.unsubscribe(userChannel);
-
-    // Remove them from the Map
+    redisSub.off("message", handleRedisMessage); // clean up
     userConnections.delete(id);
 
     console.log(`[Redis] Unsubscribed ${id} from ${userChannel}.`);

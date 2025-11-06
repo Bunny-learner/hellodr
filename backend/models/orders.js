@@ -1,3 +1,7 @@
+import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+
 const orderSchema = new Schema({
   patientid: {
     type: Schema.Types.ObjectId,

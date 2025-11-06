@@ -8,6 +8,9 @@ import { TimeSlot } from "../models/timeslot.js"
 import { Transaction } from "../models/transactions.js"
 import mongoose from "mongoose"
 import notificationQueue from '../queue/notification.queue.js';
+import { redisPub } from '../db/redisconnect.js';
+import doctorSocketHandler from "../sockets/doctor.sockets.js";
+
 
 
 
@@ -17,7 +20,7 @@ import notificationQueue from '../queue/notification.queue.js';
  * @returns {Date} 
  */
 const parseDMY = (dateString) => {
-  
+
   const [day, month, year] = dateString.replace(/\//g, '-').split('-').map(Number);
   if (!day || !month || !year) {
     throw new Error(`Invalid date format: ${dateString}`);
@@ -41,13 +44,13 @@ const book_appointment = asynchandler(async (req, res) => {
     symptoms,
     mode
   } = req.body;
-  
 
-  
+
+
 
 
   const patientID = req.user._id;
-  const patientEmail = req.user.email; 
+  const patientEmail = req.user.email;
 
 
 
@@ -76,7 +79,7 @@ const book_appointment = asynchandler(async (req, res) => {
   const timeslot = await TimeSlot.findOne({
     doctor: doctorId,
     Day: dayName,
-    fee:fee,
+    fee: fee,
     StartTime: timeSlot,
   });
   console.log("🧩 Found timeslot:", timeslot);
@@ -92,7 +95,7 @@ const book_appointment = asynchandler(async (req, res) => {
   }
 
   if (typeof timeslot.booked !== "number") timeslot.booked = 0;
-  if (typeof timeslot.limit !== "number") timeslot.limit = 1; 
+  if (typeof timeslot.limit !== "number") timeslot.limit = 1;
 
   if (timeslot.booked >= timeslot.limit) {
     timeslot.status = "full";
@@ -111,13 +114,13 @@ const book_appointment = asynchandler(async (req, res) => {
     age: Number(age),
     gender,
     phone: phoneNumber,
-    email: email || patientEmail, 
-    date: appointmentDate, 
+    email: email || patientEmail,
+    date: appointmentDate,
     TimeSlot: timeslot._id,
-    symptoms: symptoms || "Not specified", 
-    mode:mode.toLowerCase()
+    symptoms: symptoms || "Not specified",
+    mode: mode.toLowerCase()
   });
-  
+
 
   await appointment.save();
   timeslot.booked += 1;
@@ -125,7 +128,7 @@ const book_appointment = asynchandler(async (req, res) => {
 
   if (timeslot.booked >= timeslot.limit) {
     timeslot.status = "full";
-  } 
+  }
 
   await timeslot.save();
 
@@ -133,10 +136,21 @@ const book_appointment = asynchandler(async (req, res) => {
   const populatedAppointment = await Appointment.findById(appointment._id)
     .populate("TimeSlot");
 
-  console.log("populated appointment:", populatedAppointment);
 
+
+   
+
+   redisPub.publish(`user:${appointment.doctor}`, JSON.stringify({
+            data: {
+             message :`Patient ${appointment.name} (${gender}, ${age} years old) has booked an ${mode.toLowerCase()} appointment on ${appointmentDate} at ${timeslot._id}.`,
+             doctorid: appointment.doctor,
+            appointmentid: appointment.id,
+               isappointment: true,
+              from: "doctor",
+            }
+          }));
   res.status(201).json({
-    message: "Appointment booked successfully",
+    sucess:true,
     appointment: populatedAppointment,
   });
 });
@@ -145,15 +159,15 @@ const book_appointment = asynchandler(async (req, res) => {
 
 
 const get_all_appointments = asynchandler(async (req, res) => {
-    const userID = req.user.id;
-    const userType = req.userType;
+  const userID = req.user.id;
+  const userType = req.userType;
 
-    
-    const appointments = await Appointment.find({ [userType]: userID })
-        .populate('doctor', 'name speciality fee profilePic address') // get doctor info
-        .populate('TimeSlot'); // populate the timeslot details
 
-    res.status(200).json(new ApiResponse("Appointments fetched successfully", appointments));
+  const appointments = await Appointment.find({ [userType]: userID })
+    .populate('doctor', 'name speciality fee profilePic address roomid') // get doctor info
+    .populate('TimeSlot'); // populate the timeslot details
+
+  res.status(200).json(new ApiResponse("Appointments fetched successfully", appointments));
 });
 
 
@@ -179,34 +193,41 @@ const update_appointment_status = asynchandler(async (req, res) => {
   appointment.status = status;
   await appointment.save();
 
-  // NO NEED for this line, data is already in appointment.TimeSlot
-  // const slot=await Timeslot.findOne({_id:appointment.TimeSlot}) 
+  
+
+   redisPub.publish(`user:${appointment.patient}`, JSON.stringify({
+            data: {
+              message: `Your doctor appointment status is ${status}`,
+              doctorid: appointment.doctor,
+              appointmentid: appointment.id,
+              isappointment: true,
+              from: "doctor",
+            }
+          }));
 
   if (status.toLowerCase() === "accepted") {
-    
+
     // Use the populated time slot data
     const timeSlot = appointment.TimeSlot;
 
     if (!timeSlot || !timeSlot.Day || !timeSlot.StartTime) {
       console.error(`[API] Appointment ${appointment.id} is missing TimeSlot data. Cannot schedule job.`);
     } else {
-      
-      // --- START: NEW LOGIC ---
+
 
       // 1. Construct the full appointment time from the slot's day and time
       //    (This assumes startTime is a string like "10:00" or "17:30")
       const [hours, minutes] = timeSlot.StartTime.split(':').map(Number);
       const appointmentTime = new Date(appointment.date);
-      console.log("appointment time",appointmentTime)
-      
+      console.log("appointment time", appointmentTime)
+
       // Set the time on the correct date (in the server's local timezone)
       appointmentTime.setHours(hours, minutes, 0, 0); // H, M, S, MS
 
-      // 2. Check if this appointment is for today
       const now = new Date();
-      console.log("now",now)
+      console.log("now", now)
       const isToday = (appointmentTime.toDateString() === now.toDateString());
-      console.log("istoday->",isToday)
+      console.log("istoday->", isToday)
 
       if (isToday) {
         // 3. It's today. Calculate delay and schedule.
@@ -216,16 +237,22 @@ const update_appointment_status = asynchandler(async (req, res) => {
           await notificationQueue.add(
             `notify-job:${appointment.id}`, // Job name
             {
-              
+
               appointmentId: appointment.id,
-              doctorId: appointment.doctor, 
+              doctorId: appointment.doctor,
               patientId: appointment.patient
             },
             {
-              delay: delay // Tell BullMQ when to run this job
+              delay: delay 
             }
           );
+         
+
           console.log(`[API] Job scheduled for appointment ${appointment.id}. Will run in ${delay}ms.`);
+
+
+
+          //sending messagesocket
         } else {
           // It's today but in the past.
           console.log(`[API] Appointment ${appointment.id} is for today but already in the past. No job scheduled.`);
@@ -234,7 +261,7 @@ const update_appointment_status = asynchandler(async (req, res) => {
         // 4. It's not today. Do not schedule.
         console.log(`[API] Appointment ${appointment.id} is for a future date (${appointmentTime.toDateString()}). No job scheduled.`);
       }
-      // --- END: NEW LOGIC ---
+
     }
   }
 
@@ -299,21 +326,21 @@ const update_appointment_status = asynchandler(async (req, res) => {
 
 
 const get_appiontment = asynchandler(async (req, res) => {
-    const { appointmentID } = req.params
-    if (!appointmentID) {
-        res.status(400)
-        throw new ApiError("Appointment ID is required")
-    }
-    if (!mongoose.Types.ObjectId.isValid(appointmentID)) {
-        res.status(400);
-        throw new ApiError("Invalid Appointment ID format");
-    }
-    const appointment = await Appointment.findById(appointmentID)
-    if (!appointment) {
-        res.status(404)
-        throw new ApiError("Appointment not found")
-    }
-    res.status(200).json(new ApiResponse("Appointment fetched successfully", appointment))
+  const { appointmentID } = req.params
+  if (!appointmentID) {
+    res.status(400)
+    throw new ApiError("Appointment ID is required")
+  }
+  if (!mongoose.Types.ObjectId.isValid(appointmentID)) {
+    res.status(400);
+    throw new ApiError("Invalid Appointment ID format");
+  }
+  const appointment = await Appointment.findById(appointmentID)
+  if (!appointment) {
+    res.status(404)
+    throw new ApiError("Appointment not found")
+  }
+  res.status(200).json(new ApiResponse("Appointment fetched successfully", appointment))
 })
 
 
@@ -336,9 +363,9 @@ const getsession = asynchandler(async (req, res) => {
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
-       payment_intent_data: {
-    capture_method: "manual", 
-  },
+      payment_intent_data: {
+        capture_method: "manual",
+      },
       line_items: [
         {
           price_data: {
@@ -385,15 +412,15 @@ const getsession = asynchandler(async (req, res) => {
   }
 });
 
- 
+
 
 const gettransactions = asynchandler(async (req, res) => {
-  const patientId = req.user._id; 
+  const patientId = req.user._id;
   console.log("patientID")
   console.log("inside the get transactions handler")
   const transactions = await Transaction.find({ patient: patientId })
-    .populate("appointment", "date TimeSlot") 
-    .populate("doctor", "name speciality"); 
+    .populate("appointment", "date TimeSlot")
+    .populate("doctor", "name speciality");
 
   if (!transactions || transactions.length === 0) {
     return res.status(200).json(new ApiResponse("No transactions found", []));
@@ -405,8 +432,9 @@ const gettransactions = asynchandler(async (req, res) => {
 });
 
 
-const authorize=asynchandler(async(req,res)=>{
+const authorize = asynchandler(async (req, res) => {
   console.log("inside the authorize handler------->::::::")
-  res.status(200).json({message:"User is authenticated",role:req.role,id:req.userId})})
+  res.status(200).json({ message: "User is authenticated", role: req.role, id: req.userId })
+})
 
-export { book_appointment,authorize,gettransactions,getsession ,get_all_appointments, update_appointment_status, get_appiontment }
+export { book_appointment, authorize, gettransactions, getsession, get_all_appointments, update_appointment_status, get_appiontment }

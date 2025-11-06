@@ -19,35 +19,6 @@ export default function PatientLayout() {
 
 
   
-//socket handlers start
-
-useEffect(() => {
-    if (!socketId || !socket) return;
-
-    
-    const onNotification = (msg) => {
-        console.log("Received 'notifications' event:", msg); 
-
-        if (msg && msg.data && msg.data.message) {
-            toast.success(msg.data.message);
-        } else {
-            console.error("Toast failed: msg.data.message is not valid.", msg);
-            // Fire a test toast to make sure toast itself is working
-            toast.error("Received an invalid notification."); 
-        }
-    };
-
-    socket.on('notifications', onNotification);
-
-    return () => {
-        console.log("Removing 'notifications' listener...");
-        socket.off('notifications', onNotification);
-    };
-
-
-}, [socketId, socket]);
-//socket handlers end
-
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);

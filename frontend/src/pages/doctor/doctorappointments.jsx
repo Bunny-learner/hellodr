@@ -12,7 +12,7 @@ import {
     FiClock,
     FiArrowUp,
     FiArrowDown,
-    FiWifi, // For Online
+    FiWifi,
     FiHome,   // For Offline
     FiMail,
     FiPhone,
@@ -21,8 +21,8 @@ import {
     FiMic, // For Join Audio
     FiMessageSquare // For Chat
 } from 'react-icons/fi';
-// Import your single, final CSS file
 import "../../css/DoctorAppointments.css"; 
+import { useSocket } from "../../pages/SocketContext.jsx";
 import Bubbles from '../../components/Loaders/bubbles';
 
 
@@ -40,12 +40,34 @@ const formatDate = (dateString) => {
 //todays card
 const TodayAppointmentCard = ({ app, onUpdateStatus, onViewDetails }) => {
     
+    const navigate=useNavigate()
     const isOnline = app.mode.toLowerCase() === 'online';
+
+
+ 
 
     const handleJoin = (joinType) => {
         toast.success(`Joining ${joinType} with ${app.name}`);
-        // Example navigation:
-        // navigate(`/doctor/consultation/${app._id}?mode=${joinType}`);
+        //saving patient details to localstorage
+            const patientDetails = {
+                        name: app.name,
+                        age: app.age,
+                        gender: app.gender,
+                        email: app.email,
+                        phone: app.phone,
+                        symptoms: app.symptoms,
+                        mode: app.mode,
+                        status: app.status
+                        };
+
+    localStorage.setItem('current', JSON.stringify(patientDetails));
+
+
+
+    if(joinType === 'chat') navigate(`/chat/${app.doctor.roomid}?consultationId=${app._id}`);
+    else if(joinType === 'audio') navigate(`/audio/${app.doctor.roomid}`);
+    else if(joinType === 'video') navigate(`/video/${app.doctor.roomid}`);
+
     };
 
     return (
@@ -83,9 +105,8 @@ const TodayAppointmentCard = ({ app, onUpdateStatus, onViewDetails }) => {
             <div className="today-card-right">
                 {isOnline ? (
                     <div className="today-join-actions">
-                        <button className="btn-join" onClick={() => handleJoin('video')} title="Start Video Call"><FiVideo /></button>
-                        <button className="btn-join" onClick={() => handleJoin('audio')} title="Start Audio Call"><FiMic /></button>
                         <button className="btn-join" onClick={() => handleJoin('chat')} title="Start Chat"><FiMessageSquare /></button>
+                        <button className="btn-join" onClick={() => handleJoin('audio')} title="Start Audio Call"><FiMic /></button>
                     </div>
                 ) : (
                     <div className="today-offline-actions">
@@ -107,7 +128,7 @@ const TodayAppointmentCard = ({ app, onUpdateStatus, onViewDetails }) => {
 
 
 
-// ### 2. "INBOX" CARD (For "Pending" Filter)                         
+                       
 
 const PendingAppointmentCard = ({ app, onUpdateStatus }) => {
     console.log(app)

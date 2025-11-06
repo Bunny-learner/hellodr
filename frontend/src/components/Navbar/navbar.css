@@ -1,9 +1,4 @@
-/* Global Font */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-/* =========================================== */
-/* NAVBAR STYLES                               */
-/* =========================================== */
 .main-navbar {
   display: flex;
   justify-content: space-between;
@@ -15,9 +10,25 @@
   width: 100%;
   position: sticky;
   top: 0;
-  z-index: 1000;
   font-family: 'Poppins', sans-serif;
 }
+
+.notification-wrapper {
+  position: relative;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -6px;
+  right: -4px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+}
+
 
 /* Navbar Left */
 .navbar-left {
@@ -30,7 +41,7 @@
   font-weight: 700;
   display: flex;
   align-items: center;
-  gap:0.5rem;
+  gap: 0.5rem;
   color: #34495e;
   text-decoration: none;
 }
@@ -44,6 +55,7 @@
   list-style: none;
   margin: 0;
   padding: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 .navbar-links a {
   text-decoration: none;
@@ -82,7 +94,7 @@
   border: none;
   cursor: pointer;
   color: #555;
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   padding: 0.5rem;
   border-radius: 50%;
   display: flex;
@@ -133,21 +145,25 @@
     padding: 0.75rem 1rem;
   }
 
+  /* Hide regular links on mobile */
   .navbar-links {
-    display: none; /* hide links initially on mobile */
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
+    position: fixed;
+    top: 0;
+    right: -100%;
+    height: 100%;
+    width: 250px;
     flex-direction: column;
-    background: #fff;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    padding: 1rem 0;
+    background-color: #fff;
+    padding-top: 5rem;
+    gap: 1.5rem;
+    box-shadow: -2px 0 12px rgba(0,0,0,0.15);
+    transition: right 0.3s ease;
     z-index: 999;
   }
 
+  /* When sidebar open */
   .navbar-links.show {
-    display: flex;
+    right: 0;
   }
 
   .navbar-links a {
@@ -164,27 +180,15 @@
   }
 }
 
-/* Hamburger button */
-.hamburger {
+/* Hamburger bell behavior (used as toggle) */
+.hamburger-bell {
   display: none;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 25px;
-  height: 18px;
-  cursor: pointer;
-}
-
-.hamburger span {
-  display: block;
-  height: 3px;
-  width: 100%;
-  background-color: #555;
-  border-radius: 2px;
-  transition: all 0.3s ease;
 }
 
 @media (max-width: 768px) {
-  .hamburger {
+  .hamburger-bell {
     display: flex;
+    cursor: pointer;
+    font-size: 1.5rem;
   }
 }
