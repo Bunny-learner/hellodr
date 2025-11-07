@@ -4,7 +4,7 @@ import { LinearProgress } from '@mui/material';
 import {
     FaCamera, FaUser, FaPhoneAlt, FaArrowLeft, FaCalendarAlt, FaMapMarkerAlt,
     FaRegBookmark, FaChevronDown, FaEnvelope, FaStethoscope, FaAward, FaDollarSign,
-    FaLanguage, FaStar, FaInfoCircle
+    FaLanguage, FaStar, FaInfoCircle, FaPlus
 } from 'react-icons/fa';
 import toast, { Toaster } from 'react-hot-toast';
 import { IoMdSettings, IoMdHelpCircleOutline } from 'react-icons/io';
@@ -14,6 +14,7 @@ import Bubbles from '../../components/Loaders/bubbles';
 export default function DoctorProfile() {
     const [profile, setProfile] = useState(null);
     const [languageInput, setLanguageInput] = useState("");
+    const [newTreatment, setNewTreatment] = useState("");
     const [url, setUrl] = useState(null);
     const [loading, setLoading] = useState(false);
     const [editMode, setEditMode] = useState(false);
@@ -68,9 +69,9 @@ export default function DoctorProfile() {
                 credentials: 'include'
             });
             if (res.status === 200)
-                navigate('/doctor/login?alert=Logged Out Successfully')
+                navigate('/doctor/login?alert=Logged Out Successfully');
             else
-                toast.error("Please try logging out again")
+                toast.error("Please try logging out again");
         } catch (err) {
             console.log(err);
         }
@@ -127,6 +128,30 @@ export default function DoctorProfile() {
         }
     };
 
+    // ---- Past Treatments ----
+    const addTreatment = () => {
+        if (!newTreatment.trim()) return;
+        setProfile(prev => ({
+            ...prev,
+            pasttreatments: [...(prev.pasttreatments || []), newTreatment.trim()]
+        }));
+        setNewTreatment("");
+    };
+
+    const removeTreatment = (index) => {
+        setProfile(prev => ({
+            ...prev,
+            pasttreatments: prev.pasttreatments.filter((_, i) => i !== index)
+        }));
+    };
+
+    const handleTreatmentKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            addTreatment();
+        }
+    };
+
     const saveProfile = async () => {
         const updatedProfile = {
             ...profile,
@@ -162,6 +187,7 @@ export default function DoctorProfile() {
             <div className="profile-main-container">
                 <Toaster position="top-left" toastOptions={{ className: "my-toast" }} />
 
+                {/* Sidebar */}
                 <div className="profile-sidebar">
                     <div className="profile-pic-wrapper">
                         <div className="profile-avatar">
@@ -202,10 +228,11 @@ export default function DoctorProfile() {
                     </nav>
                 </div>
 
+                {/* Main Content */}
                 <div className="profile-main-content">
                     <form onSubmit={(e) => e.preventDefault()} className="profile-form">
 
-                        {/* Personal Information */}
+                        {/* Personal Info */}
                         <section className="profile-form-section">
                             <h2>Personal information</h2>
                             <div className="profile-form-grid">
@@ -349,6 +376,49 @@ export default function DoctorProfile() {
                             </div>
                         </section>
 
+                        {/* Past Treatments */}
+                        <section className="profile-form-section">
+                            <h2>Past Treatments</h2>
+                            <div className="allergy-list-container">
+                                <div className="allergy-tags">
+                                    {(profile.pasttreatments || []).length === 0 && (
+                                        <p className="no-allergies-text">No past treatments added yet</p>
+                                    )}
+                                    {(profile.pasttreatments || []).map((treatment, index) => (
+                                        <div key={index} className="allergy-tag">
+                                            {treatment}
+                                            {editMode && (
+                                                <span
+                                                    className="remove-allergy"
+                                                    onClick={() => removeTreatment(index)}
+                                                >
+                                                    ×
+                                                </span>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                                {editMode && (
+                                    <div className="add-allergy-input">
+                                        <input
+                                            type="text"
+                                            placeholder="Type treatment and press Enter"
+                                            value={newTreatment}
+                                            onChange={(e) => setNewTreatment(e.target.value)}
+                                            onKeyPress={handleTreatmentKeyPress}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={addTreatment}
+                                            className="add-allergy-btn"
+                                        >
+                                            <FaPlus /> Add
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </section>
+
                         {/* Biography */}
                         <section className="profile-form-section">
                             <h2>Biography</h2>
@@ -386,7 +456,6 @@ export default function DoctorProfile() {
                                 </button>
                             )}
                         </div>
-
                     </form>
                 </div>
             </div>

@@ -418,7 +418,7 @@ const updateprofile = asynchandler(async (req, res) => {
 
 
 
-    const { name, address, gender, phone,dob,location } = req.body;
+    const { name, address, gender, phone,dob,location,allergys,bloodGroup } = req.body;
     console.log("Profile details are updated succesfully")
     const user = await Patient.findOne({ _id: req.user });
     if (!user)
@@ -429,9 +429,10 @@ const updateprofile = asynchandler(async (req, res) => {
     user.address = address
     user.dob = dob
     user.location = location
+    user.allergys = allergys
+    user.bloodGroup = bloodGroup
     await user.save();
     res.status(200).json({ "message": "success" })
-
 })
 
 

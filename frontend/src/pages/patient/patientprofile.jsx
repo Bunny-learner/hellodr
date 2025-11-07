@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LinearProgress, Button } from '@mui/material';
+import { LinearProgress } from '@mui/material';
+import icon from "../../assets/icon.png";
 import {
     FaCamera,
     FaUser,
@@ -10,20 +11,22 @@ import {
     FaMapMarkerAlt,
     FaBriefcaseMedical,
     FaRegBookmark,
-    FaChevronDown
+    FaChevronDown,
+    FaHeartbeat,
+    FaPlus
 } from 'react-icons/fa';
 import toast, { Toaster } from 'react-hot-toast';
 import { IoMdSettings, IoMdHelpCircleOutline } from 'react-icons/io';
-import "../../css/patientprofile.css"
-import Bubbles from "../../components/Loaders/bubbles"
+import "../../css/patientprofile.css";
+import Bubbles from "../../components/Loaders/bubbles";
 
 const PatientProfile = () => {
     const [profile, setProfile] = useState(null);
     const [url, setUrl] = useState(null);
-    const [loading,setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [editMode, setEditMode] = useState(false);
+    const [newAllergy, setNewAllergy] = useState("");
     const navigate = useNavigate();
-
     const fileInputRef = useRef(null);
 
     useEffect(() => {
@@ -34,27 +37,22 @@ const PatientProfile = () => {
                     credentials: 'include'
                 });
                 const response = await res.json();
-                console.log(response);
                 if (res.status === 200) {
                     setProfile(response.profile);
                     setUrl(response.profile.profilePic || null);
-                } 
-                else if(!response.isToken)
-                    navigate("/patient/login?alert=Session expired please login again")
-                else {
+                } else if (!response.isToken) {
+                    navigate("/patient/login?alert=Session expired please login again");
+                } else {
                     console.log('Failed to fetch profile');
                 }
             } catch (err) {
                 console.log(err);
             }
         }
-
         fetchProfile();
-    }, []);
+    }, [navigate]);
 
-    const handleButtonClick = () => {
-        fileInputRef.current.click();
-    };
+    const handleButtonClick = () => fileInputRef.current.click();
 
     const saveFileToDb = async (fileUrl) => {
         if (fileUrl) {
@@ -65,9 +63,8 @@ const PatientProfile = () => {
                     credentials: 'include',
                     body: JSON.stringify({ url: fileUrl })
                 });
-                
                 toast.success('Profile image updated successfully');
-                setLoading(false)
+                setLoading(false);
                 setUrl(fileUrl);
             } catch (err) {
                 console.log(err);
@@ -75,21 +72,19 @@ const PatientProfile = () => {
         }
     };
 
-    const logout=async()=>{
-
-        await fetch("http://localhost:8000/patient/logout",{
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include'
+    const logout = async () => {
+        await fetch("http://localhost:8000/patient/logout", {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
         })
-        .then((res)=>{
-            if(res.status==200)
-                navigate('/patient/login?alert=Logged Out Successfully')
-            else
-                toast.error("Please try logging out again")
-        })
-        .catch((err)=>console.log(err))
-    }
+            .then((res) => {
+                if (res.status === 200)
+                    navigate('/patient/login?alert=Logged Out Successfully');
+                else toast.error("Please try logging out again");
+            })
+            .catch((err) => console.log(err));
+    };
 
     const fileUpload = async (event) => {
         const file = event.target.files[0];
@@ -118,22 +113,41 @@ const PatientProfile = () => {
             });
             const uploadData = await uploadRes.json();
 
-            if (uploadData.secure_url) {
-                await saveFileToDb(uploadData.secure_url);
-            } else {
-                toast.error("Error uploading file");
-            }
+            if (uploadData.secure_url) await saveFileToDb(uploadData.secure_url);
+            else toast.error("Error uploading file");
         } catch (err) {
             console.log(err);
             toast.error("Error uploading file");
         }
     };
 
-
-
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setProfile(prev => ({ ...prev, [name]: value }));
+    };
+
+    // ---- Allergies ----
+    const addAllergy = () => {
+        if (!newAllergy.trim()) return;
+        setProfile(prev => ({
+            ...prev,
+            allergys: [...(prev.allergys || []), newAllergy.trim()]
+        }));
+        setNewAllergy("");
+    };
+
+    const removeAllergy = (index) => {
+        setProfile(prev => ({
+            ...prev,
+            allergys: prev.allergys.filter((_, i) => i !== index)
+        }));
+    };
+
+    const handleAllergyKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            addAllergy();
+        }
     };
 
     const saveProfile = async () => {
@@ -144,7 +158,6 @@ const PatientProfile = () => {
                 credentials: 'include',
                 body: JSON.stringify(profile)
             });
-            const data = await res.json();
             if (res.status === 200) {
                 toast.success('Profile updated successfully');
                 setEditMode(false);
@@ -157,16 +170,15 @@ const PatientProfile = () => {
         }
     };
 
-    if (!profile) return <Bubbles/>
+    if (!profile) return <Bubbles />;
 
     return (
         <div className="main">
-            {loading && (
-                <LinearProgress color="primary" className="progress" />
-            )}
+            {loading && <LinearProgress color="primary" className="progress" />}
             <div className="profile-main-container">
                 <Toaster position="top-left" toastOptions={{ className: "my-toast" }} />
-              
+
+                {/* Sidebar */}
                 <div className="profile-sidebar">
                     <div className="profile-pic-wrapper">
                         <div className="profile-avatar">
@@ -201,35 +213,24 @@ const PatientProfile = () => {
                             <IoMdHelpCircleOutline />
                             <span>Help center</span>
                         </Link>
-                        <button className='logout' onClick={logout} >
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-  <path fill-rule="evenodd" d="M7.5 3.75A1.5 1.5 0 0 0 6 5.25v13.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5V15a.75.75 0 0 1 1.5 0v3.75a3 3 0 0 1-3 3h-6a3 3 0 0 1-3-3V5.25a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3V9A.75.75 0 0 1 15 9V5.25a1.5 1.5 0 0 0-1.5-1.5h-6Zm5.03 4.72a.75.75 0 0 1 0 1.06l-1.72 1.72h10.94a.75.75 0 0 1 0 1.5H10.81l1.72 1.72a.75.75 0 1 1-1.06 1.06l-3-3a.75.75 0 0 1 0-1.06l3-3a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
-</svg>
-
-                            <span >Log out</span>
+                        <button className='logout' onClick={logout}>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+                                <path fillRule="evenodd" d="M7.5 3.75A1.5 1.5 0 0 0 6 5.25v13.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5V15a.75.75 0 0 1 1.5 0v3.75a3 3 0 0 1-3 3h-6a3 3 0 0 1-3-3V5.25a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3V9A.75.75 0 0 1 15 9V5.25a1.5 1.5 0 0 0-1.5-1.5h-6Zm5.03 4.72a.75.75 0 0 1 0 1.06l-1.72 1.72h10.94a.75.75 0 0 1 0 1.5H10.81l1.72 1.72a.75.75 0 1 1-1.06 1.06l-3-3a.75.75 0 0 1 0-1.06l3-3a.75.75 0 0 1 1.06 0Z" clipRule="evenodd" />
+                            </svg>
+                            <span>Log out</span>
                         </button>
                     </nav>
                 </div>
 
+                {/* Main Content */}
                 <div className="profile-main-content">
-
                     <div className="profile-logo">
-                        <svg width="60" height="60" className="logo-svg" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                              d="M64.9511 16.4914H53.5086V5.04886C53.5086 2.26596 51.2426 0 48.4597 0H21.5364C18.7535 0 16.4875 2.26596 16.4875 5.04886V16.4914H5.04886C2.26596 16.4914 0 18.7535 0 21.5403V48.4636C0 51.2465 2.26596 53.5125 5.04886 53.5125H16.4914V64.955C16.4914 67.7379 18.7535 70.0039 21.5403 70.0039H48.4636C51.2465 70.0039 53.5125 67.7379 53.5125 64.955V53.5125H64.955C67.7379 53.5125 70.0039 51.2465 70.0039 48.4636V21.5403C70 18.7535 67.734 16.4914 64.9511 16.4914ZM64.613 48.1255H53.5086V27.2576H48.1255V64.613H21.8745V53.5086H42.7385V48.1255H5.38312V21.8745H16.4875V42.7385H21.8706V5.38312H48.1177V16.4875H27.2615V21.8706H64.6169V48.1255H64.613Z"
-                              fill="url(#paint0_linear_495_3740)"
-                            />
-                            <defs>
-                              <linearGradient id="paint0_linear_495_3740" x1="-1.69238e-07" y1="3.58994" x2="76.3966" y2="18.4545" gradientUnits="userSpaceOnUse">
-                                <stop stopColor="#0EBE7E" />
-                                <stop offset="1" stopColor="#07D9AD" />
-                              </linearGradient>
-                            </defs>
-                        </svg>
+                         <img src={icon} alt="App Icon" style={{ width: "60px", height: "60px" }} />
                         HELLO <span className="profile-logo-blue">Dr.</span>
                     </div>
 
                     <form onSubmit={(e) => e.preventDefault()} className="profile-form">
+                        {/* Personal Info */}
                         <section className="profile-form-section">
                             <h2>Personal information</h2>
                             <div className="profile-form-grid">
@@ -294,9 +295,69 @@ const PatientProfile = () => {
                                     </select>
                                     <FaChevronDown className="profile-input-icon-right" />
                                 </div>
+
+                                <div className="profile-input-group profile-select-group">
+                                    <select
+                                        name="bloodGroup"
+                                        value={profile.bloodGroup || ""}
+                                        onChange={handleInputChange}
+                                        disabled={!editMode}
+                                    >
+                                        <option value="">Blood Group</option>
+                                        <option value="A+">A+</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B+">B+</option>
+                                        <option value="B-">B-</option>
+                                        <option value="O+">O+</option>
+                                        <option value="O-">O-</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="AB-">AB-</option>
+                                    </select>
+                                    <FaHeartbeat className="profile-input-icon-right" />
+                                </div>
                             </div>
                         </section>
 
+                        {/* Allergies */}
+                        <section className="profile-form-section">
+                            <h2>Allergies</h2>
+                            <div className="allergy-list-container">
+                                <div className="allergy-tags">
+                                    {(profile.allergys || []).length === 0 && (
+                                        <p className="no-allergies-text">No allergies added yet</p>
+                                    )}
+                                    {(profile.allergys || []).map((allergy, index) => (
+                                        <div key={index} className="allergy-tag">
+                                            {allergy}
+                                            {editMode && (
+                                                <span
+                                                    className="remove-allergy"
+                                                    onClick={() => removeAllergy(index)}
+                                                >
+                                                    ×
+                                                </span>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                                {editMode && (
+                                    <div className="add-allergy-input">
+                                        <input
+                                            type="text"
+                                            placeholder="Type allergy and press Enter"
+                                            value={newAllergy}
+                                            onChange={(e) => setNewAllergy(e.target.value)}
+                                            onKeyPress={handleAllergyKeyPress}
+                                        />
+                                        <button type="button" onClick={addAllergy} className="add-allergy-btn">
+                                            <FaPlus /> Add
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </section>
+
+                        {/* Past Medical History */}
                         <section className="profile-form-section">
                             <h2>Past medical history</h2>
                             <div className="profile-input-group profile-textarea-group">
@@ -313,20 +374,12 @@ const PatientProfile = () => {
 
                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                             {!editMode && (
-                                <button
-                                    type="button"
-                                    className="profile-save-btn"
-                                    onClick={() => setEditMode(true)}
-                                >
+                                <button type="button" className="profile-save-btn" onClick={() => setEditMode(true)}>
                                     Edit
                                 </button>
                             )}
                             {editMode && (
-                                <button
-                                    type="button"
-                                    className="profile-save-btn"
-                                    onClick={saveProfile}
-                                >
+                                <button type="button" className="profile-save-btn" onClick={saveProfile}>
                                     Save <FaRegBookmark />
                                 </button>
                             )}
@@ -337,4 +390,5 @@ const PatientProfile = () => {
         </div>
     );
 };
-export default PatientProfile; 
+
+export default PatientProfile;

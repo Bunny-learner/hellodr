@@ -31,6 +31,14 @@ const userSchema = new mongoose.Schema({
     location: {
         type: String,
     },
+    allergys: {
+        type: [String],
+        default: []
+    },
+    bloodGroup: {
+        type: String,
+        default:""
+    },
     profilePic: {
         type: String,
         default: 'https://placehold.co/150x150/cbd5e1/1f2937?text=User'

@@ -37,7 +37,6 @@ export default function ViewDoctorProfile() {
     if (!doctors || !doctorId) return;
 
     const doctor = doctors.find((d) => d._id === doctorId);
-    console.log(doctor);
     if (doctor) {
       setDoctorProfile(doctor);
       getReviews(doctor._id);
@@ -78,14 +77,28 @@ export default function ViewDoctorProfile() {
               {doctorProfile.bio || "No bio available"}
             </p>
 
-          <div className="doctor-info-table">
-  <div><strong>Email</strong><span>{doctorProfile.email}</span></div>
-  <div><strong>Gender</strong><span>{doctorProfile.gender || "-"}</span></div>
-  <div><strong>Languages</strong><span>{doctorProfile.languages?.join(", ") || "-"}</span></div>
-  <div><strong>Hospital</strong><span>{doctorProfile.hospital}</span></div>
-  <div><strong>Rating</strong><span>⭐ {doctorProfile.rating || "N/A"}</span></div>
-</div>
-
+            <div className="doctor-info-table">
+              <div>
+                <strong>Email</strong>
+                <span>{doctorProfile.email}</span>
+              </div>
+              <div>
+                <strong>Gender</strong>
+                <span>{doctorProfile.gender || "-"}</span>
+              </div>
+              <div>
+                <strong>Languages</strong>
+                <span>{doctorProfile.languages?.join(", ") || "-"}</span>
+              </div>
+              <div>
+                <strong>Hospital</strong>
+                <span>{doctorProfile.hospital}</span>
+              </div>
+              <div>
+                <strong>Rating</strong>
+                <span>⭐ {doctorProfile.rating || "N/A"}</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -109,6 +122,20 @@ export default function ViewDoctorProfile() {
               <span key={index} className="condition-chip">
                 {condition}
               </span>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* ===== PAST TREATMENTS ===== */}
+      {doctorProfile.pasttreatments?.length > 0 && (
+        <section className="treatments-section">
+          <h2 className="section-title">Past Treatments</h2>
+          <div className="treatments-list">
+            {doctorProfile.pasttreatments.map((treatment, index) => (
+              <div key={index} className="treatment-card">
+                {treatment}
+              </div>
             ))}
           </div>
         </section>

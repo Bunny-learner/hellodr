@@ -3,21 +3,20 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
     FiUser, FiSend, FiPaperclip, FiMoreVertical, FiVideo,
     FiPhone, FiArrowLeft, FiFileText, FiHeart, FiCalendar,
-    FiX, FiFile, FiLoader
+    FiX, FiFile, FiLoader, FiClock
 } from 'react-icons/fi';
 import "../css/chatpage.css";
 import { useAuth } from "./AuthContext.jsx";
 import { useSocket } from "./SocketContext.jsx";
 
-// --- Timestamp Formatter (Unchanged) ---
+// --- Timestamp Formatter ---
 const formatChatTimestamp = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
 };
 
-
-const CLOUDINARY_CLOUD_NAME = 'decmqqc9n'
-const CLOUDINARY_UPLOAD_PRESET = 'hellodr'
+const CLOUDINARY_CLOUD_NAME = 'decmqqc9n';
+const CLOUDINARY_UPLOAD_PRESET = 'hellodr';
 
 export default function ChatPage() {
     const { socket, isConnected } = useSocket();
@@ -25,97 +24,122 @@ export default function ChatPage() {
     const navigate = useNavigate();
     const { role } = useAuth();
     const currentUserID = role;
-const [patientInfo, setPatientInfo] = useState(() => {
-  const stored = localStorage.getItem("current");
-  if (stored) {
-    try {
-      return JSON.parse(stored); // convert back from string to object
-    } catch (error) {
-      console.error("Error parsing localStorage data:", error);
-    }
-  }
-  // fallback if no data found
-  return {
-    name: "",
-    gender: "Male",
-    age: "",
-    bloodGroup: "",
-    allergies: "",
-    lastAppointment: ""
-  };
-});
 
+    // --- Patient Info ---
+    const [patientInfo, setPatientInfo] = useState(() => {
+        const stored = localStorage.getItem("current");
+        if (stored) {
+            try {
+                return JSON.parse(stored);
+            } catch (error) {
+                console.error("Error parsing localStorage data:", error);
+            }
+        }
+        return {
+            name: "",
+            gender: "Male",
+            age: "",
+            bloodGroup: "",
+            allergies: "",
+            lastAppointment: ""
+        };
+    });
 
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
     const [filesToUpload, setFilesToUpload] = useState([]);
-    const [isUploading, setIsUploading] = useState(false); // State for loading
+    const [isUploading, setIsUploading] = useState(false);
+    const [elapsedTime, setElapsedTime] = useState(0); // 🕒 timer
     const messagesEndRef = useRef(null);
+    const timerRef = useRef(null);
+    const isPausedRef = useRef(false);
 
+    // --- Timer with Pause/Resume ---
+    useEffect(() => {
+        const startTimer = () => {
+            if (timerRef.current) clearInterval(timerRef.current);
+            timerRef.current = setInterval(() => {
+                if (!isPausedRef.current) {
+                    setElapsedTime(prev => prev + 1);
+                }
+            }, 1000);
+        };
 
+        const handleVisibilityChange = () => {
+            if (document.hidden) {
+                isPausedRef.current = true;
+            } else {
+                isPausedRef.current = false;
+            }
+        };
 
-    // Scroll to bottom
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+        startTimer();
+
+        return () => {
+            clearInterval(timerRef.current);
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+        };
+    }, []);
+
+    const formatElapsedTime = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    };
+
+    // --- Scroll to bottom ---
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
+    // --- Socket Setup ---
     useEffect(() => {
         if (socket && isConnected && roomid) {
+            console.log(`%cChatPage: Socket connected! Joining room: ${roomid}`, "color: green;");
+            socket.emit("join_room", { roomid });
 
-            // --- A. JOIN ROOM ---
-            console.log(`%cChatPage: Socket is connected! Joining room: ${roomid}`, "color: green;");
-            socket.emit("join_room", { roomid: roomid });
-
-            
             const handleReceiveMessage = (data) => {
                 setMessages(prev => [...prev, data]);
             };
             socket.on("send_topat", handleReceiveMessage);
             socket.on("send_todoc", handleReceiveMessage);
 
-
             return () => {
                 console.log(`%cChatPage: Leaving room: ${roomid}`, "color: red;");
-                socket.emit("leave_room", { roomid: roomid });
+                socket.emit("leave_room", { roomid });
                 socket.off("send_topat", handleReceiveMessage);
                 socket.off("send_todoc", handleReceiveMessage);
+                clearInterval(timerRef.current); // stop timer on exit
             };
         } else {
-            console.log(`%cChatPage: Waiting for socket connection... (Socket: ${!!socket}, Connected: ${isConnected}, Room: ${!!roomid})`, "color: gray;");
+            console.log(`Waiting for socket connection...`);
         }
-
-    
     }, [socket, isConnected, roomid]);
-    // Handle removing a file from preview
+
+    // --- Remove file preview ---
     const handleRemoveFile = (previewKey) => {
         setFilesToUpload(prevFiles => {
             const fileToRemove = prevFiles.find(f => f.previewKey === previewKey);
-            if (fileToRemove) {
-                URL.revokeObjectURL(fileToRemove.objectUrl); // Clean up memory
-            }
+            if (fileToRemove) URL.revokeObjectURL(fileToRemove.objectUrl);
             return prevFiles.filter(f => f.previewKey !== previewKey);
         });
     };
 
+    // --- Send Message ---
     const handleSendMessage = async (e) => {
         e.preventDefault();
         if (!newMessage.trim() && filesToUpload.length === 0) return;
-
         setIsUploading(true);
 
         try {
-            // --- 1. UPLOAD FILES TO CLOUDINARY --
-
             const uploadFile = async (fileObject) => {
                 const formData = new FormData();
                 formData.append("file", fileObject.file);
                 formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-
                 let resourceType = "image";
-
-                if (fileObject.file.type.startsWith("video/")) {
-                    resourceType = "video";
-                } else if (
+                if (fileObject.file.type.startsWith("video/")) resourceType = "video";
+                else if (
                     fileObject.file.type === "application/pdf" ||
                     fileObject.file.type.includes("officedocument") ||
                     fileObject.file.type.includes("msword") ||
@@ -124,71 +148,42 @@ const [patientInfo, setPatientInfo] = useState(() => {
                 ) {
                     resourceType = "raw";
                 }
-
                 const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${resourceType}/upload`;
-
-                try {
-                    const response = await fetch(uploadUrl, {
-                        method: "POST",
-                        body: formData,
-                    });
-                    const data = await response.json();
-                    if (data.secure_url) {
-                        return {
-                            url: data.secure_url, // The final Cloudinary URL
-                            name: fileObject.file.name,
-                            type: fileObject.file.type,
-                        };
-                    } else {
-                        throw new Error("Cloudinary upload failed: " + (data.error?.message || "Unknown error"));
-                    }
-                } catch (error) {
-                    console.error("Upload Error:", error);
-                    return null;
+                const response = await fetch(uploadUrl, { method: "POST", body: formData });
+                const data = await response.json();
+                if (data.secure_url) {
+                    return { url: data.secure_url, name: fileObject.file.name, type: fileObject.file.type };
+                } else {
+                    throw new Error("Upload failed");
                 }
             };
 
-            // Create an array of upload promises
             const uploadPromises = filesToUpload.map(uploadFile);
+            const finalFilePayloads = (await Promise.all(uploadPromises)).filter(Boolean);
 
-            // Wait for all files to finish uploading
-            const finalFilePayloads = (await Promise.all(uploadPromises)).filter(Boolean); // Filter out any nulls from errors
-
-            // 2. Create the message object
             const newMessageObj = {
-                id: `m_${Date.now()}_${Math.random()}`, // Unique ID
+                id: `m_${Date.now()}_${Math.random()}`,
                 senderId: currentUserID,
                 text: newMessage,
                 timestamp: new Date().toISOString(),
                 files: finalFilePayloads,
             };
 
-            // 3. Emit based on role
-            if (role === "patient") {
-                socket.emit("msg_frompat", { msg: newMessageObj, roomid: roomid });
-            } else {
-                socket.emit("msg_fromdoc", { msg: newMessageObj, roomid: roomid });
-            }
+            if (role === "patient") socket.emit("msg_frompat", { msg: newMessageObj, roomid });
+            else socket.emit("msg_fromdoc", { msg: newMessageObj, roomid });
 
-            // 4. Add to local state
             setMessages(prev => [...prev, newMessageObj]);
-
-            // 5. Clear inputs and revoke URLs
-            filesToUpload.forEach(f => URL.revokeObjectURL(f.objectUrl)); // Clean up all blob URLs
+            filesToUpload.forEach(f => URL.revokeObjectURL(f.objectUrl));
             setNewMessage("");
             setFilesToUpload([]);
-
-        } catch (error) {
-            console.error("Error sending message:", error);
-            // You can add a user-facing error message here
+        } catch (err) {
+            console.error("Error sending message:", err);
         } finally {
-            setIsUploading(false); // Always set uploading to false
+            setIsUploading(false);
         }
     };
 
-    const handleGoBack = () => {
-        navigate(-1);
-    };
+    const handleGoBack = () => navigate(-1);
 
     if (!patientInfo) {
         return <div className="chat-page-loading">Loading consultation...</div>;
@@ -200,7 +195,9 @@ const [patientInfo, setPatientInfo] = useState(() => {
                 <ActiveChatHeader
                     patientName={patientInfo.name}
                     onBack={handleGoBack}
+                    elapsedTime={formatElapsedTime(elapsedTime)}
                 />
+
                 <div className="chat-messages-area">
                     {messages.map(msg => (
                         <ChatMessage
@@ -222,7 +219,7 @@ const [patientInfo, setPatientInfo] = useState(() => {
                     setNewMessage={setNewMessage}
                     onSendMessage={handleSendMessage}
                     setFilesToUpload={setFilesToUpload}
-                    isUploading={isUploading} // Pass loading state
+                    isUploading={isUploading}
                 />
             </div>
 
@@ -231,11 +228,11 @@ const [patientInfo, setPatientInfo] = useState(() => {
     );
 }
 
-// ######################################################################
-// ### SUB-COMPONENTS                                               ###
-// ######################################################################
+// ######################################################
+// ### SUB COMPONENTS BELOW ###
+// ######################################################
 
-const ActiveChatHeader = ({ patientName, onBack }) => (
+const ActiveChatHeader = ({ patientName, onBack, elapsedTime }) => (
     <div className="chat-header">
         <div className="patient-info">
             <button className="back-button" onClick={onBack} title="Back to Appointments"><FiArrowLeft /></button>
@@ -245,6 +242,9 @@ const ActiveChatHeader = ({ patientName, onBack }) => (
             </div>
         </div>
         <div className="chat-actions">
+            <div className="timer-display" title="Consultation Duration">
+                <FiClock size={16} /> <span>{elapsedTime}</span>
+            </div>
             <button className="action-btn" title="Start Audio Call"><FiPhone /> <span>Call</span></button>
             <button className="action-btn btn-video" title="Start Video Call"><FiVideo /> <span>Video</span></button>
             <button className="action-btn-icon" title="More Options"><FiMoreVertical /></button>
@@ -252,9 +252,6 @@ const ActiveChatHeader = ({ patientName, onBack }) => (
     </div>
 );
 
-/**
- * Renders a file in the chat bubble (Simplified)
- */
 const FileRenderer = ({ file }) => {
     const fileUrl = file.url;
     const fileName = file.name;
@@ -266,7 +263,6 @@ const FileRenderer = ({ file }) => {
             </a>
         );
     }
-
     if (file.type.startsWith("video/")) {
         return (
             <a href={fileUrl} target="_blank" rel="noopener noreferrer">
@@ -274,8 +270,6 @@ const FileRenderer = ({ file }) => {
             </a>
         );
     }
-
-    // Any other file type (PDF, DOC, etc.)
     return (
         <a href={fileUrl} download={fileName} target="_blank" rel="noopener noreferrer" className="chat-file-link">
             <FiFileText size={24} />
@@ -284,8 +278,6 @@ const FileRenderer = ({ file }) => {
     );
 };
 
-
-/** A single message bubble */
 const ChatMessage = ({ message, isSender, timestamp }) => (
     <div className={`message-wrapper ${isSender ? 'sent' : 'received'}`}>
         <div className="message-bubble">
@@ -296,15 +288,12 @@ const ChatMessage = ({ message, isSender, timestamp }) => (
                     ))}
                 </div>
             )}
-            {message.text && (
-                <p className="message-text">{message.text}</p>
-            )}
+            {message.text && <p className="message-text">{message.text}</p>}
             <span className="message-timestamp">{timestamp}</span>
         </div>
     </div>
 );
 
-/** The message input form */
 const ChatInputArea = ({ newMessage, setNewMessage, onSendMessage, setFilesToUpload, isUploading }) => {
     const fileInputRef = useRef(null);
 
@@ -312,7 +301,7 @@ const ChatInputArea = ({ newMessage, setNewMessage, onSendMessage, setFilesToUpl
         const newFiles = Array.from(e.target.files);
         if (newFiles.length > 0) {
             const taggedFiles = newFiles.map(file => ({
-                file: file,
+                file,
                 previewKey: `preview_${Date.now()}_${Math.random()}`,
                 objectUrl: URL.createObjectURL(file)
             }));
@@ -321,9 +310,7 @@ const ChatInputArea = ({ newMessage, setNewMessage, onSendMessage, setFilesToUpl
         e.target.value = null;
     };
 
-    const handleAttachClick = () => {
-        fileInputRef.current.click();
-    };
+    const handleAttachClick = () => fileInputRef.current.click();
 
     return (
         <form className="chat-input-area" onSubmit={onSendMessage}>
@@ -336,13 +323,7 @@ const ChatInputArea = ({ newMessage, setNewMessage, onSendMessage, setFilesToUpl
                 accept="image/*,video/*,application/pdf,.doc,.docx,.xls,.xlsx"
                 disabled={isUploading}
             />
-            <button
-                type="button"
-                className="action-btn-icon"
-                title="Attach File"
-                onClick={handleAttachClick}
-                disabled={isUploading}
-            >
+            <button type="button" className="action-btn-icon" onClick={handleAttachClick} disabled={isUploading}>
                 <FiPaperclip />
             </button>
             <input
@@ -353,47 +334,30 @@ const ChatInputArea = ({ newMessage, setNewMessage, onSendMessage, setFilesToUpl
                 onChange={(e) => setNewMessage(e.target.value)}
                 disabled={isUploading}
             />
-            <button
-                type="submit"
-                className="send-button"
-                title="Send Message"
-                disabled={isUploading}
-            >
-                {isUploading ? (
-                    <FiLoader className="upload-spinner" size={16} />
-                ) : (
-                    <FiSend />
-                )}
+            <button type="submit" className="send-button" disabled={isUploading}>
+                {isUploading ? <FiLoader className="upload-spinner" size={16} /> : <FiSend />}
                 <span>{isUploading ? "Sending" : "Send"}</span>
             </button>
         </form>
     );
 };
 
-//** File Preview Item
 const FilePreviewItem = ({ file, onRemove }) => {
     const isImage = file.file.type.startsWith("image/");
-
     return (
         <div className="file-preview-item" title={file.file.name}>
             <button type="button" className="remove-file-btn" onClick={() => onRemove(file.previewKey)}>
                 <FiX size={14} />
             </button>
             {isImage ? (
-                <div
-                    className="file-preview-image-bg"
-                    style={{ backgroundImage: `url(${file.objectUrl})` }}
-                />
+                <div className="file-preview-image-bg" style={{ backgroundImage: `url(${file.objectUrl})` }} />
             ) : (
-                <div className="file-preview-icon-bg">
-                    <FiFile size={28} />
-                </div>
+                <div className="file-preview-icon-bg"><FiFile size={28} /></div>
             )}
         </div>
     );
 };
 
-// File Preview Area 
 const FilePreviewArea = ({ files, onRemove }) => (
     <div className="file-preview-area">
         <div className="file-preview-list">
@@ -404,46 +368,40 @@ const FilePreviewArea = ({ files, onRemove }) => (
     </div>
 );
 
-// Sidebar
-const PatientInfoSidebar = ({ patient }) => {
-    return (
-        <div className="patient-info-sidebar">
-            <div className="patient-profile-header">
-                <div className="patient-avatar-large">
-                    {patient.avatarUrl ?
-                        <img src={patient.avatarUrl} alt={patient.name} /> :
-                        <FiUser size={40} />
-                    }
-                </div>
-                <h3>{patient.name}</h3>
-                <p>{patient.gender}, {patient.age} years old</p>
-                <button className="action-btn btn-full-profile">
-                    <FiFileText /> View Full Profile
-                </button>
+const PatientInfoSidebar = ({ patient }) => (
+    <div className="patient-info-sidebar">
+        <div className="patient-profile-header">
+            <div className="patient-avatar-large">
+                {patient.avatarUrl ? <img src={patient.avatarUrl} alt={patient.name} /> : <FiUser size={40} />}
             </div>
-            <div className="patient-details-body">
-                <h4>Key Information</h4>
-                <div className="info-grid">
-                    <div className="info-item">
-                        <span className="info-label">Blood Group</span>
-                        <span className="info-value">{patient.bloodGroup}</span>
-                    </div>
-                    <div className="info-item">
-                        <span className="info-label">Allergies</span>
-                        <span className="info-value allergy">{patient.allergies}</span>
-                    </div>
-                    <div className="info-item">
-                        <span className="info-label">Last Visit</span>
-                        <span className="info-value">{patient.lastAppointment}</span>
-                    </div>
+            <h3>{patient.name}</h3>
+            <p>{patient.gender}, {patient.age} years old</p>
+            <button className="action-btn btn-full-profile">
+                <FiFileText /> View Full Profile
+            </button>
+        </div>
+        <div className="patient-details-body">
+            <h4>Key Information</h4>
+            <div className="info-grid">
+                <div className="info-item">
+                    <span className="info-label">Blood Group</span>
+                    <span className="info-value">{patient.bloodGroup}</span>
                 </div>
-                <h4>Consultation Tools</h4>
-                <div className="tool-buttons">
-                    <button className="tool-btn"><FiHeart /> <span>Add Vitals</span></button>
-                    <button className="tool-btn"><FiFileText /> <span>Write Prescription</span></button>
-                    <button className="tool-btn"><FiCalendar /> <span>Book Follow-up</span></button>
+                <div className="info-item">
+                    <span className="info-label">Allergies</span>
+                    <span className="info-value allergy">{patient.allergies}</span>
                 </div>
+                <div className="info-item">
+                    <span className="info-label">Last Visit</span>
+                    <span className="info-value">{patient.lastAppointment}</span>
+                </div>
+            </div>
+            <h4>Consultation Tools</h4>
+            <div className="tool-buttons">
+                <button className="tool-btn"><FiHeart /> <span>Add Vitals</span></button>
+                <button className="tool-btn"><FiFileText /> <span>Write Prescription</span></button>
+                <button className="tool-btn"><FiCalendar /> <span>Book Follow-up</span></button>
             </div>
         </div>
-    );
-};
+    </div>
+);

@@ -435,3 +435,48 @@ svg {
   background: #155cc0;
   box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
 }
+
+/* ===== Past Treatments Section ===== */
+.treatments-section {
+  margin: 50px 0;
+  padding: 20px 0;
+  background: linear-gradient(to right, #f8fdfc, #f2fafa);
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.treatments-section .section-title {
+  text-align: left;
+  font-size: 22px;
+  font-weight: 700;
+  color: #0ebe7e;
+  margin-bottom: 20px;
+  padding-left: 10px;
+}
+
+.treatments-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 0 10px 10px;
+  justify-content: flex-start;
+}
+
+.treatment-card {
+  background: linear-gradient(135deg, #e8fff5, #d4fff2);
+  border: 1px solid #b4f0dd;
+  color: #0ebe7e;
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 15px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.07);
+}
+
+.treatment-card:hover {
+  transform: scale(1.05);
+  background: linear-gradient(135deg, #c9ffe9, #b2f7df);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+

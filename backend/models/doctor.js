@@ -77,6 +77,10 @@ const userSchema = new mongoose.Schema({
     sid:{
         type:String
     },
+    pasttreatments:{
+        type:[String],
+        default:[]
+    },
     refreshtoken: {
         type: String,
         default: null
