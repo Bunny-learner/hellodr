@@ -9,7 +9,9 @@ import { Transaction } from "../models/transactions.js"
 import mongoose from "mongoose"
 import { redisPub } from '../db/redisconnect.js';
 import doctorSocketHandler from "../sockets/doctor.sockets.js";
-import {scheduleJobsForAppointment} from "../scheduling/schedule_appointment.ts"
+import {scheduleJobsForAppointment} from "../scheduling/schedule_appointment.js"
+
+
 
 
 
@@ -28,6 +30,22 @@ const parseDMY = (dateString) => {
   return new Date(year, month - 1, day);
 };
 
+
+const itime=async(appointment)=>{
+  const utcDate = new Date(appointment.date);
+
+const indiaTime = utcDate.toLocaleString("en-IN", {
+  timeZone: "Asia/Kolkata",
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: true
+});
+return indiaTime
+}
 const book_appointment = asynchandler(async (req, res) => {
   const {
     doctorId,
@@ -135,17 +153,17 @@ const book_appointment = asynchandler(async (req, res) => {
   const populatedAppointment = await Appointment.findById(appointment._id)
     .populate("TimeSlot");
 
-
-
-   
-
+  
+let indiaTime=await itime(appointment)
    redisPub.publish(`user:${appointment.doctor}`, JSON.stringify({
             data: {
-             message :`Patient ${appointment.name} (${gender}, ${age} years old) has booked an ${mode.toLowerCase()} appointment on ${appointmentDate} at ${timeslot._id}.`,
+             message :`Patient ${appointment.name} (${gender}, ${age} years old) has booked an ${mode.toLowerCase()} appointment on ${indiaTime}.`,
              doctorid: appointment.doctor,
-            appointmentid: appointment.id,
-               isappointment: true,
-              from: "doctor",
+             patientid:appointment.patient,
+              appointmentid: appointment.id,
+              isappointment: true,
+              from: "patient",
+              to:"doctor"
             }
           }));
   res.status(201).json({
@@ -192,15 +210,19 @@ const update_appointment_status = asynchandler(async (req, res) => {
   appointment.status = status;
   await appointment.save();
 
-  
+ let indiaTime=await itime(appointment)
+
+
 
    redisPub.publish(`user:${appointment.patient}`, JSON.stringify({
             data: {
-              message: `Your doctor appointment status is ${status}`,
+              message: `Your doctor appointment status is ${status} for the slot  ${appointment.TimeSlot.StartTime}-${appointment.TimeSlot.EndTime} booked on ${indiaTime} `,
               doctorid: appointment.doctor,
+              patientid:appointment.patient,
               appointmentid: appointment.id,
               isappointment: true,
-              from: "doctor",
+              from:"doctor",
+              to:"patient"
             }
           }));
 

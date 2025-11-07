@@ -1,7 +1,11 @@
 import {Appointment} from "../models/appointment.js";
 import { redisPub } from '../db/redisconnect.js';
 
-export async function startProcessor(job:any) {
+
+export async function startProcessor(job) {
+
+  
+  
   try {
     const { appointmentId,doctorId,patientId } = job.data;
 

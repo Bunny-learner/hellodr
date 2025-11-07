@@ -1,11 +1,11 @@
 import { Worker } from "bullmq";
 import redisConnection  from "../db/redisconnect.js"
-
-import { startProcessor } from "../processors/start.processor.ts";
+import {dbconnection} from "../db/dbconnect.js"
+import { startProcessor } from "../processors/start.processor.js";
 // import { reminderProcessor } from "../processors/reminder.processor.js";
 // import { timeoutProcessor } from "../processors/timeout.processor.js";
 // import { hydratorProcessor } from "../processors/hydrator.processor.js";
-
+await dbconnection()
 console.log("[WORKERS] Starting all BullMQ workers…");
 
 

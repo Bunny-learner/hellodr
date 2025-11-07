@@ -84,22 +84,22 @@ const PendingAppointmentCard = ({ app, onUpdateStatus }) => {
         </div>
       </div>
 
-      <div className="pending-card-actions">
-        <button
-          className="btn-action btn-reject"
-          onClick={() => onUpdateStatus(app._id, 'rejected', 'pending')}
-        >
-          <FiXCircle /> Reject
-        </button>
-        <button
-          className="btn-action btn-accept"
-          onClick={() => onUpdateStatus(app._id, 'accepted', 'pending')}
-        >
-          <FiCheckSquare /> Accept
-        </button>
-      </div>
-    </div>
-  );
+            <div className="pending-card-actions">
+                <button
+                    className="btn-action btn-reject"
+                    onClick={() => onUpdateStatus(app._id, 'cancelled', 'pending')}
+                >
+                    <FiXCircle /> Reject
+                </button>
+                <button
+                    className="btn-action btn-accept"
+                    onClick={() => onUpdateStatus(app._id, 'accepted', 'pending')}
+                >
+                    <FiCheckSquare /> Accept
+                </button>
+            </div>
+        </div>
+    );
 };
 
 // ========== ARCHIVE/GENERAL CARD ==========

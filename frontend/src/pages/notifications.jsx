@@ -1,19 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import { FaCalendarCheck, FaCommentDots, FaCog, FaCheckCircle, FaTrash } from 'react-icons/fa';
-import '../css/notifications.css';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import {
+  FaCalendarCheck,
+  FaCommentDots,
+  FaCog,
+  FaCheckCircle,
+  FaTrash,
+} from "react-icons/fa";
+import "../css/notifications.css";
 
-const NotificationPanel = () => {
+const Notifications = () => {
   const [notifList, setNotifList] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Fetch notifications from backend
+  // =====================
+  // FETCH FROM BACKEND
+  // =====================
   const fetchNotifications = async () => {
     try {
-      // TODO: replace with actual API call
-      // const res = await fetch('/api/notifications');
-      // const data = await res.json();
-      // setNotifList(data.notifications);
-    } catch (err) {
-      console.error('Error fetching notifications:', err);
+      const res = await axios.get("/getallnotifications");
+      setNotifList(res.data);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -21,72 +31,83 @@ const NotificationPanel = () => {
     fetchNotifications();
   }, []);
 
-  const unreadNotifications = notifList.filter(n => !n.isRead);
-  const readNotifications = notifList.filter(n => n.isRead);
-
-  const handleNotificationClick = async (notification) => {
-    try {
-      // TODO: call backend API to mark as read
-      // await fetch(`/api/notifications/${notification.id}/markread`, { method: 'POST' });
-      
-      setNotifList(notifList.map(n => n.id === notification.id ? { ...n, isRead: true } : n));
-      // TODO: navigate to notification.link if needed
-    } catch (err) {
-      console.error('Error marking notification read:', err);
-    }
-  };
-
-  const handleMarkAllRead = async () => {
-    try {
-      // TODO: call backend API to mark all as read
-      // await fetch('/api/notifications/markallread', { method: 'POST' });
-      
-      setNotifList(notifList.map(n => ({ ...n, isRead: true })));
-    } catch (err) {
-      console.error('Error marking all notifications as read:', err);
-    }
-  };
-
-  const handleDeleteNotification = async (notificationId) => {
-    try {
-      // TODO: call backend API to delete notification
-      // await fetch(`/api/notifications/${notificationId}`, { method: 'DELETE' });
-      
-      setNotifList(notifList.filter(n => n.id !== notificationId));
-    } catch (err) {
-      console.error('Error deleting notification:', err);
-    }
-  };
+  // =====================
+  // HELPERS
+  // =====================
+  const unreadNotifications = notifList.filter((n) => !n.isRead);
+  const readNotifications = notifList.filter((n) => n.isRead);
 
   const getIcon = (type) => {
     switch (type) {
-      case 'appointment': return <FaCalendarCheck className="icon-appointment" />;
-      case 'chat': return <FaCommentDots className="icon-chat" />;
-      case 'system': return <FaCog className="icon-system" />;
-      default: return <FaCog className="icon-default" />;
+      case "appointment":
+        return <FaCalendarCheck className="icon-appointment" />;
+      case "chat":
+        return <FaCommentDots className="icon-chat" />;
+      case "system":
+        return <FaCog className="icon-system" />;
+      default:
+        return <FaCog className="icon-default" />;
     }
   };
 
   const timeAgo = (isoString) => {
     const date = new Date(isoString);
     const seconds = Math.floor((new Date() - date) / 1000);
-    let interval = seconds / 31536000;
-    if (interval > 1) return Math.floor(interval) + "y ago";
-    interval = seconds / 2592000;
-    if (interval > 1) return Math.floor(interval) + "mo ago";
-    interval = seconds / 86400;
-    if (interval > 1) return Math.floor(interval) + "d ago";
-    interval = seconds / 3600;
-    if (interval > 1) return Math.floor(interval) + "h ago";
-    interval = seconds / 60;
-    if (interval > 1) return Math.floor(interval) + "m ago";
-    return "Just now";
+    if (seconds < 60) return "just now";
+    if (seconds < 3600) return Math.floor(seconds / 60) + "m ago";
+    if (seconds < 86400) return Math.floor(seconds / 3600) + "h ago";
+    if (seconds < 2592000) return Math.floor(seconds / 86400) + "d ago";
+    if (seconds < 31536000) return Math.floor(seconds / 2592000) + "mo ago";
+    return Math.floor(seconds / 31536000) + "y ago";
   };
+
+  // =====================
+  // ACTIONS
+  // =====================
+
+  const handleNotificationClick = async (notification) => {
+    if (notification.isRead) return;
+    try {
+      await axios.post(`/notification/${notification.id}/mark-read`);
+      setNotifList(
+        notifList.map((n) =>
+          n.id === notification.id ? { ...n, isRead: true } : n
+        )
+      );
+    } catch (err) {
+      console.log("Mark single read error", err);
+    }
+  };
+
+  const handleMarkAllRead = async () => {
+    try {
+      await axios.post("/notification/mark-all-read");
+      setNotifList(notifList.map((n) => ({ ...n, isRead: true })));
+    } catch (err) {
+      console.log("Mark all read error", err);
+    }
+  };
+
+  const handleDeleteNotification = async (notificationId) => {
+    try {
+      await axios.delete(`/notification/${notificationId}`);
+      setNotifList(notifList.filter((n) => n.id !== notificationId));
+    } catch (err) {
+      console.log("Delete error", err);
+    }
+  };
+
+  // =====================
+  // UI
+  // =====================
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div className="notification-panel">
       <div className="panel-header">
         <h2>Notifications</h2>
+
         {unreadNotifications.length > 0 && (
           <button className="mark-read-btn" onClick={handleMarkAllRead}>
             Mark all as read
@@ -97,28 +118,41 @@ const NotificationPanel = () => {
       <div className="panel-body">
         {notifList.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-icon"><FaCheckCircle /></div>
+            <div className="empty-icon">
+              <FaCheckCircle />
+            </div>
             <p>You're all caught up!</p>
           </div>
         ) : (
           <>
+            {/* NEW */}
             {unreadNotifications.length > 0 && (
               <div className="notification-group">
                 <h3>New</h3>
-                {unreadNotifications.map(notif => (
+
+                {unreadNotifications.map((notif) => (
                   <div
                     key={notif.id}
-                    className={`notification-item ${notif.isRead ? '' : 'unread'}`}
+                    className={`notification-item unread`}
                     onClick={() => handleNotificationClick(notif)}
                   >
-                    <div className="notif-icon-wrapper">{getIcon(notif.type)}</div>
+                    <div className="notif-icon-wrapper">
+                      {getIcon(notif.type)}
+                    </div>
+
                     <div className="notif-content">
                       <p className="notif-message">{notif.message}</p>
-                      <span className="notif-timestamp">{timeAgo(notif.timestamp)}</span>
+                      <span className="notif-timestamp">
+                        {timeAgo(notif.timestamp)}
+                      </span>
                     </div>
+
                     <button
                       className="delete-btn"
-                      onClick={(e) => { e.stopPropagation(); handleDeleteNotification(notif.id); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteNotification(notif.id);
+                      }}
                     >
                       <FaTrash />
                     </button>
@@ -127,23 +161,34 @@ const NotificationPanel = () => {
               </div>
             )}
 
+            {/* EARLIER */}
             {readNotifications.length > 0 && (
               <div className="notification-group">
                 <h3>Earlier</h3>
-                {readNotifications.map(notif => (
+
+                {readNotifications.map((notif) => (
                   <div
                     key={notif.id}
                     className="notification-item"
                     onClick={() => handleNotificationClick(notif)}
                   >
-                    <div className="notif-icon-wrapper">{getIcon(notif.type)}</div>
+                    <div className="notif-icon-wrapper">
+                      {getIcon(notif.type)}
+                    </div>
+
                     <div className="notif-content">
                       <p className="notif-message">{notif.message}</p>
-                      <span className="notif-timestamp">{timeAgo(notif.timestamp)}</span>
+                      <span className="notif-timestamp">
+                        {timeAgo(notif.timestamp)}
+                      </span>
                     </div>
+
                     <button
                       className="delete-btn"
-                      onClick={(e) => { e.stopPropagation(); handleDeleteNotification(notif.id); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteNotification(notif.id);
+                      }}
                     >
                       <FaTrash />
                     </button>
@@ -154,12 +199,8 @@ const NotificationPanel = () => {
           </>
         )}
       </div>
-
-      <div className="panel-footer">
-        <a href="/notifications">View All Notifications</a>
-      </div>
     </div>
   );
 };
 
-export default NotificationPanel;
+export default Notifications;

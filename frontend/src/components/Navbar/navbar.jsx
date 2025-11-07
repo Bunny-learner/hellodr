@@ -6,9 +6,12 @@ import { FiBell } from "react-icons/fi";
 import bg from "../../assets/icon.png";
 import "./navbar.css";
 import { useSocket } from "../../pages/SocketContext.jsx";
+import { useAuth } from "../../pages/AuthContext.jsx";
+
 
 export default function Navbar({ src, usertype = "patient" }) {
   const location = useLocation();
+  const {role}=useAuth()
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -24,6 +27,7 @@ export default function Navbar({ src, usertype = "patient" }) {
                 });
         const data = await response.json();
 
+        
         if (data.success) {
           setNotifications(data.notifications);
           setUnreadCount(data.count || 0);
@@ -47,13 +51,16 @@ export default function Navbar({ src, usertype = "patient" }) {
     console.log(data.msg)
     setUnreadCount((prev)=>prev+1);
   }
-  socket.on("notification",notifydot)
+  if(role=="patient")
+  socket.on("patientnotification",notifydot)
+  else socket.on("doctornotification",notifydot)
 
  return () => {
-    socket.off("notification", notifydot);
+    socket.off("patientnotification", notifydot);
+    socket.off("doctornotification", notifydot);
   };
 
-  },[socket,socketId])
+  },[socket,socketId,role])
 
 
 

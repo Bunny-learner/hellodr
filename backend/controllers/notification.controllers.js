@@ -31,6 +31,7 @@ const get_notifications = asynchandler(async (req, res) => {
 
     const unreadNotifications = await Notification.find(filter);
     const count = unreadNotifications.length;
+    console.log(count)
 
     res.status(200).json({
       success: true,

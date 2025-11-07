@@ -26,9 +26,8 @@ import google_auth from "./Routes/google_auth.js"
 import face_auth from "./Routes/facebook_auth.js"
 import appointment from "./Routes/appointment.route.js"
 import authorizer from "./Routes/authorizer.js";
-import doctorSocketHandler from "./sockets/doctor.sockets.js";
 import notify from "./Routes/notification.js";
-import patientSocketHandler from "./sockets/patient.sockets.js";
+import socketMain from "./sockets/index.js";
 import { startQueue } from "./queues/start.queue.js";
 
 const app = express()
@@ -46,7 +45,7 @@ app.use(express.json({limit:'100mb'}));
 
 // Bull Board Setup
 const serverAdapter = new ExpressAdapter();
-serverAdapter.setBasePath("/admin/queues"); // <-- Path
+serverAdapter.setBasePath("/admin/queues"); 
 createBullBoard({
   queues: [new BullMQAdapter(startQueue)],
   serverAdapter,
@@ -90,7 +89,7 @@ const io = new Server(server, {
   }
 });
 
-const userConnections = new Map();
+
 
 
 redisSub.on('error', (err) => {
@@ -98,40 +97,6 @@ redisSub.on('error', (err) => {
 });
 
 
-redisSub.on('message', (channel, message) => {
-    console.log(`[Redis] Message on channel ${channel}:`, message);
-    const userId = channel.split(':')[1];
-    const socket = userConnections.get(userId);
-
-    if (socket) {
-        try {
-            socket.emit('notifications', JSON.parse(message));
-            console.log(`[Socket.io] Forwarded message to ${userId}`);
-        } catch (err) {
-            console.error('Error parsing or sending message:', err);
-        }
-    } else {
-        console.log(`[Socket.io] No live socket for ${userId}.`);
-    }
-});
-
-// Socket Connection Handler (This is correct)
-io.on("connection", (socket) => {
-  console.log("✅ New socket connected:", socket.id);
-  const { role, id } = socket.handshake.query;
-
-  if (!id) {
-    return socket.disconnect();
-  }
-
-  if (role === "doctor") {
-    doctorSocketHandler(io, socket, id, userConnections, redisSub);
-  } else if (role === "patient") {
-    patientSocketHandler(io, socket, id, userConnections, redisSub);
-  } else {
-    socket.disconnect();
-  }
-});
-
+socketMain(io,redisSub)
 
 export default server;
