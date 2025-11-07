@@ -28,7 +28,9 @@ import appointment from "./Routes/appointment.route.js"
 import authorizer from "./Routes/authorizer.js";
 import notify from "./Routes/notification.js";
 import socketMain from "./sockets/index.js";
+import {  reminderQueue } from "./queues/reminder.queue.js";
 import { startQueue } from "./queues/start.queue.js";
+import { hydratorQueue } from "./queues/hydrator.queue.js";
 
 const app = express()
 
@@ -47,7 +49,7 @@ app.use(express.json({limit:'100mb'}));
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath("/admin/queues"); 
 createBullBoard({
-  queues: [new BullMQAdapter(startQueue)],
+  queues: [new BullMQAdapter(startQueue),new BullMQAdapter(hydratorQueue),new BullMQAdapter(reminderQueue)],
   serverAdapter,
 });
 app.use('/admin/queues', serverAdapter.getRouter()); 

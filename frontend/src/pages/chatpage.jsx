@@ -6,6 +6,7 @@ import {
     FiX, FiFile, FiLoader
 } from 'react-icons/fi';
 import "../css/chatpage.css";
+import Message from '../components/Loaders/message.jsx';
 import { useAuth } from "./AuthContext.jsx";
 import { useSocket } from "./SocketContext.jsx";
 
@@ -25,33 +26,37 @@ export default function ChatPage() {
     const navigate = useNavigate();
     const { role } = useAuth();
     const currentUserID = role;
-const [patientInfo, setPatientInfo] = useState(() => {
-  const stored = localStorage.getItem("current");
-  if (stored) {
-    try {
-      return JSON.parse(stored); // convert back from string to object
-    } catch (error) {
-      console.error("Error parsing localStorage data:", error);
-    }
-  }
-  // fallback if no data found
-  return {
-    name: "",
-    gender: "Male",
-    age: "",
-    bloodGroup: "",
-    allergies: "",
-    lastAppointment: ""
-  };
-});
+    const [patientInfo, setPatientInfo] = useState(() => {
+        const stored = localStorage.getItem("current");
+        if (stored) {
+            try {
+                return JSON.parse(stored); // convert back from string to object
+            } catch (error) {
+                console.error("Error parsing localStorage data:", error);
+            }
+        }
+        // fallback if no data found
+        return {
+            name: "",
+            gender: "Male",
+            age: "",
+            bloodGroup: "",
+            allergies: "",
+            lastAppointment: ""
+        };
+    });
 
 
     const [messages, setMessages] = useState([]);
+    
     const [newMessage, setNewMessage] = useState("");
     const [filesToUpload, setFilesToUpload] = useState([]);
     const [isUploading, setIsUploading] = useState(false); // State for loading
     const messagesEndRef = useRef(null);
+    const [isOtherTyping, setIsOtherTyping] = useState(false);
+    const typingTimer = useRef(null);
 
+console.log(role)
 
 
     // Scroll to bottom
@@ -62,21 +67,32 @@ const [patientInfo, setPatientInfo] = useState(() => {
     useEffect(() => {
         if (socket && isConnected && roomid) {
 
-            // --- A. JOIN ROOM ---
+
             console.log(`%cChatPage: Socket is connected! Joining room: ${roomid}`, "color: green;");
             socket.emit("join_room", { roomid: roomid });
 
-            
+
             const handleReceiveMessage = (data) => {
                 setMessages(prev => [...prev, data]);
             };
+             const handletyping = () => {
+    setIsOtherTyping(true);
+    clearTimeout(typingTimer.current);
+    typingTimer.current = setTimeout(() => setIsOtherTyping(false), 2000);
+};
+
+            
             socket.on("send_topat", handleReceiveMessage);
             socket.on("send_todoc", handleReceiveMessage);
+            socket.on("pat_types", handletyping)
+            socket.on("doc_types", handletyping)
 
 
             return () => {
                 console.log(`%cChatPage: Leaving room: ${roomid}`, "color: red;");
                 socket.emit("leave_room", { roomid: roomid });
+                socket.off("pat_types", handletyping);
+                socket.off("doc_types", handletyping);
                 socket.off("send_topat", handleReceiveMessage);
                 socket.off("send_todoc", handleReceiveMessage);
             };
@@ -84,7 +100,7 @@ const [patientInfo, setPatientInfo] = useState(() => {
             console.log(`%cChatPage: Waiting for socket connection... (Socket: ${!!socket}, Connected: ${isConnected}, Room: ${!!roomid})`, "color: gray;");
         }
 
-    
+
     }, [socket, isConnected, roomid]);
     // Handle removing a file from preview
     const handleRemoveFile = (previewKey) => {
@@ -190,9 +206,20 @@ const [patientInfo, setPatientInfo] = useState(() => {
         navigate(-1);
     };
 
+
+    // ✅ ADD
+    const handletyping = () => {
+        setIsOtherTyping(true);
+
+        clearTimeout(typingTimer.current);
+        typingTimer.current = setTimeout(() => setIsOtherTyping(false), 2000);
+    };
+
     if (!patientInfo) {
         return <div className="chat-page-loading">Loading consultation...</div>;
     }
+
+
 
     return (
         <div className="pro-chat-layout">
@@ -210,6 +237,13 @@ const [patientInfo, setPatientInfo] = useState(() => {
                             timestamp={formatChatTimestamp(msg.timestamp)}
                         />
                     ))}
+
+                    {isOtherTyping && (
+                    
+                          <Message/>
+                    
+                    )}
+
                     <div ref={messagesEndRef} />
                 </div>
 
@@ -222,7 +256,10 @@ const [patientInfo, setPatientInfo] = useState(() => {
                     setNewMessage={setNewMessage}
                     onSendMessage={handleSendMessage}
                     setFilesToUpload={setFilesToUpload}
-                    isUploading={isUploading} // Pass loading state
+                    isUploading={isUploading} 
+                     role={role}
+                    socket={socket}
+                roomid={roomid}
                 />
             </div>
 
@@ -305,7 +342,7 @@ const ChatMessage = ({ message, isSender, timestamp }) => (
 );
 
 /** The message input form */
-const ChatInputArea = ({ newMessage, setNewMessage, onSendMessage, setFilesToUpload, isUploading }) => {
+const ChatInputArea = ({ newMessage, setNewMessage, onSendMessage, setFilesToUpload, isUploading ,role,socket,roomid}) => {
     const fileInputRef = useRef(null);
 
     const handleFileChange = (e) => {
@@ -350,7 +387,16 @@ const ChatInputArea = ({ newMessage, setNewMessage, onSendMessage, setFilesToUpl
                 placeholder={isUploading ? "Uploading files..." : "Type your message here..."}
                 className="message-input"
                 value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
+                onChange={(e) => {
+                    setNewMessage(e.target.value);
+                    if (role === "patient") {
+                        socket.emit("patient_typing", { roomid });
+                    } else {
+                        
+                        socket.emit("doctor_typing", { roomid });
+                    }
+                }}
+
                 disabled={isUploading}
             />
             <button

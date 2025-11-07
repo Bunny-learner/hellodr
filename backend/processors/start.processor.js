@@ -34,26 +34,29 @@ export async function startProcessor(job) {
         const doctorChannel = `user:${doctorId}`;
         const patientChannel = `user:${patientId}`;
         
+       
         // Create the notification message
         const pat_payload = JSON.stringify({
-            type: 'APPOINTMENT_START',
-            data: { 
-                appointmentId: appointmentId,
-                message: "Patient Please be ready ,Your Consultation will start within few minutes.",
-                doctorid:doctorId,
-                isappointment:true,
-                from:"system"
+             data: {
+              message: "Patient Please be ready ,Your Consultation will start within few minutes.",
+             doctorid:doctorId,
+             patientid:patientId,
+              appointmentid: appointmentId,
+              isappointment: true,
+              from: "system",
+              to:"patient"
             }
         });
 
          const doc_payload = JSON.stringify({
-            type: 'APPOINTMENT_START',
             data: { 
-                appointmentId: appointmentId,
+                appointmentid: appointmentId,
                 patientid:patientId,
+                doctorid:doctorId,
                 message: "Doctor Please be ready, your Consulation will start within few minutes.",
                 isappointment:true,
-                from:"system"
+                from:"system",
+                to:"doctor"
             }
         });
 

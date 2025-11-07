@@ -4,6 +4,7 @@ export default function registerRedisListener(redisSub, userConnections) {
   console.log("✅ Redis global listener registered");
 
   redisSub.on("message", async (channel, message) => {
+    console.log("message recieved:",message)
     try {
       const payload = JSON.parse(message);
       const userId = channel.split(":")[1];  

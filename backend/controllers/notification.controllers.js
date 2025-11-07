@@ -45,12 +45,12 @@ const get_notifications = asynchandler(async (req, res) => {
 
 
 
-const getallnotifications=asynchandler(async(req,res)=>{
+const get_allnotifications=asynchandler(async(req,res)=>{
 
 
-  
   const {userId,role}=req
 
+  let filter;
 if (role === "doctor") {
       filter = {
         to: "doctor",
@@ -115,4 +115,87 @@ res.status(200).json({success:true})
 
 
 
-export {get_notifications,markallread}
+
+
+const delete_notification = async (req, res) => {
+  try {
+    const { notificationId } = req.params;
+    const { userId, role } = req;   // coming from auth middleware
+
+    if (!notificationId) {
+      return res.status(400).json({ success: false, message: "Notification ID missing" });
+    }
+
+    // Ensure user owns this notification
+    let filter = { _id: notificationId };
+
+    if (role === "doctor") {
+      filter.doctorid = userId;
+    } else if (role === "patient") {
+      filter.patientid = userId;
+    }
+
+    const deleted = await Notification.findOneAndDelete(filter);
+
+    if (!deleted) {
+      return res.status(404).json({
+        success: false,
+        message: "Notification not found / Not authorized",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Notification deleted successfully",
+      deleted,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+
+const mark_read = async (req, res) => {
+  try {
+    const { notificationId } = req.params;
+    const { userId, role } = req;   // coming from auth middleware
+
+    if (!notificationId) {
+      return res.status(400).json({ success: false, message: "Notification ID missing" });
+    }
+
+    // Ensure user owns this notification
+    let filter = { _id: notificationId };
+
+    if (role === "doctor") {
+      filter.doctorid = userId;
+    } else if (role === "patient") {
+      filter.patientid = userId;
+    }
+ const updated = await Notification.findOneAndUpdate(
+      filter,
+      { $set: { isread: true } },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({
+        success: false,
+        message: "Notification not found or not owned by user",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Notification marked read",
+      notification: updated,
+    });
+
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+export {get_notifications,get_allnotifications,delete_notification,markallread,mark_read}

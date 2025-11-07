@@ -4,7 +4,7 @@ export const authJWT = (req, res, next) => {
   try {
     const token = req.cookies?.accesstoken;
 
-    console.log(token)
+    console.log("accesstoken ->",token)
 
     if (!token) {
       return res.status(401).json({ message: "Access token missing", istoken: false });

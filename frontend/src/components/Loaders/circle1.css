@@ -1,0 +1,26 @@
+.loader2 {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+}
+
+.loader2 div {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: blue;
+  animation: bounce 0.6s infinite alternate;
+}
+
+.loader2 div:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.loader2 div:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  from { transform: translateY(0); opacity: 0.5 }
+  to   { transform: translateY(-8px); opacity: 1 }
+}

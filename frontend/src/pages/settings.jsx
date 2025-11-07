@@ -1,201 +1,170 @@
 import React, { useState } from 'react';
-import '../css/settings.css'; // This will import the new scoped CSS
-
-// Example user prop:
-// const doctorUser = {
-//   role: 'doctor',
-//   email: 'dr.house@example.com',
-//   phone: '+1 555-123-4567',
-// };
-
+import { FaWhatsapp } from 'react-icons/fa';
+import '../css/settings.css';
 
 export default function SettingsPage() {
-  // Use user's saved settings, or defaults
   const user = {
-  role: 'patient',
-  email: 'patient.zero@example.com',
-  phone: '+1 555-765-4321',
-};
+    role: 'patient',
+    email: 'patient.zero@example.com',
+    phone: '+1 555-765-4321',
+  };
+
   const [theme, setTheme] = useState('system');
   const [textSize, setTextSize] = useState('medium');
-  const [reminders, setReminders] = useState({
-    dayBefore: true,
-    hourBefore: true,
-    tenMinBefore: false,
-  });
-  const [channels, setChannels] = useState({
-    push: true,
-    email: true,
-    sms: false,
-  });
+  // Number-based reminders
+  const [reminders, setReminders] = useState({ days: 1, hours: 1, minutes: 10 });
+  const [channels, setChannels] = useState({ push: true, email: true, sms: false, whatsapp: false });
+
   const [notificationTypes, setNotificationTypes] = useState({
     chat: true,
     accepted: true,
     cancelled: true,
-    newRequest: true, // Doctor-specific
-    patientCancelled: true, // Doctor-specific
-  });
-  const [availability, setAvailability] = useState({
-    status: 'online',
-    acceptingBookings: true,
+    newRequest: true,
+    patientCancelled: true,
   });
 
-  // --- Handlers ---
-  
-  const handleReminderChange = (e) => {
-    setReminders({ ...reminders, [e.target.name]: e.target.checked });
-  };
-  
+  const [availability, setAvailability] = useState({ status: 'online', acceptingBookings: true });
+
   const handleChannelChange = (e) => {
-    setChannels({ ...channels, [e.target.name]: e.target.checked });
+    setChannels(prev => ({ ...prev, [e.target.name]: e.target.checked }));
   };
-  
-  const handleTypeChange = (e) => {
-    setNotificationTypes({ ...notificationTypes, [e.target.name]: e.target.checked });
+
+  const handleReminderChange = (e) => {
+    const { name, value } = e.target;
+    const num = Math.max(0, parseInt(value || '0', 10));
+    setReminders(prev => ({ ...prev, [name]: num }));
   };
-  
+
   const handleAvailabilityChange = (e) => {
-     setAvailability({ ...availability, [e.target.name]: e.target.type === 'checkbox' ? e.target.checked : e.target.value });
+    setAvailability(prev => ({
+      ...prev,
+      [e.target.name]: e.target.type === 'checkbox' ? e.target.checked : e.target.value,
+    }));
   };
-  
+
+  const isAnyChannelSelected = Object.values(channels).some(Boolean);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Consolidate all state and send to your backend API
+    if (!isAnyChannelSelected) {
+      alert('Select at least one notification channel to receive reminders.');
+      return;
+    }
     const settingsData = {
       theme,
       textSize,
       reminders,
       channels,
       notificationTypes,
-      availability
+      availability,
     };
     console.log('Saving settings:', settingsData);
-    // api.saveSettings(settingsData);
-    // toast.success('Settings saved!');
   };
 
   return (
-    // This is the parent class that scopes all the CSS
-    <div className="settings-page"> 
-      <form onSubmit={handleSubmit}>
-        
-        {/* --- Account Section --- */}
-        <section className="settings-section">
-          <h3>👤 Account</h3>
-          <div className="setting-item">
-            <label className="setting-label">Email Address</label>
-            <div className="setting-value">{user.email}</div>
+    <div className="settings-container">
+      <form onSubmit={handleSubmit} className="settings-card">
+        {/* Account */}
+        <section className="section-block">
+          <h3 className="section-title">Account</h3>
+          <div className="row-item">
+            <div>
+              <p className="label">Email</p>
+              <p className="value">{user.email}</p>
+            </div>
             <button type="button" className="btn-secondary">Change</button>
           </div>
-          <div className="setting-item">
-            <label className="setting-label">Phone Number</label>
-            <div className="setting-value">{user.phone}</div>
+          <div className="row-item">
+            <div>
+              <p className="label">Phone</p>
+              <p className="value">{user.phone}</p>
+            </div>
             <button type="button" className="btn-secondary">Change</button>
-          </div>
-          <div className="setting-item">
-            <label className="setting-label">Password</label>
-            <div className="setting-value">********</div>
-            <button type="button" className="btn-secondary">Change Password</button>
           </div>
         </section>
 
-        {/* --- Appearance Section --- */}
-        <section className="settings-section">
-          <h3>🎨 Appearance</h3>
-          <div className="setting-item-col">
-            <label className="setting-label">Theme</label>
-            <div className="radio-group">
-              <label><input type="radio" name="theme" value="light" checked={theme === 'light'} onChange={(e) => setTheme(e.target.value)} /> Light</label>
-              <label><input type="radio" name="theme" value="dark" checked={theme === 'dark'} onChange={(e) => setTheme(e.target.value)} /> Dark</label>
-              <label><input type="radio" name="theme" value="system" checked={theme === 'system'} onChange={(e) => setTheme(e.target.value)} /> System</label>
+        {/* Appearance */}
+        <section className="section-block">
+          <h3 className="section-title">Appearance</h3>
+          <div className="setting-group">
+            <p className="label">Theme</p>
+            <div className="option-group">
+              {['light','dark','system'].map(v => (
+                <label key={v}>
+                  <input type="radio" name="theme" value={v} checked={theme===v} onChange={(e)=>setTheme(e.target.value)} /> {v}
+                </label>
+              ))}
             </div>
           </div>
-          <div className="setting-item-col">
-            <label className="setting-label">Text Size</label>
-            <div className="radio-group">
-              <label><input type="radio" name="text-size" value="small" checked={textSize === 'small'} onChange={(e) => setTextSize(e.target.value)} /> Small</label>
-              <label><input type="radio" name="text-size" value="medium" checked={textSize === 'medium'} onChange={(e) => setTextSize(e.target.value)} /> Medium</label>
-              <label><input type="radio" name="text-size" value="large" checked={textSize === 'large'} onChange={(e) => setTextSize(e.target.value)} /> Large</label>
+          <div className="setting-group">
+            <p className="label">Text Size</p>
+            <div className="option-group">
+              {['small','medium','large'].map(v => (
+                <label key={v} className="capitalize">
+                  <input type="radio" name="textSize" value={v} checked={textSize===v} onChange={(e)=>setTextSize(e.target.value)} /> {v}
+                </label>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* --- Notifications Section --- */}
-        <section className="settings-section">
-          <h3>🔔 Notifications & Reminders</h3>
-          <div className="setting-item-col">
-            <label className="setting-label">Appointment Reminders</label>
-            <p>Send me a reminder before my appointment:</p>
+        {/* Notifications */}
+        <section className="section-block">
+          <h3 className="section-title">Notifications & Reminders</h3>
+
+          {/* Channels */}
+          <div className="setting-group">
+            <p className="label">Channels <span className="hint">(Select at least one)</span></p>
             <div className="checkbox-group">
-              <label><input type="checkbox" name="dayBefore" checked={reminders.dayBefore} onChange={handleReminderChange} /> 1 Day before</label>
-              <label><input type="checkbox" name="hourBefore" checked={reminders.hourBefore} onChange={handleReminderChange} /> 1 Hour before</label>
-              <label><input type="checkbox" name="tenMinBefore" checked={reminders.tenMinBefore} onChange={handleReminderChange} /> 10 Minutes before</label>
-            </div>
-          </div>
-          <div className="setting-item-col">
-            <label className="setting-label">Notification Channels</label>
-            <p>Send my notifications and reminders via:</p>
-            <div className="checkbox-group">
-              <label><input type="checkbox" name="push" checked={channels.push} onChange={handleChannelChange} /> Push Notification</label>
+              <label><input type="checkbox" name="push" checked={channels.push} onChange={handleChannelChange} /> Push</label>
               <label><input type="checkbox" name="email" checked={channels.email} onChange={handleChannelChange} /> Email</label>
-              <label><input type="checkbox" name="sms" checked={channels.sms} onChange={handleChannelChange} /> SMS (Text Message)</label>
+              <label><input type="checkbox" name="sms" checked={channels.sms} onChange={handleChannelChange} /> SMS</label>
+              <label className="whatsapp-label">
+                <input type="checkbox" name="whatsapp" checked={channels.whatsapp} onChange={handleChannelChange} />
+                <FaWhatsapp className="whatsapp-icon" /> WhatsApp
+              </label>
             </div>
           </div>
-          <div className="setting-item-col">
-            <label className="setting-label">Notification Types</label>
-            <p>Notify me when:</p>
-            <div className="checkbox-group">
-              <label><input type="checkbox" name="chat" checked={notificationTypes.chat} onChange={handleTypeChange} /> I receive a new chat message</label>
-              <label><input type="checkbox" name="accepted" checked={notificationTypes.accepted} onChange={handleTypeChange} /> An appointment is confirmed</label>
-              <label><input type="checkbox" name="cancelled" checked={notificationTypes.cancelled} onChange={handleTypeChange} /> An appointment is cancelled</label>
-              
-              {/* Doctor-only settings */}
-              {user.role === 'doctor' && (
-                <>
-                  <label><input type="checkbox" name="newRequest" checked={notificationTypes.newRequest} onChange={handleTypeChange} /> A patient sends a new booking request</label>
-                  <label><input type="checkbox" name="patientCancelled" checked={notificationTypes.patientCancelled} onChange={handleTypeChange} /> A patient cancels an appointment</label>
-                </>
-              )}
+
+          {/* Number-based reminder offsets */}
+          <div className={`setting-group ${!isAnyChannelSelected ? 'disabled-block' : ''}`}>
+            <p className="label">Appointment Reminders</p>
+            <p className="hint">We will send a reminder at: <strong>{reminders.hours}</strong> hour(s), <strong>{reminders.minutes}</strong> minute(s) before the appointment.</p>
+            <div className="number-group">
+              <label className="num-field">
+                <span>Hours</span>
+                <input type="number" name="hours" min="0" max="72" value={reminders.hours} onChange={handleReminderChange} />
+              </label>
+              <label className="num-field">
+                <span>Minutes</span>
+                <input type="number" name="minutes" min="0" max="1440" step="5" value={reminders.minutes} onChange={handleReminderChange} />
+              </label>
             </div>
           </div>
         </section>
-        
-        {/* --- Doctor Availability (Conditional) --- */}
+
+        {/* (Optional) Doctor block retained for completeness */}
         {user.role === 'doctor' && (
-          <section className="settings-section">
-            <h3>🩺 Doctor Availability</h3>
-            <div className="setting-item-col">
-              <label className="setting-label">Online Status</label>
-              <p>Set your current status for patients.</p>
-              <div className="radio-group">
-                <label><input type="radio" name="status" value="online" checked={availability.status === 'online'} onChange={handleAvailabilityChange} /> Online</label>
-                <label><input type="radio" name="status" value="offline" checked={availability.status === 'offline'} onChange={handleAvailabilityChange} /> Offline</label>
+          <section className="section-block">
+            <h3 className="section-title">Doctor Availability</h3>
+            <div className="setting-group">
+              <p className="label">Status</p>
+              <div className="option-group">
+                <label><input type="radio" name="status" value="online" checked={availability.status==='online'} onChange={handleAvailabilityChange} /> Online</label>
+                <label><input type="radio" name="status" value="offline" checked={availability.status==='offline'} onChange={handleAvailabilityChange} /> Offline</label>
               </div>
             </div>
-            <div className="setting-item">
-              <label className="setting-label" htmlFor="acceptingBookings">Accepting New Bookings</label>
-              <div className="toggle-switch">
-                <input type="checkbox" id="acceptingBookings" name="acceptingBookings" checked={availability.acceptingBookings} onChange={handleAvailabilityChange} />
-                <label htmlFor="acceptingBookings"></label>
-              </div>
+            <div className="row-item">
+              <label className="label" htmlFor="acceptingBookings">Accepting New Bookings</label>
+              <label className="switch">
+                <input id="acceptingBookings" type="checkbox" name="acceptingBookings" checked={availability.acceptingBookings} onChange={handleAvailabilityChange} />
+                <span className="slider" />
+              </label>
             </div>
           </section>
         )}
 
-        {/* --- Account Management Section --- */}
-        <section className="settings-section">
-          <h3>🔒 Account Management</h3>
-          <div className="setting-item-col-danger">
-            <button type="button" className="btn-secondary btn-full">Log Out</button>
-            <button type="button" className="btn-danger btn-full">Deactivate Account</button>
-          </div>
-        </section>
-
-        {/* --- Save Button --- */}
-        <div className="settings-footer">
-          <button type="submit" className="btn-primary">Save Changes</button>
-        </div>
-
+        <button type="submit" className="btn-primary">Save Changes</button>
       </form>
     </div>
   );

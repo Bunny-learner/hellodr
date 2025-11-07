@@ -38,6 +38,11 @@ export default async function doctorSocket(
     socket.to(roomid).emit("send_topat", msg);
   });
 
+
+  socket.on("doctor_typing",({roomid})=>{
+let msg="doctor is typing"
+socket.to(roomid).emit("doc_types",msg)
+  })
   
   socket.on("disconnect", () => {
     console.log(`❌ Doctor ${id} disconnected: ${socket.id}`);

@@ -200,7 +200,10 @@ const update_appointment_status = asynchandler(async (req, res) => {
   }
 
   // Good: You are populating the TimeSlot here.
-  const appointment = await Appointment.findById(appointmentID).populate("TimeSlot");
+  const appointment = await Appointment.findById(appointmentID)
+  .populate("TimeSlot")
+  .populate("patient");
+
   console.log(appointment)
   if (!appointment) {
     res.status(404);

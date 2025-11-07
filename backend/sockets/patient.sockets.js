@@ -39,6 +39,11 @@ export default async function patientSocket(
   });
 
 
+  socket.on("patient_typing",({roomid})=>{
+let msg="patient is typing"
+socket.to(roomid).emit("pat_types",msg)
+  })
+
   socket.on("disconnect", () => {
     console.log(`❌ Patient ${id} disconnected: ${socket.id}`);
     userConnections.delete(id);

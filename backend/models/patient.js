@@ -18,15 +18,15 @@ const userSchema = new mongoose.Schema({
     },
     phone: {
         type: String,
-        default:""
+        default: ""
     },
     gender: {
         type: String,
-        default:""
+        default: ""
     },
     dob: {
         type: Date,
-        default:""
+        default: ""
     },
     location: {
         type: String,
@@ -40,10 +40,20 @@ const userSchema = new mongoose.Schema({
         ref: 'Doctor'
     }]
     ,
-    socketid:{
-        type:String
+    socketid: {
+        type: String
     },
     resetCode: String,
+    preferences: {
+        remindertime: Date,
+        channels: {
+            type: [String],
+            default: [],
+        },
+        whatsappNumber: String,
+        smsNumber: String,
+        email: String,
+    },
     resetCodeExpires: Date,
     refreshtoken: {
         type: String,
@@ -70,7 +80,7 @@ userSchema.methods.generateAccessToken = function () {
         _id: this._id,
         email: this.email,
         name: this.name,
-        role:'patient'
+        role: 'patient'
     }, process.env.ACCESS_TOKEN_SECRET, {
         expiresIn: process.env.ACCESS_TOKEN_EXPIRY
     })
