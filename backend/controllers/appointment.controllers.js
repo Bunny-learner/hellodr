@@ -7,10 +7,9 @@ import { Doctor } from "../models/doctor.js"
 import { TimeSlot } from "../models/timeslot.js"
 import { Transaction } from "../models/transactions.js"
 import mongoose from "mongoose"
-import notificationQueue from '../queue/notification.queue.js';
 import { redisPub } from '../db/redisconnect.js';
 import doctorSocketHandler from "../sockets/doctor.sockets.js";
-
+import {scheduleJobsForAppointment} from "../scheduling/schedule_appointment.ts"
 
 
 
@@ -207,62 +206,8 @@ const update_appointment_status = asynchandler(async (req, res) => {
 
   if (status.toLowerCase() === "accepted") {
 
-    // Use the populated time slot data
-    const timeSlot = appointment.TimeSlot;
-
-    if (!timeSlot || !timeSlot.Day || !timeSlot.StartTime) {
-      console.error(`[API] Appointment ${appointment.id} is missing TimeSlot data. Cannot schedule job.`);
-    } else {
-
-
-      // 1. Construct the full appointment time from the slot's day and time
-      //    (This assumes startTime is a string like "10:00" or "17:30")
-      const [hours, minutes] = timeSlot.StartTime.split(':').map(Number);
-      const appointmentTime = new Date(appointment.date);
-      console.log("appointment time", appointmentTime)
-
-      // Set the time on the correct date (in the server's local timezone)
-      appointmentTime.setHours(hours, minutes, 0, 0); // H, M, S, MS
-
-      const now = new Date();
-      console.log("now", now)
-      const isToday = (appointmentTime.toDateString() === now.toDateString());
-      console.log("istoday->", isToday)
-
-      if (isToday) {
-        // 3. It's today. Calculate delay and schedule.
-        const delay = appointmentTime.getTime() - now.getTime();
-
-        if (delay > 0) {
-          await notificationQueue.add(
-            `notify-job:${appointment.id}`, // Job name
-            {
-
-              appointmentId: appointment.id,
-              doctorId: appointment.doctor,
-              patientId: appointment.patient
-            },
-            {
-              delay: delay 
-            }
-          );
-         
-
-          console.log(`[API] Job scheduled for appointment ${appointment.id}. Will run in ${delay}ms.`);
-
-
-
-          //sending messagesocket
-        } else {
-          // It's today but in the past.
-          console.log(`[API] Appointment ${appointment.id} is for today but already in the past. No job scheduled.`);
-        }
-      } else {
-        // 4. It's not today. Do not schedule.
-        console.log(`[API] Appointment ${appointment.id} is for a future date (${appointmentTime.toDateString()}). No job scheduled.`);
-      }
-
-    }
+    await scheduleJobsForAppointment(appointment)
+    
   }
 
   // ... (rest of your logic for Stripe) ...

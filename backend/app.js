@@ -15,7 +15,7 @@ import passport from "./middlewares/auth.google.js"
 import { createBullBoard } from '@bull-board/api';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
 import { ExpressAdapter } from '@bull-board/express';
-import notificationQueue from "./queue/notification.queue.js"; // <-- Moved to top
+ // <-- Moved to top
 
 // Routes and Handlers
 import { redisSub } from './db/redisconnect.js';
@@ -29,7 +29,7 @@ import authorizer from "./Routes/authorizer.js";
 import doctorSocketHandler from "./sockets/doctor.sockets.js";
 import notify from "./Routes/notification.js";
 import patientSocketHandler from "./sockets/patient.sockets.js";
-
+import { startQueue } from "./queues/start.queue.js";
 
 const app = express()
 
@@ -48,7 +48,7 @@ app.use(express.json({limit:'100mb'}));
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath("/admin/queues"); // <-- Path
 createBullBoard({
-  queues: [new BullMQAdapter(notificationQueue)],
+  queues: [new BullMQAdapter(startQueue)],
   serverAdapter,
 });
 app.use('/admin/queues', serverAdapter.getRouter()); 
