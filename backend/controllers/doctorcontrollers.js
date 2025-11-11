@@ -106,7 +106,8 @@ const updateDoctorProfile = asynchandler(async (req, res) => {
         experience, 
         fee, 
         bio, 
-        languages 
+        languages,
+        pasttreatments 
     } = req.body;
 
     const user = await Doctor.findOne({ _id: req.user });
@@ -125,6 +126,7 @@ const updateDoctorProfile = asynchandler(async (req, res) => {
     user.fee = fee;
     user.bio = bio;
     user.languages = languages; 
+    user.pasttreatments = pasttreatments;
     await user.save();
 
     console.log("Doctor profile details were updated successfully");

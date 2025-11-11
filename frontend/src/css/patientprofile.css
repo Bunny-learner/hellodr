@@ -304,7 +304,68 @@
   display: inline-block;
 }
 
-/* --- Responsive Design --- */
+/* === Existing styles kept intact === */
+.profile-main-container {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #ffffff;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* ... (your full CSS above remains unchanged) ... */
+
+/* === Allergy Section Additions === */
+.allergy-list-container {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.allergy-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.allergy-tag {
+  background-color: #e6f8f2;
+  color: #0ebe7e;
+  padding: 6px 12px;
+  border-radius: 15px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.remove-allergy {
+  cursor: pointer;
+  color: #ff4d4d;
+  font-weight: bold;
+}
+
+.no-allergies-text {
+  font-size: 14px;
+  color: #888;
+  margin-top: 5px;
+}
+
+.add-allergy-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.add-allergy-input input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+
 
 /* Tablet screens (≤1024px) */
 @media (max-width: 1024px) {
@@ -456,3 +517,5 @@
     font-size: 14px;
   }
 }
+
+

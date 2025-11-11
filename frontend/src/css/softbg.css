@@ -1,0 +1,49 @@
+.softbg-wrapper {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+
+  /* More contrast but still professional */
+  background: linear-gradient(
+    135deg,
+    #bcdcff,   /* brighter sky */
+    #8fcaff,   /* noticeable blue */
+    #a4f0ff,   /* aqua pop */
+    #d6e8ff    /* soft fade */
+  );
+  background-size: 400% 400%;
+  animation: softbgShift 10s ease-in-out infinite;
+}
+
+/* Soft glow overlay */
+.softbg-wrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 255, 255, 0.42) 0%,
+    rgba(255, 255, 255, 0.10) 45%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes softbgShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  33% {
+    background-position: 50% 100%;
+  }
+  66% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}

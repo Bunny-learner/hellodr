@@ -6,13 +6,12 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userID, setUserID] = useState(null);
   const [user, setUser] = useState(null);
-  const [role,setrole]=useState(null)
+  const [role, setRole] = useState(null);
+  const [loading, setLoading] = useState(true);   
 
-  
   useEffect(() => {
     const checkAuth = async () => {
       try {
-      
         const res = await fetch("http://localhost:8000/verify/auth", {
           method: "GET",
           credentials: "include",
@@ -20,18 +19,25 @@ export const AuthProvider = ({ children }) => {
 
         if (res.status === 200) {
           const data = await res.json();
-          console.log(" Auth confirmed:", data);
-          setrole(data.role);
-          setUserID(data.id)
+          console.log("Auth confirmed:", data);
+
+          setRole(data.role);
+          setUserID(data.id);
+          setUser(data.user);
           setIsAuthenticated(true);
         } else {
-          console.log(" Not authenticated");
+          console.log("Not authenticated");
           setIsAuthenticated(false);
           setUser(null);
+          setRole(null);
         }
       } catch (err) {
-        console.error(" Error checking auth:", err);
+        console.error("Error checking auth:", err);
         setIsAuthenticated(false);
+        setUser(null);
+        setRole(null);
+      } finally {
+        setLoading(false);       // ✅ ALWAYS STOP LOADING
       }
     };
 
@@ -41,11 +47,23 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setIsAuthenticated(false);
     setUser(null);
-    // Optionally call backend logout route
+    setRole(null);
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated,setUserID, setUser,userID,role, setIsAuthenticated, logout }}>
+    <AuthContext.Provider
+      value={{
+        isAuthenticated,
+        user,
+        userID,
+        role,
+        setUser,
+        setUserID,
+        setIsAuthenticated,
+        logout,
+        loading,     
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

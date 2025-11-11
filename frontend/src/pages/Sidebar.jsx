@@ -1,6 +1,6 @@
 import React from 'react';
 import '../css/sidebar.css';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from "react-router-dom"
 import {
 FaBell,
 FaCalendarCheck,

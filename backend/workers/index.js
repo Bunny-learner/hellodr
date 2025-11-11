@@ -3,7 +3,7 @@ import redisConnection  from "../db/redisconnect.js"
 import {dbconnection} from "../db/dbconnect.js"
 import { startProcessor } from "../processors/start.processor.js";
 import { reminderProcessor } from "../processors/reminder.processor.js";
-// import { timeoutProcessor } from "../processors/timeout.processor.js";
+import { timeoutProcessor } from "../processors/timeout.processor.js";
 import { hydratorProcessor } from "../processors/hydrator.processor.js";
 
 
@@ -23,7 +23,7 @@ new Worker(
 
 // REMINDER
 new Worker(
-  "reminderQueue",
+  "reminder_Queue",
   reminderProcessor,
   {
     connection:redisConnection,
@@ -31,15 +31,15 @@ new Worker(
   }
 );
 
-// // TIMEOUT
-// new Worker(
-//   "timeoutQueue",
-//   timeoutProcessor,
-//   {
-//     connection,
-//     concurrency: 3,
-//   }
-// );
+// TIMEOUT
+new Worker(
+  "timeoutQueue",
+  timeoutProcessor,
+  {
+    connection:redisConnection,
+    concurrency: 5,
+  }
+);
 
 // HYDRATOR
 new Worker(

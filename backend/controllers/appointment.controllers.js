@@ -8,9 +8,10 @@ import { TimeSlot } from "../models/timeslot.js"
 import { Transaction } from "../models/transactions.js"
 import mongoose from "mongoose"
 import { redisPub } from '../db/redisconnect.js';
+import { Patient } from "../models/patient.js"
 import doctorSocketHandler from "../sockets/doctor.sockets.js";
-import {scheduleJobsForAppointment} from "../scheduling/schedule_appointment.js"
-
+import { scheduleJobsForAppointment } from "../scheduling/schedule_appointment.js"
+import { scheduleRemindersForAppointment } from "../scheduling/schedule_reminder.js";
 
 
 
@@ -31,20 +32,20 @@ const parseDMY = (dateString) => {
 };
 
 
-const itime=async(appointment)=>{
+const itime = async (appointment) => {
   const utcDate = new Date(appointment.date);
 
-const indiaTime = utcDate.toLocaleString("en-IN", {
-  timeZone: "Asia/Kolkata",
-  year: "numeric",
-  month: "short",
-  day: "numeric",
-  hour: "2-digit",
-  minute: "2-digit",
-  second: "2-digit",
-  hour12: true
-});
-return indiaTime
+  const indiaTime = utcDate.toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true
+  });
+  return indiaTime
 }
 const book_appointment = asynchandler(async (req, res) => {
   const {
@@ -153,21 +154,22 @@ const book_appointment = asynchandler(async (req, res) => {
   const populatedAppointment = await Appointment.findById(appointment._id)
     .populate("TimeSlot");
 
-  
-let indiaTime=await itime(appointment)
-   redisPub.publish(`user:${appointment.doctor}`, JSON.stringify({
-            data: {
-             message :`Patient ${appointment.name} (${gender}, ${age} years old) has booked an ${mode.toLowerCase()} appointment on ${indiaTime}.`,
-             doctorid: appointment.doctor,
-             patientid:appointment.patient,
-              appointmentid: appointment.id,
-              isappointment: true,
-              from: "patient",
-              to:"doctor"
-            }
-          }));
+
+  let indiaTime = await itime(appointment)
+  redisPub.publish(`user:${appointment.doctor}`, JSON.stringify({
+    type: "booking",
+    data: {
+      message: `Patient ${appointment.name} (${gender}, ${age} years old) has booked an ${mode.toLowerCase()} appointment on ${indiaTime}.`,
+      doctorid: appointment.doctor,
+      patientid: appointment.patient,
+      appointmentid: appointment.id,
+      isappointment: true,
+      from: "patient",
+      to: "doctor"
+    }
+  }));
   res.status(201).json({
-    sucess:true,
+    sucess: true,
     appointment: populatedAppointment,
   });
 });
@@ -175,17 +177,47 @@ let indiaTime=await itime(appointment)
 
 
 
+
 const get_all_appointments = asynchandler(async (req, res) => {
   const userID = req.user.id;
-  const userType = req.userType;
+  const userType = req.userType;     // 'doctor' or 'patient'
+  let { status, date } = req.query;  // <-- pick filters from query
+
+  // Build base query
+  const query = { [userType]: userID };
+
+  
+  if (status && status.toLowerCase() !== "all") {
+    // normalize lowercase
+    status = status.toLowerCase();
+
+    // UI sends "rejected" → DB may store "cancelled"
+    if (status === "rejected") {
+      query["status"] = { $in: ["rejected", "cancelled"] };
+    } else {
+      query["status"] = status;
+    }
+  }
+if (date) {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+
+  const next = new Date(d);
+  next.setDate(d.getDate() + 1);
+
+  query["date"] = { $gte: d, $lte: next };   
+}
 
 
-  const appointments = await Appointment.find({ [userType]: userID })
-    .populate('doctor', 'name speciality fee profilePic address roomid') // get doctor info
-    .populate('TimeSlot'); // populate the timeslot details
+  const appointments = await Appointment.find(query)
+    .populate("doctor", "name speciality fee profilePic address roomid")
+    .populate("TimeSlot");
 
-  res.status(200).json(new ApiResponse("Appointments fetched successfully", appointments));
+  return res
+    .status(200)
+    .json(new ApiResponse("Appointments fetched successfully", appointments));
 });
+
 
 
 
@@ -201,10 +233,9 @@ const update_appointment_status = asynchandler(async (req, res) => {
 
   // Good: You are populating the TimeSlot here.
   const appointment = await Appointment.findById(appointmentID)
-  .populate("TimeSlot")
-  .populate("patient");
+    .populate("TimeSlot")
+    .populate("patient");
 
-  console.log(appointment)
   if (!appointment) {
     res.status(404);
     throw new ApiError("Appointment not found");
@@ -213,26 +244,30 @@ const update_appointment_status = asynchandler(async (req, res) => {
   appointment.status = status;
   await appointment.save();
 
- let indiaTime=await itime(appointment)
+  let indiaTime = await itime(appointment)
 
 
 
-   redisPub.publish(`user:${appointment.patient}`, JSON.stringify({
-            data: {
-              message: `Your doctor appointment status is ${status} for the slot  ${appointment.TimeSlot.StartTime}-${appointment.TimeSlot.EndTime} booked on ${indiaTime} `,
-              doctorid: appointment.doctor,
-              patientid:appointment.patient,
-              appointmentid: appointment.id,
-              isappointment: true,
-              from:"doctor",
-              to:"patient"
-            }
-          }));
+  redisPub.publish(`user:${appointment.patient}`, JSON.stringify({
+    type: "status",
+    data: {
+      message: `Your doctor appointment status is ${status} for the slot  ${appointment.TimeSlot.StartTime}-${appointment.TimeSlot.EndTime} booked on ${indiaTime} `,
+      doctorid: appointment.doctor,
+      patientid: appointment.patient,
+      appointmentid: appointment.id,
+      isappointment: true,
+      from: "doctor",
+      to: "patient"
+    }
+  }));
 
+  //ACCEPTED
   if (status.toLowerCase() === "accepted") {
 
     await scheduleJobsForAppointment(appointment)
+    await scheduleRemindersForAppointment(appointment)
     
+
   }
 
   // ... (rest of your logic for Stripe) ...
@@ -244,28 +279,36 @@ const update_appointment_status = asynchandler(async (req, res) => {
 
     if (transaction && transaction.stripePaymentIntentId) {
       try {
-        let stripeResult;
+        let stripeResult="";
 
         if (info === "proceed") {
           stripeResult = await stripe.paymentIntents.capture(transaction.stripePaymentIntentId);
           transaction.paymentStatus = "paid";
+          await transaction.save();
+          console.log("Stripe processed:", stripeResult);
+          
         } else if (info === "cancel") {
           stripeResult = await stripe.paymentIntents.cancel(transaction.stripePaymentIntentId);
           transaction.paymentStatus = "failed";
+          await transaction.save();
+          console.log("Stripe processed:", stripeResult);
+          
         }
+        else
+          console.log("stripe processing is being skipped ")
+        
 
-        await transaction.save();
-        console.log("Stripe processed:", stripeResult);
+
+        
       } catch (err) {
         console.error("Stripe processing error:", err);
       }
     }
   }
 
-  // ... (rest of your logic for cancellation) ...
   if (status.toLowerCase() === "cancelled") {
     try {
-      // Use the populated ID directly
+      // ✅ slot update
       const slot = await TimeSlot.findById(appointment.TimeSlot._id);
 
       if (slot) {
@@ -276,7 +319,33 @@ const update_appointment_status = asynchandler(async (req, res) => {
         }
 
         await slot.save();
-        console.log(`Slot ${slot._id} updated: booked=${slot.booked}, status=${slot.status}`);
+
+        // ✅ FIX VALUES
+        const patient = appointment.patient;
+        const mode = appointment.mode;
+        const age = appointment.age;   // you stored age above
+        const gender = patient.gender || "N/A";
+
+        redisPub.publish(
+          `user:${patient._id}`,
+          JSON.stringify({
+            type: "cancelled",
+            data: {
+              message: `Dear ${patient.name}, your ${mode.toLowerCase()} appointment on ${indiaTime} has been cancelled due to doctor unavailability.`,
+              appointment,
+              doctorid: appointment.doctor,
+              patientid: appointment.patient._id,
+              appointmentid: appointment._id,
+              isappointment: true,
+              from: "system",
+              to: "patient",
+            },
+          })
+        );
+
+        console.log(
+          `Slot ${slot._id} updated: booked=${slot.booked}, status=${slot.status}`
+        );
       } else {
         console.warn(`TimeSlot not found for appointment ${appointmentID}`);
       }
@@ -284,6 +353,7 @@ const update_appointment_status = asynchandler(async (req, res) => {
       console.error("Error updating timeslot after cancellation:", err);
     }
   }
+
 
   res.status(201).json({
     message: "Appointment status updated successfully",
@@ -404,7 +474,16 @@ const gettransactions = asynchandler(async (req, res) => {
 
 const authorize = asynchandler(async (req, res) => {
   console.log("inside the authorize handler------->::::::")
-  res.status(200).json({ message: "User is authenticated", role: req.role, id: req.userId })
+
+  const { role, userId } = req
+
+  let user = {}
+  if (role == "patient")
+    user = await Patient.findById(userId)
+  else
+    user = await Doctor.findById(userId)
+
+  res.status(200).json({ message: "User is authenticated", role: role, id: userId, user: user })
 })
 
 export { book_appointment, authorize, gettransactions, getsession, get_all_appointments, update_appointment_status, get_appiontment }

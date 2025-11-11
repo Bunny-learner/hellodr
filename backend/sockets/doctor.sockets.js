@@ -1,51 +1,63 @@
 import { Doctor } from "../models/doctor.js";
+import { redisPub } from '../db/redisconnect.js';
 
-export default async function doctorSocket(
-  io,
-  socket,
-  id,
-  userConnections
-) {
+export const doctorConnections = new Map();
+
+export default async function doctorSocket(io, socket, id, userConnections) {
+
   console.log(`👨‍⚕️ Doctor connected: ${socket.id} (User ID: ${id})`);
 
-  
   userConnections.set(id, socket);
 
-  
   try {
     const doctor = await Doctor.findById(id);
-    if (!doctor) {
-      console.log("❌ Doctor not found in DB");
-    } else {
+    if (doctor) {
       doctor.socketid = socket.id;
       await doctor.save();
-
-      
-      if (doctor.roomid) {
-        socket.join(doctor.roomid);
-        console.log(`✅ Doctor ${id} joined room: ${doctor.roomid}`);
-      }
-
       console.log(`✅ Saved socket for doctor: ${id}`);
+    } else {
+      console.log("❌ Doctor not found in DB");
     }
   } catch (err) {
     console.log("❌ Failed to store doctor socket ID", err);
   }
 
-  
+
+  socket.on("remove_patient", ({ roomid, appointmentId, doctorId, patientId }) => {
+  io.to(roomid).emit("consultation_over", {
+    appointmentId,
+    doctorId,
+    patientId,
+  });
+});
+
+
+
+
   socket.on("msg_fromdoc", ({ msg, roomid }) => {
-    console.log("💬 doctor sent:", msg, roomid);
     socket.to(roomid).emit("send_topat", msg);
   });
 
 
-  socket.on("doctor_typing",({roomid})=>{
-let msg="doctor is typing"
-socket.to(roomid).emit("doc_types",msg)
-  })
-  
+  socket.on("doctor_typing", ({ roomid }) => {
+    socket.to(roomid).emit("doc_types", "doctor is typing");
+  });
+
+
   socket.on("disconnect", () => {
     console.log(`❌ Doctor ${id} disconnected: ${socket.id}`);
+
+    const old = doctorConnections.get(id);
+    if (old && old.roomId) {
+      roomPresence[old.roomId].doctor = false;
+      socket.to(old.roomId).emit("presence_change", {
+        who: "doctor",
+        present: false
+      });
+    }
+
+    doctorConnections.delete(id);
     userConnections.delete(id);
   });
+
 }

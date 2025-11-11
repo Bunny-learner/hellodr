@@ -16,6 +16,7 @@ import Success from './pages/patient/sucess'
 import Failure from './pages/patient/failure'
 import Notification from './pages/notifications';
 import ChatPage from './pages/chatpage';
+import WaitingRoom from './pages/WaitingRoom'
 
 
 const AppointmentReview =lazy(()=>import('./pages/patient/appointmentreview'))
@@ -44,6 +45,9 @@ function App() {
         <Route path="/patient/reset" element={<Resetpassword />} />
         <Route path="/doctor/signup" element={<Doctorsignup />} />
         <Route path="/doctor/login" element={<Doctorlogin />} />
+        <Route path="/waiting-room/:roomid" element={<WaitingRoom />}
+  />
+
         <Route path="/chat/:roomid" element={<ChatPage />} />
         
 

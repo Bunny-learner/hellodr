@@ -19,6 +19,7 @@ import { ExpressAdapter } from '@bull-board/express';
 
 // Routes and Handlers
 import { redisSub } from './db/redisconnect.js';
+import setter from "./Routes/settings.js"
 import hooker from "./Routes/webhook.js";
 import doctor from "./Routes/doctor.js"
 import patient from "./Routes/patient.js"
@@ -31,6 +32,7 @@ import socketMain from "./sockets/index.js";
 import {  reminderQueue } from "./queues/reminder.queue.js";
 import { startQueue } from "./queues/start.queue.js";
 import { hydratorQueue } from "./queues/hydrator.queue.js";
+
 
 const app = express()
 
@@ -77,6 +79,7 @@ app.use('/auth/google',google_auth)
 app.use('/auth/faceboook',face_auth)
 app.use('/appointment',appointment)
 app.use('/verify',authorizer)
+app.use("/settings",setter)
 
 
 

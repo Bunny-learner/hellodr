@@ -236,8 +236,6 @@ export default function PatientAppointments() {
     // --- UPDATED handleJoinCall ---
     // Now uses the context to find the roomid
     const handleJoinCall = (appointment) => {
-
-
        
         if (!doctors || doctors.length === 0) {
             toast.error("Doctor list not available. Please refresh the page.");
@@ -264,7 +262,8 @@ export default function PatientAppointments() {
             roomid:fullDoctorProfile.roomid
         })
         toast.success("Joining the room...");
-        navigate(`/chat/${fullDoctorProfile.roomid}?consultationId=${appointment._id}`);
+      navigate(`/waiting-room/${fullDoctorProfile.roomid}?consultationId=${appointment._id}&user=patient`);
+
     };
 
 

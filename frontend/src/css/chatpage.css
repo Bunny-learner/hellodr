@@ -24,6 +24,20 @@
 
 
 
+
+.message-wrapper.system .message-bubble {
+    background: #e6e6e6;
+    color: #333;
+    text-align: center;
+    border-radius: 6px;
+}
+
+.message-wrapper.system {
+    justify-content: center;
+}
+
+
+
 video{
     max-height: 300px;
     max-width: 300px;
@@ -477,4 +491,30 @@ body {
 .tool-btn {
     width: 100%;
     justify-content: flex-start;
+}
+
+
+
+/* === END CONSULTATION BUTTON === */
+.action-btn.btn-end {
+    background-color: #dc3545;      /* Red tone */
+    border-color: #dc3545;
+    color: var(--text-light);
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: var(--border-radius-md);
+    transition: all 0.25s ease;
+}
+
+.action-btn.btn-end:hover {
+    background-color: #b62b37;
+    border-color: #b62b37;
+    color: var(--text-light);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(220, 53, 69, 0.25);
+}
+
+.action-btn.btn-end:active {
+    transform: scale(0.98);
+    box-shadow: none;
 }

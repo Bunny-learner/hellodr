@@ -77,6 +77,32 @@ const userSchema = new mongoose.Schema({
     sid:{
         type:String
     },
+     preferences: {
+        remindertime: {
+            type: Date,
+            default: null,
+        },
+        channels: {
+            type: [String],
+            default: [],    
+        },
+        whatsappNumber: {
+            type: String,
+            default: null,
+        },
+        smsNumber: {
+            type: String,
+            default: null,
+        },
+        email: {
+            type: String,
+            default: null,
+        },
+    },
+    pasttreatments:{
+        type:[String],
+        default:[]
+    },
     refreshtoken: {
         type: String,
         default: null

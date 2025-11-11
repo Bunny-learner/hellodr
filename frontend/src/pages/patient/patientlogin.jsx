@@ -3,7 +3,7 @@ import { set, useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import { LinearProgress, Button } from '@mui/material';
-import { useAuth } from '../../pages/AuthContext';
+import { useAuth } from '../AuthContext';
 import toast, { Toaster } from 'react-hot-toast';
 import '../../css/signup.css';
 
@@ -48,20 +48,24 @@ export default function patientlogin() {
       }),
       credentials: 'include'
     })
-      .then((res) => {
-    setUser(data.user);
-    setIsAuthenticated(true);
-    setLoading(false);
-    btn.disabled = false;
+      .then(async (res) => {
+      const result = await res.json();    
 
-    if (res.status === 201) {
-        toast.error("Login failed!");
-    } else if (res.status === 202) {
+      if (res.status === 202) {
+        setUser(result.user);             
+        setIsAuthenticated(true);
         navigate('/patient/home?alert=Login was Successful');
-    } else {
+      } 
+      else if (res.status === 201) {
+        toast.error("Login failed!");
+      } 
+      else {
         toast.error("This mail is not registered please SignUp.");
-    }
-})
+      }
+
+      setLoading(false);
+      btn.disabled = false;
+    })
       .catch((err) => console.log(err))
 
 
