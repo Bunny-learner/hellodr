@@ -97,7 +97,7 @@ export default function PatientHome() {
       <section className="content-section">
         <div className="navbar-center">
           <div className="navbar-search">
-            <FiSearch className="search-icon" />
+            <FiSearch className="search-icon "  />
             <input type="text" value={text} placeholder="Search doctors, specialties..." onChange={show} />
           </div>
         </div>

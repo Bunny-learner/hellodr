@@ -31,16 +31,12 @@ export default function SlotBooking() {
   const getNextDateForDay = (dayName) => {
     const today = new Date();
     const days = [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
+      "Sunday", "Monday", "Tuesday", "Wednesday",
+      "Thursday", "Friday", "Saturday",
     ];
     const dayIndex = days.indexOf(dayName);
     if (dayIndex === -1) return null;
+
     const diff = (dayIndex - today.getDay() + 7) % 7;
     const nextDate = new Date(today);
     nextDate.setDate(today.getDate() + diff);
@@ -64,6 +60,7 @@ export default function SlotBooking() {
     if (!doctorId) return;
 
     let mounted = true;
+
     const fetchSlots = async () => {
       setLoading(true);
       setError(null);
@@ -72,6 +69,7 @@ export default function SlotBooking() {
           headers: { "Content-Type": "application/json", doctorid: doctorId },
           credentials: "include",
         });
+
         if (!res.ok) throw new Error("Failed to fetch time slots");
         const data = await res.json();
 
@@ -81,6 +79,7 @@ export default function SlotBooking() {
 
           const slotMode = (slot.mode || "offline").toLowerCase();
           const hour = parseInt(String(slot.StartTime).split(":")[0], 10);
+
           let period = "Morning";
           if (hour >= 12 && hour < 17) period = "Afternoon";
           else if (hour >= 17) period = "Evening";
@@ -100,8 +99,8 @@ export default function SlotBooking() {
             };
           }
 
-          const targetModeBucket = slotMode === "online" ? "online" : "offline";
-          grouped[key][targetModeBucket][period].push({
+          const targetBucket = slotMode === "online" ? "online" : "offline";
+          grouped[key][targetBucket][period].push({
             label: `${slot.StartTime} - ${slot.EndTime}`,
             fee: slot.fee ?? doctorProfile?.fee ?? 0,
             limit: slot.limit ?? 0,
@@ -116,20 +115,21 @@ export default function SlotBooking() {
         arr.sort((a, b) => a.dateObj - b.dateObj);
         setAvailabilityData(arr);
 
-        const firstWithMode = arr.find(
+        const firstDayWithMode = arr.find(
           (d) =>
-            d[mode] &&
-            (d[mode].Morning.length +
+            d[mode].Morning.length +
               d[mode].Afternoon.length +
-              d[mode].Evening.length) >
-              0
+              d[mode].Evening.length >
+            0
         );
-        if (firstWithMode) setSelectedDayId(firstWithMode.id);
+
+        if (firstDayWithMode) setSelectedDayId(firstDayWithMode.id);
         else if (arr.length > 0) setSelectedDayId(arr[0].id);
         else setSelectedDayId("");
+
       } catch (err) {
         if (!mounted) return;
-        setError(err.message || "Unknown error");
+        setError(err.message || "Unknown error occurred.");
       } finally {
         if (mounted) setLoading(false);
       }
@@ -139,38 +139,36 @@ export default function SlotBooking() {
     return () => {
       mounted = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [doctorId, doctorProfile]);
 
+
   useEffect(() => {
-    if (!availabilityData || availabilityData.length === 0) return;
+    if (!availabilityData.length) return;
 
     const current = availabilityData.find((d) => d.id === selectedDayId);
-    const hasInCurrent =
+    const currentHasSlots =
       current &&
       (current[mode].Morning.length +
         current[mode].Afternoon.length +
-        current[mode].Evening.length) >
-        0;
+        current[mode].Evening.length >
+        0);
 
-    if (!hasInCurrent) {
-      const firstWithMode = availabilityData.find(
+    if (!currentHasSlots) {
+      const firstValid = availabilityData.find(
         (d) =>
-          (d[mode].Morning.length +
+          d[mode].Morning.length +
             d[mode].Afternoon.length +
-            d[mode].Evening.length) >
+            d[mode].Evening.length >
           0
       );
-      if (firstWithMode) {
-        setSelectedDayId(firstWithMode.id);
-        setSelectedSlot(null);
-        setConsultFee(null);
-      } else {
+      if (firstValid) {
+        setSelectedDayId(firstValid.id);
         setSelectedSlot(null);
         setConsultFee(null);
       }
     }
   }, [mode, availabilityData, selectedDayId]);
+
 
   const hasOnlineSlots = availabilityData.some(
     (d) =>
@@ -179,6 +177,7 @@ export default function SlotBooking() {
         d.online.Evening.length >
       0
   );
+
   const hasOfflineSlots = availabilityData.some(
     (d) =>
       d.offline.Morning.length +
@@ -187,18 +186,19 @@ export default function SlotBooking() {
       0
   );
 
+
   const goto = () => {
     if (!selectedSlot || !doctorProfile) return;
-    const selectedDayData = availabilityData.find((d) => d.id === selectedDayId);
-    if (!selectedDayData) return;
+    const dayData = availabilityData.find((d) => d.id === selectedDayId);
+    if (!dayData) return;
 
     const appointmentData = {
       doctorId: doctorProfile._id,
       doctorName: doctorProfile.name,
       mode,
       fee: consultFee ?? doctorProfile.fee,
-      date: selectedDayData.date,
-      dayName: selectedDayData.dayName,
+      date: dayData.date,
+      dayName: dayData.dayName,
       timeSlot: selectedSlot.label.split(" - ")[0],
     };
 
@@ -206,19 +206,21 @@ export default function SlotBooking() {
     navigate("/patient/appointment/form");
   };
 
+
   if (loading) return <HeartLoader />;
   if (error) return <p className="booking-card-error">{error}</p>;
   if (!doctorProfile) return null;
 
-  const selectedDayData =
-    availabilityData.find((d) => d.id === selectedDayId) || null;
+
+  const selectedDayData = availabilityData.find(
+    (d) => d.id === selectedDayId
+  );
+
   const modeSlots = selectedDayData ? selectedDayData[mode] : null;
 
-  const isToday = selectedDayData
-    ? selectedDayData.dateObj.toDateString() === new Date().toDateString()
-    : false;
+  const isToday =
+    selectedDayData?.dateObj.toDateString() === new Date().toDateString();
 
-  // 🔹 Filter helper: only keep slots that are future if today
   const isFutureSlot = (slotLabel) => {
     const [startTime] = slotLabel.split("-");
     const [hours, minutes] = startTime.trim().split(":").map(Number);
@@ -228,147 +230,210 @@ export default function SlotBooking() {
     return slotTime > now;
   };
 
+
   return (
-    <div className="booking-card" id="book">
-      <header className="doctor-header">
-        <div className="doctor-left">
-          <img
-            src={doctorProfile.profilePic}
-            alt={doctorProfile.name}
-            className="doctor-avatar"
-          />
-        </div>
+    <div className="booking-page-container">
+      <button onClick={() => navigate(-1)} className="back-button">
+        &larr; Back
+      </button>
 
-        <div className="doctor-main">
-          <h1 className="doctor-name">
-            {doctorProfile.name}{" "}
-            <Link
-              to={`/patient/${doctorId}`}
-              className="info-icon-slot"
-              title="View Profile"
+      <div className="booking-layout">
+        <div className="booking-main">
+          
+          <div className="booking-doctor-header">
+            <img
+              src={doctorProfile.profilePic}
+              alt={doctorProfile.name}
+              className="doctor-avatar"
+            />
+            <div className="doctor-main">
+              <h1 className="doctor-name">
+                {doctorProfile.name}
+                <Link to={`/patient/${doctorId}`} className="info-icon-slot">
+                  view profile
+                </Link>
+              </h1>
+              <p className="doctor-sub">
+                {doctorProfile.speciality} • {doctorProfile.experience} yrs
+                experience
+              </p>
+            </div>
+          </div>
+
+          <div className="mode-toggle">
+            <button
+              className={mode === "offline" ? "active" : ""}
+              onClick={() => setMode("offline")}
+              disabled={!hasOfflineSlots}
             >
-              view profile
-            </Link>
-          </h1>
+              Offline
+            </button>
+            <button
+              className={mode === "online" ? "active" : ""}
+              onClick={() => setMode("online")}
+              disabled={!hasOnlineSlots}
+            >
+              Online
+            </button>
+          </div>
 
-          <p className="doctor-sub">
-            {doctorProfile.speciality} • {doctorProfile.experience} yrs
-            experience
-          </p>
+          <div className="availability-details">
+            <h3 className="slots-title">Select a Slot</h3>
 
-          <div className="doctor-meta-grid" style={{ marginTop: 8 }}>
-            <div className="meta-item">
-              <span className="meta-key">🏥 Hospital</span>
-              <span className="meta-val">{doctorProfile.hospital}</span>
-            </div>
-            <div className="meta-item">
-              <span className="meta-key">⭐ Rating</span>
-              <span className="meta-val">{doctorProfile.rating ?? "N/A"}</span>
-            </div>
+            <DayTabs
+              availabilityData={availabilityData}
+              mode={mode}
+              selectedDayId={selectedDayId}
+              setSelectedDayId={setSelectedDayId}
+              setSelectedSlot={setSelectedSlot}
+              setConsultFee={setConsultFee}
+            />
+
+            {modeSlots ? (
+              (() => {
+                const allVisible = [
+                  ...modeSlots.Morning.filter(
+                    (slot) => !isToday || isFutureSlot(slot.label)
+                  ),
+                  ...modeSlots.Afternoon.filter(
+                    (slot) => !isToday || isFutureSlot(slot.label)
+                  ),
+                  ...modeSlots.Evening.filter(
+                    (slot) => !isToday || isFutureSlot(slot.label)
+                  ),
+                ];
+
+                if (allVisible.length === 0) {
+                  return (
+                    <p className="no-slots-message">
+                      No slots available {isToday ? "for the rest of today." : "for this day."}
+                    </p>
+                  );
+                }
+
+                return ["Morning", "Afternoon", "Evening"]
+                  .map((period) => {
+                    const visibleSlots =
+                      modeSlots[period]
+                        ?.filter(
+                          (slot) => !isToday || isFutureSlot(slot.label)
+                        )
+                        .sort((a, b) => {
+                          const sA = a.label.split("-")[0].trim();
+                          const sB = b.label.split("-")[0].trim();
+                          const [hA, mA] = sA.split(":").map(Number);
+                          const [hB, mB] = sB.split(":").map(Number);
+                          return hA * 60 + mA - (hB * 60 + mB);
+                        }) || [];
+
+                    if (visibleSlots.length === 0) return null;
+
+                    return (
+                      <div key={period} className="time-period">
+                        <h4 className="time-title">{period}</h4>
+                        <div className="slots-grid">
+                          {visibleSlots.map((slot) => (
+                            <button
+                              key={slot.label}
+                              className={`slot-btn ${
+                                selectedSlot?.label === slot.label
+                                  ? "slot-selected"
+                                  : ""
+                              }`}
+                              onClick={() => {
+                                setSelectedSlot(slot);
+                                setConsultFee(slot.fee);
+                              }}
+                            >
+                              <div className="slot-label">{slot.label}</div>
+                              <div className="slot-info">
+                                {mode === "offline" && (
+                                  <span>
+                                    {Math.max(
+                                      0,
+                                      (slot.limit || 0) - (slot.booked || 0)
+                                    )}{" "}
+                                    left
+                                  </span>
+                                )}
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })
+                  .filter(Boolean);
+              })()
+            ) : (
+              <p className="no-slots-message">
+                No slots available for this day or mode.
+              </p>
+            )}
           </div>
         </div>
 
-        <aside className="doctor-side">
-          <div className="price">
-            <div className="price-label">Consultation Fee</div>
-            <div className="price-val">
-              ₹{consultFee !== null ? consultFee : doctorProfile.fee}
+        <div className="booking-sidebar">
+          <div className="booking-summary-card profile-card">
+            <h2 className="profile-card-title">Booking Summary</h2>
+
+            <div className="summary-doctor-info">
+              <img
+                src={doctorProfile.profilePic}
+                alt={doctorProfile.name}
+                className="summary-doctor-avatar"
+              />
+              <div>
+                <h3 className="doctor-name-summary">
+                  Dr. {doctorProfile.name}
+                </h3>
+                <p className="doctor-sub-summary">
+                  {doctorProfile.speciality}
+                </p>
+              </div>
             </div>
+
+            <div className="summary-details">
+              {!selectedSlot ? (
+                <p className="summary-placeholder">
+                  Please select a day and time slot.
+                </p>
+              ) : (
+                <ul className="info-list">
+                  <li>
+                    <strong>Date</strong>
+                    <span>{selectedDayData.date}</span>
+                  </li>
+                  <li>
+                    <strong>Time</strong>
+                    <span>{selectedSlot.label}</span>
+                  </li>
+                  <li>
+                    <strong>Mode</strong>
+                    <span style={{ textTransform: "capitalize" }}>
+                      {mode}
+                    </span>
+                  </li>
+                </ul>
+              )}
+            </div>
+
+            <div className="price-display-summary">
+              <span>Consultation Fee</span>
+              <strong>
+                ₹{consultFee !== null ? consultFee : doctorProfile.fee}
+              </strong>
+            </div>
+
+            <button
+              className="btn-primary"
+              onClick={goto}
+              disabled={!selectedSlot}
+            >
+              Book Appointment
+            </button>
           </div>
-          <button
-            className="btn-primary"
-            onClick={goto}
-            disabled={!selectedSlot}
-          >
-            Book Appointment
-          </button>
-        </aside>
-      </header>
-
-      <div className="mode-toggle" role="tablist">
-        <button
-          className={mode === "offline" ? "active" : ""}
-          onClick={() => setMode("offline")}
-          disabled={!hasOfflineSlots}
-        >
-          Offline
-        </button>
-        <button
-          className={mode === "online" ? "active" : ""}
-          onClick={() => setMode("online")}
-          disabled={!hasOnlineSlots}
-        >
-          Online
-        </button>
-      </div>
-
-      <div className="availability-details">
-        <h3 className="slots-title">Slots Available</h3>
-
-        <DayTabs
-          availabilityData={availabilityData}
-          mode={mode}
-          selectedDayId={selectedDayId}
-          setSelectedDayId={setSelectedDayId}
-          setSelectedSlot={setSelectedSlot}
-          setConsultFee={setConsultFee}
-        />
-
-        {modeSlots ? (
-          ["Morning", "Afternoon", "Evening"]
-            // ✅ Filter out periods that have no slots left after filtering expired ones
-            .map((period) => {
-              const visibleSlots = modeSlots[period]
-                ?.filter((slot) => !isToday || isFutureSlot(slot.label))
-                .sort((a, b) => {
-                  const startA = a.label.split("-")[0].trim();
-                  const startB = b.label.split("-")[0].trim();
-                  const [hourA, minA] = startA.split(":").map(Number);
-                  const [hourB, minB] = startB.split(":").map(Number);
-                  return hourA * 60 + minA - (hourB * 60 + minB);
-                }) || [];
-
-              if (visibleSlots.length === 0) return null; // ✅ hide period entirely
-
-              return (
-                <div key={period} className="time-period">
-                  <h4 className="time-title">{period}</h4>
-                  <div className="slots-grid">
-                    {visibleSlots.map((slot) => (
-                      <button
-                        key={slot.label}
-                        className={`slot-btn ${
-                          selectedSlot?.label === slot.label
-                            ? "slot-selected"
-                            : ""
-                        }`}
-                        onClick={() => {
-                          setSelectedSlot(slot);
-                          setConsultFee(slot.fee);
-                        }}
-                      >
-                        <div className="slot-label">{slot.label}</div>
-                        <div className="slot-info">
-                          {mode === "offline" && (
-                            <span>
-                              {Math.max(
-                                0,
-                                (slot.limit || 0) - (slot.booked || 0)
-                              )}{" "}
-                              left
-                            </span>
-                          )}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              );
-            })
-            .filter(Boolean) // remove nulls
-        ) : (
-          <p>No slots for this day.</p>
-        )}
+        </div>
       </div>
     </div>
   );

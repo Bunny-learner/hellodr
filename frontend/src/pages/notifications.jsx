@@ -2,22 +2,18 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import {
   FaCalendarCheck,
-  FaCommentDots, // Using this as the default icon
+  FaCommentDots, 
   FaCog,
   FaCheckCircle,
   FaTrash,
 } from "react-icons/fa";
 import Circle1 from "../components/Loaders/circle1";
-// Make sure this path is correct for your project structure
 import "../css/notifications.css"; 
 
 const Notifications = () => {
   const [notifList, setNotifList] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // =====================
-  // FETCH FROM BACKEND
-  // =====================
   const fetchNotifications = async () => {
     try {
    await fetch("http://localhost:8000/getallnotify", {
@@ -45,12 +41,8 @@ const Notifications = () => {
     fetchNotifications();
   }, []);
 
-  // =====================
-  // HELPERS
-  // =====================
-  // CHANGED: Use `isread`
+ 
   const unreadNotifications = notifList.filter((n) => !n.isread);
-  // CHANGED: Use `isread`
   const readNotifications = notifList.filter((n) => n.isread);
 
   // CHANGED: Updated logic to use the notification object and `isappointment`
@@ -109,8 +101,7 @@ const Notifications = () => {
 
   const handleMarkAllRead = async () => {
     try {
-      // Optimistic UI update
-      // CHANGED: Use `isread`
+
       setNotifList(notifList.map((n) => ({ ...n, isread: true })));
       await fetch("http://localhost:8000/markallread",{
   method:"POST",
@@ -139,9 +130,7 @@ const Notifications = () => {
     }
   };
 
-  // =====================
-  // UI
-  // =====================
+  
 
   if (loading) {
     return <div className="notification-panel-loading"><Circle1/></div>;

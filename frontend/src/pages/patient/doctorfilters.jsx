@@ -16,7 +16,7 @@ export default function DoctorFilters({ apply, globalfilters }) {
     hospital: globalfilters.hospital || [],
   });
 
-  // Multi-select toggle
+  // Toggle multi-select filter
   const toggleFilter = (category, value) => {
     setLocalFilters(prev => {
       const list = prev[category] || [];
@@ -27,7 +27,7 @@ export default function DoctorFilters({ apply, globalfilters }) {
     });
   };
 
-  // Single-select (radio-like) filters
+  // Single-select filter
   const selectSingleFilter = (category, value) => {
     setLocalFilters(prev => ({
       ...prev,
@@ -35,7 +35,6 @@ export default function DoctorFilters({ apply, globalfilters }) {
     }));
   };
 
-  // Sort dropdown
   const handleSortChange = e => {
     setLocalFilters(prev => ({ ...prev, sortBy: e.target.value }));
   };
@@ -60,7 +59,6 @@ export default function DoctorFilters({ apply, globalfilters }) {
     apply(reset);
   };
 
-  
   const filterChips = (category, options, singleSelect = false) => (
     <div className="filter-chip-group">
       {options.map(opt => {
@@ -84,12 +82,26 @@ export default function DoctorFilters({ apply, globalfilters }) {
 
   return (
     <section className="doctor-filters-modern">
-      <h4>Filter Doctors</h4>
+      <div className="filters-header-row">
+        <h4>Filter Doctors</h4>
+
+        <div className="filter-buttons-top">
+          <button className="reset-btn" onClick={handleReset}>
+            Reset
+          </button>
+          <button className="apply-btn" onClick={handleApply}>
+            Apply
+          </button>
+        </div>
+      </div>
 
       {/* Languages */}
       <div className="filter-section">
         <label>Languages:</label>
-        {filterChips('languages', ['English','Hindi','Telugu','Tamil','Kannada','Bengali','Marathi','Punjabi','Malayalam'])}
+        {filterChips('languages', [
+          'English','Hindi','Telugu','Tamil','Kannada',
+          'Bengali','Marathi','Punjabi','Malayalam'
+        ])}
       </div>
 
       {/* Fees */}
@@ -116,7 +128,8 @@ export default function DoctorFilters({ apply, globalfilters }) {
         {filterChips('specialities', [
           'General Physician','Dentist','Cardiology','Neurology','Pediatrician',
           'Dermatology','Orthopedic','Gynecology','ENT','Ophthalmologist',
-          'Psychiatrist','Gastroenterologist','Urologist','Endocrinologist','Pulmonologist','Nephrologist'
+          'Psychiatrist','Gastroenterologist','Urologist','Endocrinologist',
+          'Pulmonologist','Nephrologist'
         ])}
       </div>
 
@@ -126,18 +139,13 @@ export default function DoctorFilters({ apply, globalfilters }) {
         {filterChips('availability', ['Today','Tomorrow','Morning','Afternoon','Evening','Weekends'], true)}
       </div>
 
-      {/* Gender Preference */}
+      {/* Gender */}
       <div className="filter-section">
         <label>Gender:</label>
         {filterChips('gender', ['Male','Female'], true)}
       </div>
 
-  
-  
-
-
-
-      {/* Sort By */}
+      {/* Sort */}
       <div className="filter-section">
         <label>Sort By:</label>
         <select value={localFilters.sortBy} onChange={handleSortChange} className="sort-dropdown">
@@ -146,12 +154,6 @@ export default function DoctorFilters({ apply, globalfilters }) {
           <option value="fee">Fee</option>
           <option value="rating">Rating</option>
         </select>
-      </div>
-
-      {/* Buttons */}
-      <div className="filter-buttons">
-        <button className="apply-btn" onClick={handleApply}>Apply</button>
-        <button className="reset-btn" onClick={handleReset}>Reset</button>
       </div>
     </section>
   );

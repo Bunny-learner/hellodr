@@ -1,539 +1,299 @@
-/* --- Global Styles & Variables --- */
+/* ------------------------------------------------------
+   GLOBAL THEME 
+------------------------------------------------------ */
 :root {
-  --primary-color: skyblue;
-  --secondary-color:#f5f6fa;
-  --primary-light: #ecf8f7;
-  --white: #ffffff;
-  --grey-lightest: #f8f9fa;
-  --grey-light: #f3f4f6;
-  --grey-text: #6b7280;
-  --dark-text: #1f2937;
-  --star-color: #f59e0b;
-  --border-color: #e5e7eb;
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.07);
+  --primary: #3498db;
+  --primary-light: #e8f2ff;
+  --text-dark: #1c1c1c;
+  --text-light: #6f6f6f;
+  --border: #e5e7eb;
+  --card-bg: #ffffff;
+  --shadow-sm: 0 2px 6px rgba(0,0,0,0.05);
+  --shadow-md: 0 6px 16px rgba(0,0,0,0.10);
+  --radius: 14px;
+  --transition: all 0.25s ease;
+  font-family: "Inter", sans-serif;
 }
 
-
-.name-row {
+/* ------------------------------------------------------
+   SEARCH BAR (Shared by both pages)
+------------------------------------------------------ */
+.navbar-center {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  padding: 1.4rem 0 0.8rem;
 }
 
-.info-icon {
-  color: #007bff;
-  margin-left: 8px;
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-.info-icon:hover {
-  color: #0056b3;
-}
-
-.hospital{
-  color:green;
-  font-size: 0.9rem;
-}
-
-.booknow {
-  display: inline-block;          /* makes padding work nicely */
-  background-color: #3498db;
-  color: white;
-  text-decoration: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 8px;            /* rounded corners */
-  font-weight: 600;
-  transition: all 0.3s ease;     /* smooth hover */
-  text-align: center;
-  cursor: pointer;
-}
-
-.booknow:hover {
-  background-color: #00008b;
-  transform: translateY(-2px);   /* subtle lift effect */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* slight shadow */
-}
-
-.app-container {
-  display: flex;
-  min-height: 100vh;
-}
-
-/* --- Sidebar Styles --- */
-.sidebar {
-  width: 260px;
-  background-color: var(--white);
-  border-right: 1px solid var(--border-color);
-  padding: 2rem 1.5rem;
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-}
-
-.sidebar-logo {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--primary-color);
-  text-align: center;
-  margin-bottom: 2.5rem;
-}
-
-.sidebar-nav {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  flex-grow: 1;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  padding: 0.9rem 1.2rem;
-  border-radius: 8px;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: var(--grey-text);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.nav-item svg {
-  margin-right: 1rem;
-  font-size: 1.3rem;
-  stroke-width: 2;
-}
-
-.nav-item:hover {
-  background-color: var(--grey-light);
-}
-
-.nav-item.active {
-  background-color: var(--primary-light);
-  color: var(--primary-color);
-}
-
-.sidebar-footer {
-  margin-top: auto;
-}
-
-.main-header {
-  margin-top: -1rem; 
-}
-
-.main-content {
-  flex: 1;
-  padding: 2rem 3rem;
-  overflow-y: auto;
-  max-height: 100vh; 
-  background: linear-gradient(bottom, var(--primary-color), #f8fcff 50%, #f8fcff 100%,var(--primary-color)); 
-
-}
-
-
-.main-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-}
-
-.header-greeting h2 {
-  margin: 0;
-  font-size: 1.75rem;
-}
-
-.header-greeting p {
-  margin: 0;
-  font-size: 1rem;
-  color: var(--grey-text);
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-.search-bar {
+.navbar-search {
+  width: min(720px, 90%);
   position: relative;
 }
 
-.search-bar .search-icon {
+.navbar-search input {
+  width: 100%;
+  padding: 0.9rem 1rem 0.9rem 3.2rem;
+  border-radius: 38px;
+  border: 1px solid var(--border);
+  background: #f9fafb;
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+.navbar-search input:focus {
+  border-color: var(--primary);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(52,152,219,0.18);
+  outline: none;
+}
+
+.search-icon {
   position: absolute;
+  left: 1rem;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--grey-text);
+  font-size: 1.2rem;
+  color: var(--text-dark);
 }
 
-.search-bar input {
-  border: 1px solid var(--border-color);
-  border-radius: 2rem;
-  padding: 0.75rem 1rem 0.75rem 2.75rem;
-  font-size: 0.9rem;
-  width: 300px;
-  transition: all 0.2s ease-ou;
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  color: var(--text-dark);
 }
 
-
-
-
-.navbar-search svg:hover{
-  transform:scale(1.2);
-  transition: all 0.2s ease-in-out;
-  color: #349ce3;
+.search-icon1 {
+  left: 1rem;
+  top: 50%;
+  font-size: 1.2rem;
+  color: var(--text-dark);
 }
-
-.search-bar input:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px var(--primary-light);
-}
-
-.profile-pic {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid var(--primary-color);
-}
-
-.content-section{
-    margin-bottom: 2.5rem;
-}
-
-
-
-
-
-.categories{
-  width:100%;
-  display: flex;
-  flex-wrap:wrap;
-  gap:1rem;
-  margin-bottom: 2rem;
-}
-
-
-
-.category-card {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  height:50px;
-  margin:0;
-  width:180px;
-  border-radius: 12px;
-  color:black;
-  border:1px solid #349ce3;
-  font-size: 1.4rem;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+/* Filter Icon */
+.filter {
+  width: 26px;
+  position: absolute;
+  right: -50px;
+  top: 50%;
+  transform: translateY(-50%);
   cursor: pointer;
 }
 
-.category-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 15px rgba(25, 168, 229, 0.5);
+/* ------------------------------------------------------
+   PAGE SECTION HEADERS
+------------------------------------------------------ */
+.content-section {
+  padding: 0 1.8rem;
+  margin: 2.2rem 0;
 }
-
-
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.2rem;
 }
 
 .section-header h3 {
-  margin: 0;
-  font-size: 1.4rem;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-dark);
 }
 
 .see-all {
-  text-decoration: underline;
-  color: #349ce3;
-  font-weight: 500;
-  font-size: 1.1rem;
-}
-
-
-
-
-
-
-
-
-.heart-icon:hover {
-  color: #ef4444;
-  fill: #ef4444;
-}
-
-.featured-doc-info{
-margin-bottom: 1rem;
-}
-.featured-doc-info h5 {
-    width: inherit;
-  margin: 0 0 0.25rem 0;
   font-size: 1rem;
-}
-.check-here {
-  font-size: 0.8rem;
-  color: var(--primary-color);
+  color: var(--primary);
+  font-weight: 600;
   text-decoration: none;
-  font-weight: 500;
-}
-.featured-doc-rating {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.9rem;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
 }
 
-
-
-
-
-.navbar-search {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-.navbar-search .search-icon {
-  position: absolute;
-  left: 1rem;
-  color: #999;
-  font-size: 1.1rem;
+/* ------------------------------------------------------
+   CATEGORY CARDS (Patient Home only)
+------------------------------------------------------ */
+.hehe {
+  padding-left: 1.8rem;
+  margin-bottom: 1rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #1a1a1a;
 }
 
-
-.navbar-search input {
-  width: 100%;
-  padding: 0.8rem 1rem 0.8rem 3rem; /* Left padding for icon */
-  border-radius: 2rem; /* Pill shape */
-  border: 1px solid #ddd;
-  background-color: #f5f5f5;
-  font-size: 0.95rem;
-  font-family: 'Poppins', sans-serif; /* Added font-family */
-  transition: all 0.2s ease;
-}
-.navbar-search input:focus {
-  outline: none;
-  border-color: #3498db;
-  background-color: #fff;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-}
-
-
-.popular-doctors{
+.categories {
   display: flex;
   flex-wrap: wrap;
-  gap:1.5rem;
+  gap: 1rem;
+  padding: 0 1.8rem;
+}
+
+.category-card {
+  width: 155px;
+  height: 60px;
+  border-radius: var(--radius);
+  background: #ffffff;
+  border: 1px solid #dceeff;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.category-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ------------------------------------------------------
+   ALL DOCTORS GRID (Used in getdoctors.jsx)
+------------------------------------------------------ */
+.alldoctors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* ------------------------------------------------------
+   FEATURED DOCTOR CARDS (Shared)
+------------------------------------------------------ */
+.featured-doctors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.1rem;
+}
+
+.featured-doctor-card {
+  width: 175px;
+  background: #fff;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  padding: 1rem;
+  text-align: center;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.featured-doctor-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+}
+
+.featured-doctor-card .fphoto {
+  width: 85px;
+  height: 85px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e7e7e7;
+  margin-bottom: 0.7rem;
+}
+
+.featured-doctor-card .name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-dark);
+}
+
+.featured-doctor-card .speciality {
+  font-size: 0.9rem;
+  color: var(--primary);
+  font-weight: 600;
+  margin-top: 0.3rem;
+}
+
+.featured-doctor-card .fee {
+  font-size: 0.9rem;
+  margin-top: 0.4rem;
+  color: #0c7f78;
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------
+   POPULAR DOCTORS (Patient Home)
+------------------------------------------------------ */
+.popular-doctors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.6rem;
 }
 
 .popular-doctor-card {
-  background-color: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  width: 260px;
+  width: 245px;
+  background: #fff;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
   overflow: hidden;
-  transition: all 0.3s ease;
   cursor: pointer;
-  display: flex;
-  flex-direction: column;
 }
 
 .popular-doctor-card:hover {
   transform: translateY(-6px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-md);
 }
 
-/* --- Doctor Image --- */
 .popular-doctor-card .photo {
   width: 100%;
-  height: 220px;
+  height: 190px;
   object-fit: cover;
-  border-bottom: 1px solid #eee;
 }
 
-/* --- Info Section --- */
 .popular-doctor-card .info {
-  padding: 1rem 1.2rem;
+  padding: 1rem;
 }
 
 .popular-doctor-card .name {
   font-size: 1.1rem;
-  font-weight: 600;
-  color: #349ce3;
-  margin-bottom: 0.3rem;
+  font-weight: 700;
+  color: var(--text-dark);
 }
 
 .popular-doctor-card .speciality {
   font-size: 0.9rem;
   font-weight: 600;
-  color:#00008b;
+  color: var(--primary);
   margin-bottom: 0.6rem;
 }
 
-/* --- Details Row (Rating + Experience) --- */
 .popular-doctor-card .details {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.6rem;
+  font-size: 0.85rem;
+  color: var(--text-light);
+  margin: 0.4rem 0;
 }
 
-.popular-doctor-card .rating {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  color: #ffb400; /* star color */
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.popular-doctor-card .experience {
-  color: #444;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-/* --- Fee --- */
 .popular-doctor-card .fee {
+  font-size: 0.92rem;
+  color: #0c7f78;
   font-weight: 600;
-  color: #008c99;
-  font-size: 0.95rem;
 }
 
-/* --- Responsive --- */
-@media (max-width: 768px) {
-  .popular-doctor-card {
-    width: 90%;
-  }
-
-  .popular-doctor-card .photo {
-    height: 180px;
-  }
-}
-
-/* --- Featured Doctor Card --- */
-
-.featured-doctors{
-  display: flex;
-  flex-wrap: wrap;
-  gap:1rem;
-}
-.featured-doctor-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: #fff;
-  border: 1px solid #e6e6e6;
-  border-radius: 16px;
-  padding: 16px;
-  width: 180px;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  cursor: pointer;
-}
-
-.alldoctors {
-  gap:2rem;
-}
-.alldoctors .featured-doctor-card{
-  width:220px;
-}
-
-.featured-doctor-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.navbar-search{
-  position: relative;
-}
-.navbar-search svg{
-  position: absolute;
-  right:10px;
-  top:10px;
-  width:30px;
-  height: 30px;
-}
-.featured-doctor-card .fphoto {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 12px;
-  border: 2px solid #eaeaea;
-}
-
-.featured-doctor-card .info {
-  width:100%;
-}
-
-.featured-doctor-card .name {
-  font-size: 1.05rem;
-  font-weight: 600;
-  color: #349ce3;
-}
-
-.featured-doctor-card .speciality {
-  font-size: 0.9rem;
-    font-weight: 600;
-  color:#00008b;
-  margin-bottom: 10px;
-}
-
-
-/* --- Details Row (Rating + Experience) --- */
-.featured-doctor-card .details {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.6rem;
-}
-
-.featured-doctor-card .rating {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  color: #ffb400; /* star color */
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-.featured-doctor-card .experience {
-  color: #444;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-/* --- Fee --- */
-.featured-doctor-card .fee {
-  font-weight: 600;
-  color: #008c99;
-  font-size: 0.95rem;
-}
-
+/* ------------------------------------------------------
+   RESPONSIVE
+------------------------------------------------------ */
 @media (max-width: 768px) {
   .featured-doctor-card {
-    width: 180px;
-    padding: 12px;
+    width: 47%;
   }
-
-  .featured-doctor-card .fphoto {
-    width: 75px;
-    height: 75px;
+  .popular-doctor-card {
+    width: 100%;
   }
-
-  .featured-doctor-card .name {
-    font-size: 1rem;
+  .category-card {
+    width: 46%;
   }
 }
 
+@media (max-width: 480px) {
+  .featured-doctor-card {
+    width: 100%;
+  }
+  .category-card {
+    width: 100%;
+  }
+}

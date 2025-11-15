@@ -1,5 +1,5 @@
 import React from "react";
-import "../../css/patienthome.css";
+import "../../css/popular.css";
 import { FaStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
 

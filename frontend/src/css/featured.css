@@ -1,0 +1,131 @@
+/* ------------------------------------------------------
+   FEATURED DOCTOR CARD — Premium Online Consultation Style
+------------------------------------------------------ */
+.featured-doctor-card {
+  width: 190px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #edf1f7;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.05);
+  padding: 1.2rem 1rem 3.4rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+  text-align: center;
+}
+
+.featured-doctor-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+/* ------------------------------------------------------
+   DOCTOR PHOTO
+------------------------------------------------------ */
+.fphoto {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 0.9rem;
+  border: 3px solid #e6f0ff; /* subtle medical blue border */
+}
+
+/* ------------------------------------------------------
+   TEXT SECTIONS
+------------------------------------------------------ */
+.featured-doctor-card .info {
+  padding: 0;
+}
+
+/* Name */
+.name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1b3c74; /* Apollo/Practo style dark blue */
+  margin-bottom: 3px;
+}
+
+/* Speciality */
+.speciality {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #2d8cff; /* Premium sky-blue primary */
+  margin-bottom: 6px;
+}
+
+/* Hospital */
+.hospital {
+  font-size: 0.82rem;
+  color: #6e6e6e;
+  margin-bottom: 0.7rem;
+}
+
+/* Rating + Experience */
+.details {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 4px;
+  margin-bottom: 0.5rem;
+  color: #4d4d4d;
+  font-size: 0.83rem;
+}
+
+/* Rating (star + number) */
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #f5a623; /* premium gold star */
+  font-weight: 600;
+}
+
+.experience {
+  color: #5f6c7b;
+}
+
+/* Fee */
+.fee {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #0a7d73; /* calm medical green */
+  margin-bottom: 0.2rem;
+}
+
+/* ------------------------------------------------------
+   BOOK NOW BUTTON (Fixed Bottom)
+------------------------------------------------------ */
+.booknow {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #2d8cff; /* premium skyblue */
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.7rem 0;
+  text-align: center;
+  border-radius: 0 0 16px 16px;
+  transition: all 0.25s ease;
+  text-decoration: none;
+}
+
+.booknow:hover {
+  background: #1f6ed0;
+}
+
+/* ------------------------------------------------------
+   RESPONSIVE
+------------------------------------------------------ */
+@media (max-width: 600px) {
+  .featured-doctor-card {
+    width: 48%;
+  }
+}
+
+@media (max-width: 420px) {
+  .featured-doctor-card {
+    width: 100%;
+  }
+}

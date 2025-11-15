@@ -7,7 +7,6 @@
   background-color: #ffffff;
   border-bottom: 1px solid #e0e0e0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  width: 100%;
   position: sticky;
   top: 0;
   font-family: 'Poppins', sans-serif;
@@ -30,7 +29,7 @@
 }
 
 
-/* Navbar Left */
+
 .navbar-left {
   display: flex;
   align-items: center;

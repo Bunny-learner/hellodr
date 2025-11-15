@@ -3,129 +3,96 @@
   justify-content: space-between;
   align-items: center;
   background: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 10px;
-  padding: 16px 20px;
-  margin-bottom: 18px;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+  border-radius: 14px;
+  padding: 16px;
+  margin: 12px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  transition: 0.2s ease;
 }
 
 .doctor-card:hover {
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
 }
 
 .doctor-left {
   display: flex;
   align-items: center;
-  flex: 1;
+  gap: 14px;
 }
 
 .doctor-img {
-  width: 85px;
-  height: 85px;
-  border-radius: 8px;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
   object-fit: cover;
-  margin-right: 16px;
-  border: 1px solid #ddd;
 }
 
 .doctor-info {
   display: flex;
   flex-direction: column;
+  gap: 4px;
 }
 
 .doctor-name {
   font-size: 1.1rem;
   font-weight: 600;
-  color: #222;
-  margin-bottom: 3px;
 }
 
 .doctor-speciality {
+  font-size: 0.9rem;
   color: #555;
-  font-size: 0.95rem;
-  margin-bottom: 8px;
 }
 
 .doctor-exp {
-  color: #6b21a8;
-  font-weight: 600;
-  font-size: 0.9rem;
-  margin-bottom: 5px;
+  font-size: 0.85rem;
+  color: #666;
 }
 
-/* ⭐ Rating */
 .doctor-rating {
-  display: flex;
-  align-items: center;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #16a34a;
-}
-
-.single-star {
-  color: #fbbf24;
-  font-size: 1rem;
-  margin-right: 4px;
+  margin-top: 6px;
+  background: #f3f3f3;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  width: fit-content;
 }
 
 .doctor-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  min-width: 150px;
+  text-align: right;
 }
 
 .doctor-fee {
-  font-size: 1.2rem;
-  font-weight: 700;
   margin-bottom: 8px;
-  color: #111;
+}
+
+.fee-label {
+  display: block;
+  font-size: 0.75rem;
+  color: #777;
+}
+
+.fee-value {
+  font-size: 1rem;
+  font-weight: 600;
 }
 
 .consult-btn {
-  border: 1px solid #0c4a6e;
-  color: #0c4a6e;
-  background: white;
-  font-weight: 600;
+  background: #007bff;
+  color: #fff;
+  padding: 7px 14px;
   border-radius: 8px;
-  padding: 8px 16px;
+  border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  transition: 0.2s ease;
 }
 
 .consult-btn:hover {
-  background-color: #0c4a6e;
-  color: #fff;
+  background: #0066d5;
 }
 
 .consult-time {
-  font-size: 0.85rem;
-  color: #6b7280;
-  margin-top: 4px;
-}
-
-/* Responsive */
-@media (max-width: 700px) {
-  .doctor-card {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 14px;
-  }
-
-  .doctor-right {
-    align-items: flex-start;
-    margin-top: 10px;
-  }
-
-  .doctor-img {
-    width: 70px;
-    height: 70px;
-  }
-
-  .consult-btn {
-    width: 100%;
-    text-align: center;
-  }
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 6px;
 }

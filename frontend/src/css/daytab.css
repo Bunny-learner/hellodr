@@ -1,0 +1,76 @@
+/* --- Date Tabs Container --- */
+.date-tabs {
+  display: flex;
+  overflow-x: auto; /* Allows horizontal scrolling on mobile */
+  white-space: nowrap;
+  gap: 12px;
+  padding: 10px 5px;
+  scroll-behavior: smooth;
+}
+
+/* --- Scrollbar styling (for webkit browsers) --- */
+.date-tabs::-webkit-scrollbar {
+  height: 6px;
+}
+.date-tabs::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 3px;
+}
+.date-tabs::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* --- Individual Day Tab --- */
+.tab {
+  flex: 0 0 auto; /* Prevents shrinking/growing, lets them scroll */
+  min-width: 110px;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #fff;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.25s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Tab Hover Effect --- */
+.tab:hover {
+  background-color: #f7f7f7;
+  transform: translateY(-2px);
+}
+
+/* --- Selected Tab Style --- */
+.tab.selected {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+  box-shadow: 0 3px 6px rgba(0, 123, 255, 0.3);
+}
+
+/* --- Text inside the tab (Date) --- */
+.tab .day-date {
+  display: block;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 4px;
+}
+
+/* --- Text inside the selected tab (Date) --- */
+.tab.selected .day-date {
+  color: white;
+}
+
+/* --- Text inside the tab (Day Name) --- */
+.tab strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+
+/* --- Text inside the tab (Slot Count) --- */
+.tab span:last-child {
+  display: block;
+  font-size: 12px;
+}

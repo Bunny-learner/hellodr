@@ -1,23 +1,73 @@
-
+/* --------------------------------------------------
+   FILTER PANEL — Premium Commercial UI
+-------------------------------------------------- */
 .doctor-filters-modern {
   background: #ffffff;
   border-radius: 20px;
-  padding: 20px 25px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  padding: 22px 26px;
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.08);
   font-family: 'Inter', sans-serif;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px;
+  border: 1px solid #e8e8e8;
+  animation: slideFade 0.25s ease;
+}
+
+/* Header with Apply + Reset */
+.filters-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .doctor-filters-modern h4 {
-  font-size: 20px;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 10px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #262626;
+  margin: 0;
 }
 
+.filter-buttons-top {
+  display: flex;
+  gap: 10px;
+}
 
+.filter-buttons-top .apply-btn,
+.filter-buttons-top .reset-btn {
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+/* Apply (Primary) */
+.filter-buttons-top .apply-btn {
+  background: #00bcd4;
+  color: white;
+  border: none;
+}
+
+.filter-buttons-top .apply-btn:hover {
+  background: #009bb3;
+}
+
+/* Reset (Secondary) */
+.filter-buttons-top .reset-btn {
+  background: #f2f2f2;
+  border: 1px solid #d5d5d5;
+  color: #444;
+}
+
+.filter-buttons-top .reset-btn:hover {
+  background: #e7e7e7;
+}
+
+/* --------------------------------------------------
+   SECTION
+-------------------------------------------------- */
 .filter-section {
   display: flex;
   flex-direction: column;
@@ -25,120 +75,119 @@
 }
 
 .filter-section label {
-  font-weight: 500;
-  color: #555;
+  font-weight: 600;
+  color: #4a4a4a;
   font-size: 14px;
+  margin-bottom: 2px;
 }
 
-/* --- Chips --- */
+/* --------------------------------------------------
+   CHIPS
+-------------------------------------------------- */
 .filter-chip-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
 }
 
 .filter-chip {
-  border: 1px solid #ccc;
-  border-radius: 20px;
-  background-color: #f7f7f7;
+  border: 1px solid #cfd8dc;
+  border-radius: 22px;
+  background-color: #f7f9fa;
   color: #333;
-  padding: 6px 14px;
+  padding: 7px 15px;
   font-size: 13px;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+  font-weight: 500;
+  transition: 0.18s;
 }
 
 .filter-chip:hover {
-  background-color: #e0f7fa;
+  background-color: #e1f4f6;
   border-color: #00bcd4;
   color: #007b8e;
 }
-
 
 .filter-chip.active {
   background-color: #00bcd4;
   border-color: #00bcd4;
   color: #fff;
-  font-weight: 500;
-  transform: scale(1.05);
+  font-weight: 600;
+  box-shadow: 0 3px 8px rgba(0, 188, 212, 0.28);
+  transform: translateY(-2px);
 }
 
-/* --- Dropdown (Sort By) --- */
+/* --------------------------------------------------
+   SORT DROPDOWN
+-------------------------------------------------- */
 .sort-dropdown {
   width: 100%;
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  background-color: #fff;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #cfd8dc;
+  background-color: #ffffff;
   font-size: 14px;
   color: #333;
   outline: none;
-  transition: border 0.2s ease;
+  transition: 0.2s;
 }
 
 .sort-dropdown:focus {
   border-color: #00bcd4;
+  box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.2);
 }
 
-/* --- Buttons --- */
+/* --------------------------------------------------
+   OLD BOTTOM BUTTONS (Not used but kept safe)
+-------------------------------------------------- */
 .filter-buttons {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-  gap: 10px;
+  display: none;
 }
 
-.apply-btn,
-.reset-btn {
-  flex: 1;
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.2s ease-in-out;
-  font-size: 14px;
+/* --------------------------------------------------
+   ANIMATION
+-------------------------------------------------- */
+@keyframes slideFade {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Apply button */
-.apply-btn {
-  background-color: #00bcd4;
-  color: #fff;
-}
-
-.apply-btn:hover {
-  background-color: #009bb3;
-}
-
-/* Reset button */
-.reset-btn {
-  background-color: #f1f1f1;
-  color: #333;
-}
-
-.reset-btn:hover {
-  background-color: #e0e0e0;
-}
-
-
+/* --------------------------------------------------
+   RESPONSIVE
+-------------------------------------------------- */
 @media (max-width: 600px) {
   .doctor-filters-modern {
-    max-width: 100%;
     padding: 16px;
     border-radius: 16px;
   }
 
+  .filters-header-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .filter-buttons-top {
+    width: 100%;
+  }
+
+  .filter-buttons-top .apply-btn,
+  .filter-buttons-top .reset-btn {
+    flex: 1;
+  }
+
   .filter-chip {
     font-size: 12px;
-    padding: 5px 10px;
+    padding: 6px 11px;
   }
 
-  .filter-buttons {
-    flex-direction: column;
-  }
-
-  .apply-btn,
-  .reset-btn {
-    width: 100%;
+  .sort-dropdown {
+    padding: 8px 10px;
   }
 }

@@ -1,20 +1,19 @@
-// src/components/PatientAppointments.jsx
-import React, { useState, useEffect, useContext } from 'react'; // Added useContext
-import "../../css/patientappointments.css";
+import React, { useState, useEffect, useContext } from 'react';
+import "../../css/patientappointments.css"; 
 import toast from 'react-hot-toast';
 import HeartLoader from '../../components/Loaders/heartloader';
 import { useNavigate } from 'react-router-dom';
 import { useSocket } from "../../pages/SocketContext.jsx";
 import {
     FiCalendar, FiClock, FiMapPin, FiVideo, FiStar,
-    FiMessageSquare, FiWifi, FiHome
+    FiMessageSquare, FiWifi, FiHome, FiCheckSquare,
+    FiAlertCircle, FiXCircle, FiList
 } from 'react-icons/fi';
-import { PatientContext } from './patientcontext'; 
-
+import { PatientContext } from './patientcontext';
 
 const getTodayString = () => {
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set to midnight
+    today.setHours(0, 0, 0, 0);
     return today.toISOString().split('T')[0];
 };
 const formatDate = (dateString) => {
@@ -30,7 +29,6 @@ const formatTime = (timeString) => {
     return `${standardHours}:${minutes} ${ampm}`;
 };
 
-
 const TodayOnlineCard = ({ app, onJoin, isJoinable }) => (
     <div className="pa-card today-card today-online">
         <div className="pa-card-header">
@@ -45,26 +43,19 @@ const TodayOnlineCard = ({ app, onJoin, isJoinable }) => (
             <div className="pa-card-detail"><FiClock /><span>{formatTime(app.TimeSlot?.StartTime)} - {formatTime(app.TimeSlot?.EndTime)}</span></div>
         </div>
         <div className="pa-card-footer">
-          
             <button
-    className="pa-btn pa-btn-primary"
-    onClick={() => onJoin(app)}
-    disabled={!isJoinable}
-    style={{
-        opacity: isJoinable ? 1 : 0.4,
-        cursor: isJoinable ? "pointer" : "not-allowed"
-    }}
->
-    <FiMessageSquare />
-    {isJoinable ? "Join Chat" : 
-        (app.status.toLowerCase() === "accepted" ? "Scheduled" : "Waiting...")}
-</button>
-
+                className="pa-btn pa-btn-primary"
+                onClick={() => onJoin(app)}
+                disabled={!isJoinable}
+            >
+                <FiMessageSquare />
+                {isJoinable ? "Join Chat" :
+                    (app.status.toLowerCase() === "accepted" ? "Scheduled" : "Waiting...")}
+            </button>
         </div>
     </div>
 );
 
-// --- TodayOfflineCard (No Change) ---
 const TodayOfflineCard = ({ app }) => (
     <div className="pa-card today-card today-offline">
         <div className="pa-card-header">
@@ -85,7 +76,6 @@ const TodayOfflineCard = ({ app }) => (
     </div>
 );
 
-// --- AppointmentCard (No Change) ---
 const AppointmentCard = ({ app }) => (
     <div className="pa-card status-card">
         <div className="pa-card-header">
@@ -105,7 +95,6 @@ const AppointmentCard = ({ app }) => (
     </div>
 );
 
-// --- PastAppointmentCard (No Change) ---
 const PastAppointmentCard = ({ app, onAddReview }) => (
     <div className="pa-card status-card">
         <div className="pa-card-header">
@@ -129,7 +118,6 @@ const PastAppointmentCard = ({ app, onAddReview }) => (
     </div>
 );
 
-//--- Main Component ---
 
 export default function PatientAppointments() {
     const [loading, setLoading] = useState(false);
@@ -137,27 +125,23 @@ export default function PatientAppointments() {
     const [modeFilter, setModeFilter] = useState('all');
     const navigate = useNavigate();
     const { socketId, socket } = useSocket()
-    // --- ACCESSED CONTEXT ---
     const { doctors } = useContext(PatientContext);
 
-    // Store appointments by category
     const [todayAppointments, setTodayAppointments] = useState([]);
     const [upcomingAppointments, setUpcomingAppointments] = useState([]);
     const [pendingAppointments, setPendingAppointments] = useState([]);
     const [completedAppointments, setCompletedAppointments] = useState([]);
     const [cancelledAppointments, setCancelledAppointments] = useState([]);
 
-    // Review Modal State
     const [showReviewModal, setShowReviewModal] = useState(false);
     const [selectedAppointment, setSelectedAppointment] = useState(null);
     const [reviewRating, setReviewRating] = useState(5);
     const [reviewText, setReviewText] = useState("");
 
-    // --- NEW STATE ---
-    // Stores a Set of appointment IDs that are allowed to join
     const [joinableAppointments, setJoinableAppointments] = useState(new Set());
 
-    // --- fetchAppointments (No Change) ---
+    // --- All your useEffects and functions (fetchAppointments, submitReview, handleJoinCall) ---
+    // --- remain unchanged. They are all correct. ---
     useEffect(() => {
         const fetchAppointments = async () => {
             try {
@@ -176,10 +160,10 @@ export default function PatientAppointments() {
                 if (res.status === 200) {
                     const today = getTodayString();
 
-                  const todayApps = data.data.filter(doc =>
-    ["accepted", "next_up", "in_progress"].includes(doc.status.toLowerCase()) &&
-    doc.date.startsWith(today)
-);
+                    const todayApps = data.data.filter(doc =>
+                        ["accepted", "next_up", "in_progress"].includes(doc.status.toLowerCase()) &&
+                        doc.date.startsWith(today)
+                    );
 
                     const upcomingApps = data.data.filter(doc =>
                         doc.status === "accepted" && !doc.date.startsWith(today)
@@ -207,16 +191,15 @@ export default function PatientAppointments() {
 
 
     useEffect(() => {
-        if (!socket) return; 
+        if (!socket) return;
 
         const handleEnableJoin = (data) => {
             console.log("Socket event 'enable_join_button' received:", data);
             if (data && data.appt_id) {
                 toast.success("Doctor is ready, please join!");
                 
-                // Add the appointmentId to the set of joinable appointments
                 setJoinableAppointments(prevSet => {
-                    const newSet = new Set(prevSet); 
+                    const newSet = new Set(prevSet);
                     newSet.add(data.appt_id);
                     return newSet;
                 });
@@ -225,14 +208,12 @@ export default function PatientAppointments() {
 
         socket.on("enable_join_button", handleEnableJoin);
 
-       
         return () => {
             socket.off("enable_join_button", handleEnableJoin);
         };
     }, [socket]);
 
 
-    // --- Review Modal Handlers (No Change) ---
     const handleOpenReviewModal = (app) => {
         setSelectedAppointment(app);
         setReviewRating(5);
@@ -277,23 +258,17 @@ export default function PatientAppointments() {
     };
 
     const handleJoinCall = (appointment) => {
-
         if (!doctors || doctors.length === 0) {
             toast.error("Doctor list not available. Please refresh the page.");
             return;
         }
-
-        // Get the doctor's ID from the appointment object
         const doctorId = appointment.doctor._id;
-
-        // Find the full doctor profile from the context list
         const fullDoctorProfile = doctors.find(doc => doc._id === doctorId);
 
         if (!fullDoctorProfile) {
             toast.error("Could not find complete doctor details.");
             return;
         }
-
         if (!fullDoctorProfile.roomid) {
             toast.error("This doctor's chat room is not available.");
             return;
@@ -304,21 +279,17 @@ export default function PatientAppointments() {
         })
         toast.success("Joining the room...");
         navigate(`/waiting-room/${fullDoctorProfile.roomid}?consultationId=${appointment._id}&user=patient`);
-
     };
 
 
-    
     const renderPageContent = () => {
         if (loading) return <HeartLoader />;
 
-        // Helper function to create the "No appointments" message
         const noAppsMessage = (statusText) => {
             const modeText = modeFilter !== 'all' ? `${modeFilter}` : '';
             return `No ${modeText} ${statusText} appointments.`;
         };
 
-        // Helper to filter any list by the current modeFilter
         const filterByMode = (list) => {
             if (modeFilter === 'all') return list;
             return list.filter(app => app.mode.toLowerCase() === modeFilter);
@@ -332,17 +303,19 @@ export default function PatientAppointments() {
                 ) : (
                     filteredToday.map((app) => (
                         app.mode === 'online' ?
-                            // --- THIS IS THE FIX: Pass isJoinable prop ---
                             <TodayOnlineCard
                                 key={app._id}
                                 app={app}
                                 onJoin={handleJoinCall}
-                              isJoinable={
-                                 app.patientjoinenabled === true &&
-    app.status.toLowerCase() === "next_up" ||
-    app.status.toLowerCase() === "in_progress"
-}
-
+                                // --- 💡 LOGIC FIX ---
+                                // Your original logic was (A && B) || C, which could be true if C
+                                // was true, even if A was false.
+                                // This is (A && (B || C)), which is the correct logic.
+                                isJoinable={
+                                    (app.patientjoinenabled === true || joinableAppointments.has(app._id)) &&
+                                    (app.status.toLowerCase() === "next_up" ||
+                                    app.status.toLowerCase() === "in_progress")
+                                }
                             /> :
                             <TodayOfflineCard key={app._id} app={app} />
                     ))
@@ -387,40 +360,89 @@ export default function PatientAppointments() {
         }
     };
 
-    // --- Return JSX (No Change) ---
+    // Helper map for titles
+    const pageTitles = {
+        today: "Today's Appointments",
+        upcoming: "Upcoming Appointments",
+        pending: "Pending Requests",
+        completed: "Completed History",
+        cancelled: "Cancelled History",
+    };
+
+    // --- ⬇️ START OF RESTRUCTURED JSX ⬇️ ---
     return (
-        <section className="pa-page-container">
-            <div className="pa-header">
-                <div className='pa-filter-chips'>
-                    <button onClick={() => setPage('today')} className={`pa-chip ${page === 'today' ? 'active' : ''}`}>Today</button>
-                    <button onClick={() => setPage('upcoming')} className={`pa-chip ${page === 'upcoming' ? 'active' : ''}`}>Upcoming</button>
-                    <button onClick={() => setPage('pending')} className={`pa-chip ${page === 'pending' ? 'active' : ''}`}>Pending</button>
-                    <button onClick={() => setPage('completed')} className={`pa-chip ${page === 'completed' ? 'active' : ''}`}>Completed</button>
-                    <button onClick={() => setPage('cancelled')} className={`pa-chip ${page === 'cancelled' ? 'active' : ''}`}>Cancelled</button>
+        <section className="pa-container">
+            
+            {/* --- SIDEBAR NAVIGATION --- */}
+            <nav className="pa-sidebar">
+                <div className="pa-sidebar-header">
+                    <h4>My Appointments</h4>
                 </div>
-            </div>
+                <ul className="pa-sidebar-nav">
+                    <li>
+                        <button onClick={() => setPage('today')} className={`pa-nav-link ${page === 'today' ? 'active' : ''}`}>
+                            <FiCalendar />
+                            <span>Today</span>
+                            {todayAppointments.length > 0 && <span className="pa-nav-count">{todayAppointments.length}</span>}
+                        </button>
+                    </li>
+                    <li>
+                        <button onClick={() => setPage('upcoming')} className={`pa-nav-link ${page === 'upcoming' ? 'active' : ''}`}>
+                            <FiCheckSquare />
+                            <span>Upcoming</span>
+                            {upcomingAppointments.length > 0 && <span className="pa-nav-count">{upcomingAppointments.length}</span>}
+                        </button>
+                    </li>
+                    <li>
+                        <button onClick={() => setPage('pending')} className={`pa-nav-link ${page === 'pending' ? 'active' : ''}`}>
+                            <FiAlertCircle />
+                            <span>Pending</span>
+                            {pendingAppointments.length > 0 && <span className="pa-nav-count">{pendingAppointments.length}</span>}
+                        </button>
+                    </li>
+                    <li>
+                        <button onClick={() => setPage('completed')} className={`pa-nav-link ${page === 'completed' ? 'active' : ''}`}>
+                            <FiList />
+                            <span>Completed</span>
+                        </button>
+                    </li>
+                    <li>
+                        <button onClick={() => setPage('cancelled')} className={`pa-nav-link ${page === 'cancelled' ? 'active' : ''}`}>
+                            <FiXCircle />
+                            <span>Cancelled</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
 
+            {/* --- MAIN CONTENT AREA --- */}
+            <main className="pa-main-content">
+                <div className="pa-main-header">
+                    <h2>{pageTitles[page]}</h2>
+                    
+                    {/* Mode Filters remain here */}
+                    <div className="pa-mode-filters">
+                        <span className="pa-filter-label">Filter:</span>
+                        {['all', 'offline', 'online'].map(f => (
+                            <button
+                                key={f}
+                                className={`pa-mode-chip ${modeFilter === f ? 'active' : ''}`}
+                                onClick={() => setModeFilter(f)}
+                            >
+                                {f === 'all' && "All"}
+                                {f === 'offline' && <><FiHome size={14} /> Offline</>}
+                                {f === 'online' && <><FiWifi size={14} /> Online</>}
+                            </button>
+                        ))}
+                    </div>
+                </div>
 
-            <div className="pa-mode-filters">
-                <span className="pa-filter-label">Mode:</span>
-                {['all', 'offline', 'online'].map(f => (
-                    <button
-                        key={f}
-                        className={`pa-mode-chip ${modeFilter === f ? 'active' : ''}`}
-                        onClick={() => setModeFilter(f)}
-                    >
-                        {f === 'all' && "All Modes"}
-                        {f === 'offline' && <><FiHome size={14} /> Offline</>}
-                        {f === 'online' && <><FiWifi size={14} /> Online</>}
-                    </button>
-                ))}
-            </div>
+                <div className="pa-appointments-grid">
+                    {renderPageContent()}
+                </div>
+            </main>
 
-            <div className="pa-appointments-grid">
-                {renderPageContent()}
-            </div>
-
-            {/* Review Modal (No Change) */}
+            {/* Review Modal (Unchanged) */}
             {showReviewModal && selectedAppointment && (
                 <div className="pa-review-modal-overlay" onClick={() => setShowReviewModal(false)}>
                     <div className="pa-review-modal" onClick={(e) => e.stopPropagation()}>
@@ -444,7 +466,7 @@ export default function PatientAppointments() {
                             className="pa-review-textarea"
                             placeholder="Write your review here..."
                             value={reviewText}
-                            onChange={(e) => setReviewText(e.target.value)} // Corrected this line from your original code
+                            onChange={(e) => setReviewText(e.target.value)}
                         ></textarea>
 
                         <button className="pa-btn pa-btn-primary" onClick={submitReview}>

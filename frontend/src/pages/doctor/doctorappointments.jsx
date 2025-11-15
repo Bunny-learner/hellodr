@@ -538,7 +538,7 @@ export default function DoctorAppointments() {
 
           {/* Search */}
           <div className="search-bar">
-            <FiSearch className="search-icon" />
+            <FiSearch className="search-icon1" />
             <input
               placeholder="Search name, email, phone"
               value={searchTerm}

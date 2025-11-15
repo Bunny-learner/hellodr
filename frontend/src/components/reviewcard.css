@@ -1,83 +1,132 @@
+/* ------------------------------------------------------
+   REVIEW CONTAINER
+------------------------------------------------------ */
 .review-container {
-  max-width: 1000px;
+  max-width: 900px;
   margin: 40px auto;
-  font-family: 'Arial', sans-serif;
+  font-family: "Inter", sans-serif;
 }
+
 .review-date {
   font-size: 0.8rem;
-  color: gray;
-  margin-bottom: 5px;
-  display: block;
+  color: #6e6e6e;
+  margin-bottom: 4px;
 }
 
 
-
+/* ------------------------------------------------------
+   REVIEW LIST
+------------------------------------------------------ */
 .review-list {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
 }
 
+
+/* ------------------------------------------------------
+   REVIEW CARD
+------------------------------------------------------ */
 .review-card {
   display: flex;
-  background: #f0f8ff; /* very light blue background */
-  border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(135, 206, 250, 0.3); /* skyblue shadow */
-  padding: 20px;
-  transition: transform 0.3s, box-shadow 0.3s;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 18px 22px;
+  border: 1px solid #eef1f5;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  transition: all 0.25s ease;
+}
+
+.review-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
 }
 
 
-
+/* ------------------------------------------------------
+   LEFT SIDE (AVATAR)
+------------------------------------------------------ */
 .review-left {
   flex-shrink: 0;
-  margin-right: 20px;
+  margin-right: 16px;
 }
 
 .review-avatar {
-  width: 60px;
-  height: 60px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid #87cefa; /* skyblue border */
+  border: 2px solid #d6e6ff; /* soft blue border */
 }
 
+
+/* ------------------------------------------------------
+   RIGHT SIDE CONTENT
+------------------------------------------------------ */
 .review-right {
   flex: 1;
-}
-
-.review-header {
   display: flex;
   flex-direction: column;
-  margin-bottom: 10px;
+}
+
+
+/* ------------------------------------------------------
+   HEADER (Name + Email)
+------------------------------------------------------ */
+.review-header {
+  margin-bottom: 6px;
 }
 
 .review-name {
-  font-size: 1.1rem;
-  font-weight: bold;
-  color: #1e3a8a; 
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #1a3d7c; /* premium blue */
+  margin-bottom: 2px;
 }
 
 .review-email {
-  font-size: 0.9rem;
-  color: #555;
+  font-size: 0.85rem;
+  color: #6e6e6e;
 }
 
+
+/* ------------------------------------------------------
+   STAR RATING
+------------------------------------------------------ */
 .review-stars {
-  margin-bottom: 10px;
+  margin: 6px 0;
 }
 
 .star {
-  font-size: 1rem;
-  color: #ccc;
+  font-size: 1.1rem;
+  color: #cfcfcf;
 }
 
 .star.filled {
-  color: #f5b50a;
+  color: #f5a623;  /* warm professional gold */
 }
 
+
+/* ------------------------------------------------------
+   REVIEW MESSAGE
+------------------------------------------------------ */
 .review-message {
   font-size: 0.95rem;
   color: #333;
-  line-height: 1.4;
+  line-height: 1.45;
+  margin-top: 4px;
+}
+
+
+/* ------------------------------------------------------
+   RESPONSIVE
+------------------------------------------------------ */
+@media (max-width: 600px) {
+  .review-card {
+    flex-direction: column;
+  }
+
+  .review-left {
+    margin-bottom: 12px;
+  }
 }

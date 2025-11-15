@@ -1,69 +1,51 @@
-/* ============================ */
-/* 1. Global & Variables        */
-/* ============================ */
+/* === Root Variables (Optional, but good practice) === */
 :root {
   --primary-color: #007bff;
+  --light-bg: #f7f9fc;
+  --border-color: #e0e0e0;
   --text-color: #333;
-  --text-color-light: #6c757d;
-  --bg-color: #f8f9fa;
-  --panel-bg: #ffffff;
-  --border-color: #e9ecef;
-  --unread-bg: #f8faff;
-  --unread-dot: #007bff;
-  --shadow-color: rgba(0, 0, 0, 0.05);
-  --icon-bg-app: #e6f7ff;
-  --icon-color-app: #00a2ff;
-  --icon-bg-chat: #e6f7e9;
-  --icon-color-chat: #34c759;
-  --icon-bg-sys: #f5f5f7;
-  --icon-color-sys: #8e8e93;
+  --text-color-light: #666;
+  --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --radius: 12px;
+  --green-light: #eaf7ed;
+  --green-dark: #28a745;
+  --blue-light: #e6f2ff;
+  --blue-dark: #007bff;
 }
 
-/* Base page container to center the panel */
+/* === Page Container === */
 .notification-page-container {
-  background-color: var(--bg-color);
-  min-height: 100vh;
-  padding: 2rem;
-  display: flex;
-  justify-content: center;
+  background-color: var(--light-bg);
+  padding: 2rem 1rem;
+  min-height: 90vh;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
+/* === Loading State === */
 .notification-panel-loading {
-  font-size: 1.2rem;
-  height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: var(--text-color-light);
-    text-align: center;
-    
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5rem;
 }
 
-
-
-
-/* ============================ */
-/* 2. Notification Panel        */
-/* ============================ */
+/* === Main Notification Panel === */
 .notification-panel {
-  width: 100%;
-  max-width: 1000px;
-  background-color: var(--panel-bg);
-  border-radius: 12px;
-  box-shadow: 0 4px 12px var(--shadow-color);
-  overflow: hidden;
-  height: fit-content;
+  max-width: 700px;
+  margin: 0 auto;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-light);
+  overflow: hidden; /* Ensures border-radius applies to children */
 }
 
-/* ============================ */
-/* 3. Panel Header              */
-/* ============================ */
+/* === Panel Header === */
 .panel-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -83,174 +65,151 @@
   cursor: pointer;
   padding: 0.5rem;
   border-radius: 6px;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s;
 }
-
 .mark-read-btn:hover {
-  background-color: var(--unread-bg);
+  background-color: var(--blue-light);
 }
 
-/* ============================ */
-/* 4. Panel Body & Groups       */
-/* ============================ */
+/* === Panel Body === */
 .panel-body {
-  padding: 0.5rem 0;
-  max-height: 70vh;
-  overflow-y: auto;
+  /* No padding here, let the groups/items handle it */
 }
 
+/* === Notification Group (New / Earlier) === */
 .notification-group {
-  padding: 0 1.5rem;
-  margin-bottom: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border-color);
+}
+.notification-group:last-child {
+  border-bottom: none;
 }
 
 .notification-group h3 {
-  font-size: 1rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-color-light);
-  margin: 1rem 0 0.5rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  margin: 0 1.5rem 0.5rem 1.5rem;
 }
 
-/* ============================ */
-/* 5. Notification Item         */
-/* ============================ */
+/* === Notification Item === */
 .notification-item {
   display: flex;
-  align-items: flex-start;
-  padding: 1rem 0.5rem;
-  border-radius: 8px;
-  position: relative;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
   transition: background-color 0.2s ease;
+  position: relative; /* For the delete button */
 }
 
-.notification-item:hover {
-  background-color: var(--bg-color);
-}
-
-/* This is the "mark as read" functionality */
 .notification-item.unread {
-  background-color: var(--unread-bg);
+  background-color: var(--blue-light);
   cursor: pointer;
 }
-
-/* Unread dot indicator */
-.notification-item.unread::before {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: -8px; /* Places it just outside the padding */
-  transform: translateY(-50%);
-  width: 8px;
-  height: 8px;
-  background-color: var(--unread-dot);
-  border-radius: 50%;
+.notification-item.unread:hover {
+  background-color: #d9e9ff; /* A slightly darker blue on hover */
+}
+.notification-item:not(.unread) {
+  cursor: default;
 }
 
-/* ============================ */
-/* 6. Item Content (Icon/Text)  */
-/* ============================ */
+/* === Icon Wrapper & Icons === */
 .notif-icon-wrapper {
   flex-shrink: 0;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 1rem;
+  display: grid;
+  place-items: center;
   font-size: 1.1rem;
 }
+.icon-appointment {
+  color: var(--blue-dark);
+}
+.notif-icon-wrapper .icon-appointment {
+  background-color: var(--blue-light);
+}
+/* Unread items already have a blue bg, so make icon wrapper white */
+.unread .notif-icon-wrapper {
+  background-color: #ffffff;
+}
+.icon-chat {
+  color: var(--green-dark);
+}
+.notif-icon-wrapper .icon-chat {
+  background-color: var(--green-light);
+}
 
-/* Icon-specific styles */
-.icon-appointment { color: var(--icon-color-app); }
-.notif-icon-wrapper .icon-appointment { background-color: var(--icon-bg-app); }
-
-.icon-chat { color: var(--icon-color-chat); }
-.notif-icon-wrapper .icon-chat { background-color: var(--icon-bg-chat); }
-
-.icon-system,
-.icon-default { color: var(--icon-color-sys); }
-.notif-icon-wrapper .icon-system,
-.notif-icon-wrapper .icon-default { background-color: var(--icon-bg-sys); }
-
-
+/* === Notification Content === */
 .notif-content {
-  flex-grow: 1;
+  flex: 1; /* Takes up remaining space */
+  min-width: 0; /* Prevents text overflow issues */
 }
 
 .notif-message {
-  margin: 0;
+  margin: 0 0 4px 0;
   font-size: 0.95rem;
   color: var(--text-color);
-  line-height: 1.4;
-  font-weight: 500;
+  line-height: 1.5;
 }
 
 .notif-timestamp {
   font-size: 0.85rem;
   color: var(--text-color-light);
-  margin-top: 4px;
+}
+.unread .notif-timestamp {
+  color: var(--primary-color);
+  font-weight: 500;
 }
 
-/* ============================ */
-/* 7. Delete Button             */
-/* ============================ */
+/* === Delete Button (Shows on Hover) === */
 .delete-btn {
-  flex-shrink: 0;
-  background: none;
-  border: none;
-  color: var(--text-color-light);
-  font-size: 0.9rem;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-left: 0.5rem;
+  position: absolute;
+  top: 50%;
+  right: 1.5rem;
+  transform: translateY(-50%);
   
-  /* Modern: Hide button until hover */
-  opacity: 0;
-  transition: opacity 0.2s ease, background-color 0.2s ease;
-}
-
-/* Show delete button on item hover */
-.notification-item:hover .delete-btn {
-  opacity: 1;
-}
-
-.delete-btn:hover {
-  background-color: var(--border-color);
-  color: #d9534f; /* Red for delete */
-}
-
-
-/* ============================ */
-/* 8. Empty State               */
-/* ============================ */
-.empty-state {
-  text-align: center;
-  padding: 4rem 2rem;
+  background: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
   color: var(--text-color-light);
+  cursor: pointer;
+  
+  opacity: 0; /* Hidden by default */
+  transition: opacity 0.2s;
+}
+.notification-item:hover .delete-btn {
+  opacity: 1; /* Show on hover */
+}
+.delete-btn:hover {
+  color: #d9534f;
+  border-color: #d9534f;
+  background: #fdf2f2;
 }
 
+/* === Empty State === */
+.empty-state {
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
 .empty-icon {
   font-size: 3rem;
-  color: #34c759; /* Green check */
+  color: var(--green-dark);
   margin-bottom: 1rem;
 }
-
 .empty-state p {
   font-size: 1.1rem;
   font-weight: 500;
   color: var(--text-color);
-  margin: 0 0 0.5rem 0;
+  margin: 0;
 }
-
 .empty-state span {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
+  color: var(--text-color-light);
 }

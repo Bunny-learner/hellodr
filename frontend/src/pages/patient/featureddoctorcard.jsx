@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "../../css/patienthome.css";
+import "../../css/featured.css";
 import { FaStar, FaInfoCircle } from "react-icons/fa";
 
 export default function FeaturedDoctorCard({

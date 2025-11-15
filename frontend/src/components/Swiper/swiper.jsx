@@ -1,5 +1,5 @@
 import React from "react";
-
+import "../../css/daytab.css"
 export default function DayTabs({
   availabilityData,
   mode,
