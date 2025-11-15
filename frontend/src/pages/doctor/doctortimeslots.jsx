@@ -61,12 +61,20 @@ export default function DoctorTimeSlots() {
     useEffect(() => { fetchTimeSlots(); }, []);
 
     const filteredSlots = useMemo(() =>
-        allTimeSlots.filter(slot =>
-            slot.Day === selectedDayName &&
-            (filterMode === "all" || slot.mode === filterMode)
-        ),
-        [allTimeSlots, selectedDayName, filterMode]
-    );
+    allTimeSlots.filter(slot => {
+        if (slot.Day !== selectedDayName) return false;
+
+        if (filterMode === "all") return true;
+        if (filterMode === "online") return slot.mode === "online";
+        if (filterMode === "offline") return slot.mode === "offline";
+        if (filterMode === "available") return slot.status === "available";
+        if (filterMode === "cancelled") return slot.status === "cancelled";
+
+        return true;
+    }),
+    [allTimeSlots, selectedDayName, filterMode]
+);
+
 
     const [formData, setFormData] = useState({
         StartTime: "",
@@ -247,12 +255,45 @@ export default function DoctorTimeSlots() {
                 <div className="schedule-container">
                     <div className="schedule-header">
                         <h2>{selectedDayName} Schedule</h2>
-                        <select value={filterMode} onChange={(e) => setFilterMode(e.target.value)}>
-                            <option value="all">All</option>
-                            <option value="online">Online</option>
-                            <option value="offline">Offline</option>
-                        </select>
+
+                        <div className="filter-bar">
+                            <button
+                                className={filterMode === "all" ? "filter-active" : ""}
+                                onClick={() => setFilterMode("all")}
+                            >
+                                All
+                            </button>
+
+                            <button
+                                className={filterMode === "online" ? "filter-active" : ""}
+                                onClick={() => setFilterMode("online")}
+                            >
+                                Online
+                            </button>
+
+                            <button
+                                className={filterMode === "offline" ? "filter-active" : ""}
+                                onClick={() => setFilterMode("offline")}
+                            >
+                                Offline
+                            </button>
+
+                            <button
+                                className={filterMode === "available" ? "filter-active" : ""}
+                                onClick={() => setFilterMode("available")}
+                            >
+                                Available
+                            </button>
+
+                            <button
+                                className={filterMode === "cancelled" ? "filter-active" : ""}
+                                onClick={() => setFilterMode("cancelled")}
+                            >
+                                Cancelled
+                            </button>
+                        </div>
                     </div>
+
 
                     {isLoading ? (
                         <div className="loader-container"><HeartLoader /></div>

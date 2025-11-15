@@ -518,3 +518,140 @@ body {
     transform: scale(0.98);
     box-shadow: none;
 }
+/* ===== Prescription overlay & timer badge styles (append to chatpage.css) ===== */
+
+.timer-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(0,123,255,0.08), rgba(0,123,255,0.03));
+  border: 1px solid rgba(0,123,255,0.08);
+  margin-right: 8px;
+  min-width: 78px;
+}
+
+.prescription-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 24, 40, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1200;
+  padding: 20px;
+}
+
+.prescription-card {
+  width: 820px;
+  max-width: calc(100% - 40px);
+  background: var(--background-color);
+  border-radius: 12px;
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-color);
+}
+
+.prescription-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.prescription-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.prescription-body {
+  padding: 18px 20px;
+  max-height: 70vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.prescription-body label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.prescription-body input,
+.prescription-body textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  resize: vertical;
+}
+
+.prescription-body textarea {
+  min-height: 80px;
+}
+
+.med-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.add-med-btn {
+  background: transparent;
+  border: 1px dashed rgba(0,0,0,0.08);
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.med-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.med-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.remove-med-btn {
+  background: rgba(220,53,69,0.08);
+  border: 1px solid rgba(220,53,69,0.12);
+  color: #b02a37;
+  padding: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.generate-btn {
+  background: var(--primary-color);
+  color: var(--text-light);
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 900px) {
+  .prescription-card { width: 95%; }
+  .med-row { flex-direction: column; align-items: stretch; }
+  .med-row input { width: 100%; }
+}
