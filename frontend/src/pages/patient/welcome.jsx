@@ -28,7 +28,7 @@ const navigate=useNavigate();
     const role=event.currentTarget.textContent.trim().toLowerCase();
     if(role==="doctor"){
         navigate('/doctor/login');
-    }else navigate('/patient/login');
+    }else navigate('/patient/home');
   }
 
   return (

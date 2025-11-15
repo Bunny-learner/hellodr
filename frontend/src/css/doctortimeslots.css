@@ -144,3 +144,31 @@
 .activate-btn { color: #28a745; }
 
 .no-slots { color: #666; padding-top: 1rem; font-style: italic; }
+
+.filter-bar {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.filter-bar button {
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid #d0d0d0;
+    background: #ffffff;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+.filter-bar button:hover {
+    background: #eef6ff;
+}
+
+.filter-active {
+    background: #007bff !important;
+    color: white !important;
+    border-color: #007bff !important;
+}

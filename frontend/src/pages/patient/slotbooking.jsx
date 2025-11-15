@@ -3,10 +3,8 @@ import { useNavigate, useParams, Link } from "react-router-dom";
 import { PatientContext } from "./patientcontext";
 import HeartLoader from "../../components/Loaders/heartloader";
 import "../../css/slotbooking.css";
-import DayTabs from "../../components/Swiper/swiper";
 
 const formatDate = (date) => {
-  if (!date) return "";
   return date.toLocaleDateString("en-IN", {
     day: "2-digit",
     month: "2-digit",
@@ -28,6 +26,7 @@ export default function SlotBooking() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  /* ----------------- DATE UTILITY ----------------- */
   const getNextDateForDay = (dayName) => {
     const today = new Date();
     const days = [
@@ -44,18 +43,22 @@ export default function SlotBooking() {
     return nextDate;
   };
 
+  /* ----------------- FETCH DOCTOR ----------------- */
   useEffect(() => {
     if (!doctors || !doctorId) return;
-    const doctor = doctors.find((d) => d._id === doctorId);
-    if (doctor) {
-      setDoctorProfile(doctor);
-      setLoading(false);
-    } else {
+
+    const doc = doctors.find((d) => d._id === doctorId);
+    if (!doc) {
       setError("Doctor not found");
       setLoading(false);
+      return;
     }
+
+    setDoctorProfile(doc);
+    setLoading(false);
   }, [doctors, doctorId]);
 
+  /* ----------------- FETCH SLOTS ----------------- */
   useEffect(() => {
     if (!doctorId) return;
 
@@ -63,17 +66,16 @@ export default function SlotBooking() {
 
     const fetchSlots = async () => {
       setLoading(true);
-      setError(null);
       try {
-        const res = await fetch(`http://localhost:8000/patient/allslots`, {
+        const res = await fetch("http://localhost:8000/patient/allslots", {
           headers: { "Content-Type": "application/json", doctorid: doctorId },
           credentials: "include",
         });
 
         if (!res.ok) throw new Error("Failed to fetch time slots");
         const data = await res.json();
-
         const grouped = {};
+
         (data.timeslots || []).forEach((slot) => {
           if (slot.status?.toLowerCase() !== "available") return;
 
@@ -84,16 +86,15 @@ export default function SlotBooking() {
           if (hour >= 12 && hour < 17) period = "Afternoon";
           else if (hour >= 17) period = "Evening";
 
-          const key = (slot.Day || "unknown").toLowerCase();
-          if (!grouped[key]) {
-            const nextDateObj = getNextDateForDay(slot.Day || key);
-            if (!nextDateObj) return;
+          const key = slot.Day.toLowerCase();
 
+          if (!grouped[key]) {
+            const nextDateObj = getNextDateForDay(slot.Day);
             grouped[key] = {
               id: key,
-              dayName: slot.Day || key,
-              date: formatDate(nextDateObj),
+              dayName: slot.Day,
               dateObj: nextDateObj,
+              date: formatDate(nextDateObj),
               offline: { Morning: [], Afternoon: [], Evening: [] },
               online: { Morning: [], Afternoon: [], Evening: [] },
             };
@@ -102,17 +103,18 @@ export default function SlotBooking() {
           const targetBucket = slotMode === "online" ? "online" : "offline";
           grouped[key][targetBucket][period].push({
             label: `${slot.StartTime} - ${slot.EndTime}`,
-            fee: slot.fee ?? doctorProfile?.fee ?? 0,
+            fee: slot.fee ?? doctorProfile?.fee,
             limit: slot.limit ?? 0,
             booked: slot.booked ?? 0,
-            raw: slot,
           });
         });
 
-        if (!mounted) return;
+        if (!run) return;
 
-        const arr = Object.values(grouped);
-        arr.sort((a, b) => a.dateObj - b.dateObj);
+        const arr = Object.values(grouped).sort(
+          (a, b) => a.dateObj - b.dateObj
+        );
+
         setAvailabilityData(arr);
 
         const firstDayWithMode = arr.find(
@@ -131,7 +133,7 @@ export default function SlotBooking() {
         if (!mounted) return;
         setError(err.message || "Unknown error occurred.");
       } finally {
-        if (mounted) setLoading(false);
+        run && setLoading(false);
       }
     };
 
@@ -192,7 +194,7 @@ export default function SlotBooking() {
     const dayData = availabilityData.find((d) => d.id === selectedDayId);
     if (!dayData) return;
 
-    const appointmentData = {
+    const appt = {
       doctorId: doctorProfile._id,
       doctorName: doctorProfile.name,
       mode,
@@ -202,11 +204,13 @@ export default function SlotBooking() {
       timeSlot: selectedSlot.label.split(" - ")[0],
     };
 
-    localStorage.setItem("appointment", JSON.stringify(appointmentData));
+    localStorage.setItem("appointment", JSON.stringify(appt));
     navigate("/patient/appointment/form");
   };
 
 
+
+  /* ---------------- RENDER ---------------- */
   if (loading) return <HeartLoader />;
   if (error) return <p className="booking-card-error">{error}</p>;
   if (!doctorProfile) return null;
