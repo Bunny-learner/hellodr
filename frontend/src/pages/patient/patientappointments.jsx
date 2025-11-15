@@ -225,11 +225,11 @@ export default function PatientAppointments() {
 
         socket.on("enable_join_button", handleEnableJoin);
 
-        // Cleanup listener on component unmount
+       
         return () => {
             socket.off("enable_join_button", handleEnableJoin);
         };
-    }, [socket]); // Re-run this effect if the socket instance changes
+    }, [socket]);
 
 
     // --- Review Modal Handlers (No Change) ---
@@ -276,8 +276,6 @@ export default function PatientAppointments() {
         }
     };
 
-    // --- UPDATED handleJoinCall (No Change from your version) ---
-    // Now uses the context to find the roomid
     const handleJoinCall = (appointment) => {
 
         if (!doctors || doctors.length === 0) {
@@ -340,6 +338,7 @@ export default function PatientAppointments() {
                                 app={app}
                                 onJoin={handleJoinCall}
                               isJoinable={
+                                 app.patientjoinenabled === true &&
     app.status.toLowerCase() === "next_up" ||
     app.status.toLowerCase() === "in_progress"
 }

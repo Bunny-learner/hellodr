@@ -49,6 +49,10 @@ const AppointmentSchema = new mongoose.Schema({
         enum: ['pending','accepted','cancelled','completed','in_progress','next_up','skipped','no_show'],
         default: 'pending'
     },
+    patientjoinenabled:{
+        type:Boolean,
+        default :false
+    },
     TimeSlot: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'TimeSlot',

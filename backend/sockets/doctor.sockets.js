@@ -1,6 +1,7 @@
 import { Doctor } from "../models/doctor.js";
 import { redisPub } from '../db/redisconnect.js';
 import { userConnections } from "./index.js";
+import { Appointment} from "../models/appointment.js";
 
 
 export const doctorConnections = new Map();
@@ -34,8 +35,14 @@ export default async function doctorSocket(io, socket, id, userConnections) {
 });
 
 
-socket.on("doctor_clicked_join",({patientid,appt_id})=>{
+socket.on("doctor_clicked_join",async({patientid,appt_id})=>{
 console.log("enabling the join for the patientid :",patientid)
+
+//saved to appointment patient join enabled
+const appt=await Appointment.findById(appt_id);
+appt.patientjoinenabled=true;
+await appt.save();
+
 const socket_patient=userConnections.get(patientid);
 console.log(socket_patient,"---------")
 io.to(socket_patient).emit("enable_join_button", {
