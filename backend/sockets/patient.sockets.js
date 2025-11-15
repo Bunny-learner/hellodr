@@ -11,7 +11,7 @@ export default async function patientSocket(
 ) {
   console.log(`👤 Patient connected: ${socket.id} (User ID: ${id})`);
 
-  userConnections.set(id, socket);
+  userConnections.set(id, socket.id);
 
   try {
     const pat = await Patient.findById(id);

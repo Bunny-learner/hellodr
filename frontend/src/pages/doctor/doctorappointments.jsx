@@ -1,4 +1,3 @@
-// src/components/DoctorAppointments.jsx
 import React, { useState, useEffect, useMemo } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -20,7 +19,6 @@ import {
   FiMail,
   FiPhone,
   FiAlertCircle,
-  FiMic,
   FiMessageSquare,
   FiFilter,
   FiSkipForward,
@@ -32,6 +30,8 @@ import { useSocket } from "../../pages/SocketContext.jsx";
 
 // ---------- Helpers ----------
 const toDateOnlyKey = (d) => {
+  // Handle null date (for "Show All")
+  if (!d) return null;
   const dd = new Date(d);
   dd.setHours(0, 0, 0, 0);
   return dd.toISOString().split("T")[0];
@@ -45,9 +45,9 @@ const formatDatePretty = (d) =>
     year: "numeric",
   });
 
-// --------------------------------
-
-// ========== PENDING CARD ==========
+// --------------------------------------------------------------------
+// ---------------------- PENDING APPOINTMENT CARD ---------------------
+// --------------------------------------------------------------------
 const PendingAppointmentCard = ({ app, onUpdateStatus }) => (
   <div className="pending-card">
     <div className="pending-card-header">
@@ -122,13 +122,17 @@ const PendingAppointmentCard = ({ app, onUpdateStatus }) => (
   </div>
 );
 
-// ========== ARCHIVED CARD ==========
-const ArchivedAppointmentCard = ({ app, onUpdateStatus, onJoin }) => {
+// --------------------------------------------------------------------
+// ---------------------- ARCHIVED (LIVE QUEUE) CARD -------------------
+// --------------------------------------------------------------------
+const ArchivedAppointmentCard = ({ app, onUpdateStatus, onStartCall }) => {
   const status = (app.status || "").toLowerCase();
   const isOnline = (app.mode || "").toLowerCase() === "online";
 
-  const getStatusLabel = (status) => {
-    switch (status) {
+  const isJoinEnabled = isOnline && status === "next_up";
+
+  const getStatusLabel = (s) => {
+    switch (s) {
       case "next_up":
         return "Next Up";
       case "in_progress":
@@ -139,12 +143,17 @@ const ArchivedAppointmentCard = ({ app, onUpdateStatus, onJoin }) => {
         return "Skipped";
       case "no_show":
         return "No-Show";
+      case "completed":
+        return "Completed";
+      case "cancelled":
+        return "Cancelled";
+      case "rejected":
+        return "Rejected";
       default:
-        return app.status;
+        // Capitalize any other status
+        return s.charAt(0).toUpperCase() + s.slice(1);
     }
   };
-
-  const statusLabel = getStatusLabel(status);
 
   return (
     <div className={`appointment-card status-${status}`}>
@@ -166,7 +175,9 @@ const ArchivedAppointmentCard = ({ app, onUpdateStatus, onJoin }) => {
           </span>
         </div>
 
-        <span className={`status-badge status-${status}`}>{statusLabel}</span>
+        <span className={`status-badge status-${status}`}>
+          {getStatusLabel(status)}
+        </span>
       </div>
 
       <div className="card-body">
@@ -195,11 +206,17 @@ const ArchivedAppointmentCard = ({ app, onUpdateStatus, onJoin }) => {
         <div className="action-buttons">
           {(status === "accepted" || status === "next_up") && isOnline && (
             <button
-              className="btn-action btn-cancel"
-              title="Chat"
-              onClick={() => onJoin(app, "chat")}
+              className="btn-action btn-join"
+              title={isJoinEnabled ? "Start Chat" : "Waiting for queue..."}
+              disabled={!isJoinEnabled}
+              onClick={() => onStartCall(app)}
+              style={{
+                opacity: isJoinEnabled ? 1 : 0.4,
+                cursor: isJoinEnabled ? "pointer" : "not-allowed",
+              }}
             >
               <FiMessageSquare />
+              {isJoinEnabled ? "Start Chat" : "Waiting..."}
             </button>
           )}
 
@@ -240,7 +257,9 @@ const ArchivedAppointmentCard = ({ app, onUpdateStatus, onJoin }) => {
   );
 };
 
-// ========== MAIN COMPONENT ==========
+// --------------------------------------------------------------------
+// --------------------------- MAIN COMPONENT --------------------------
+// --------------------------------------------------------------------
 export default function DoctorAppointments() {
   const navigate = useNavigate();
   const { socket } = useSocket() || {};
@@ -249,27 +268,34 @@ export default function DoctorAppointments() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // filters
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("accepted");
+  const [statusFilter, setStatusFilter] = useState("accepted"); // LIVE QUEUE
   const [modeFilter, setModeFilter] = useState("all");
   const [sortOrder, setSortOrder] = useState("asc");
 
   const [showDateFilter, setShowDateFilter] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
-  // ---------- FETCH APPOINTMENTS ----------
+  // --------------------------------------------------------------------
+  // ----------------------- FETCH APPOINTMENTS -------------------------
+  // --------------------------------------------------------------------
   useEffect(() => {
     const fetchAppointments = async () => {
       setIsLoading(true);
       setError(null);
-
-      // ✅ Prevent flicker
       setAppointmentsList([]);
 
       const url = new URL("http://localhost:8000/doctor/appointments");
-      url.searchParams.append("status", statusFilter);
-      if (selectedDate) url.searchParams.append("date", toDateOnlyKey(selectedDate));
+        if (statusFilter === "accepted") {
+        url.searchParams.append("status", "livequeue");
+        } else {
+        url.searchParams.append("status", statusFilter);
+        }
+
+
+      if (selectedDate) {
+        url.searchParams.append("date", toDateOnlyKey(selectedDate));
+      }
 
       try {
         const response = await fetch(url.toString(), {
@@ -283,7 +309,7 @@ export default function DoctorAppointments() {
           return;
         }
 
-        if (!response.ok) throw new Error("Failed");
+        if (!response.ok) throw new Error("Failed to fetch");
 
         const result = await response.json();
         setAppointmentsList(result.data || []);
@@ -298,7 +324,9 @@ export default function DoctorAppointments() {
     fetchAppointments();
   }, [navigate, statusFilter, selectedDate]);
 
-  // ---------- SOCKET ----------
+  // --------------------------------------------------------------------
+  // -------------------------- SOCKET HANDLERS --------------------------
+  // --------------------------------------------------------------------
   useEffect(() => {
     if (!socket) return;
 
@@ -308,20 +336,45 @@ export default function DoctorAppointments() {
       );
     };
 
-    socket.on?.("appointment:statusChanged", onStatusChanged);
-    return () => socket.off?.("appointment:statusChanged", onStatusChanged);
+    socket.on?.("appointment:StatusChanged", onStatusChanged);
+    return () => socket.off?.("appointment:StatusChanged", onStatusChanged);
   }, [socket]);
 
-  // CLIENT FILTER — search, mode, sort
+  // --------------------------------------------------------------------
+  // -------------------------- CLIENT FILTERS ----------------------------
+  // --------------------------------------------------------------------
   const filteredAppointments = useMemo(() => {
+    const liveQueueStatuses = ["accepted", "next_up", "in_progress"];
+    const selectedDateKey = toDateOnlyKey(selectedDate);
+
     let list = [...appointmentsList];
 
+    // --- 1. Filter by DATE ---
+    if (selectedDateKey) {
+      list = list.filter((app) => toDateOnlyKey(app.date) === selectedDateKey);
+    }
+
+    // --- 2. Filter by STATUS ---
+    if (statusFilter === "accepted") {
+      // "Live Queue"
+      list = list.filter((app) =>
+        liveQueueStatuses.includes((app.status || "").toLowerCase())
+      );
+    } else if (statusFilter !== "all") {
+      // Any other specific status (e.g., "pending", "completed")
+      list = list.filter(
+        (app) => (app.status || "").toLowerCase() === statusFilter
+      );
+    }
+
+    // --- 3. Filter by MODE ---
     list = list.filter((app) =>
       modeFilter === "all"
         ? true
         : (app.mode || "").toLowerCase() === modeFilter
     );
 
+    // --- 4. Filter by SEARCH TERM ---
     const q = searchTerm.toLowerCase();
     if (q) {
       list = list.filter(
@@ -332,47 +385,67 @@ export default function DoctorAppointments() {
       );
     }
 
+    // --- 5. SORT ---
     list.sort((a, b) => {
+      // Prioritize "next_up" and "in_progress" in Live Queue
+      if (statusFilter === "accepted") {
+        const isANext = (a.status || "").toLowerCase() === "next_up";
+        const isBNext = (b.status || "").toLowerCase() === "next_up";
+        if (isANext && !isBNext) return -1; // a comes first
+        if (!isANext && isBNext) return 1; // b comes first
+
+        const isAProgress = (a.status || "").toLowerCase() === "in_progress";
+        const isBProgress = (b.status || "").toLowerCase() === "in_progress";
+        if (isAProgress && !isBProgress) return -1; // a comes first
+        if (!isAProgress && isBProgress) return 1; // b comes first
+      }
+
+      // Default sort by time
       const da = new Date(a.date).getTime();
       const db = new Date(b.date).getTime();
       return sortOrder === "asc" ? da - db : db - da;
     });
 
     return list;
-  }, [appointmentsList, modeFilter, searchTerm, sortOrder]);
+  }, [
+    appointmentsList,
+    modeFilter,
+    searchTerm,
+    sortOrder,
+    statusFilter,
+    selectedDate,
+  ]);
 
-  // QUEUE LOGIC
-  const { nextUpPatient, inProgressPatient } = useMemo(() => {
-    const sorted = [...appointmentsList].sort(
-      (a, b) => new Date(a.date) - new Date(b.date)
-    );
-
-    return {
-      nextUpPatient: sorted.find((a) => (a.status || "").toLowerCase() === "next_up"),
-      inProgressPatient: sorted.find((a) => (a.status || "").toLowerCase() === "in_progress"),
+  // --------------------------------------------------------------------
+  // -------------------------- NAVIGATION LOGIC -------------------------
+  // --------------------------------------------------------------------
+  const navigateToRoom = (app) => {
+    const details = {
+      name: app.name,
+      age: app.age,
+      gender: app.gender,
+      email: app.email,
+      phone: app.phone,
+      symptoms: app.symptoms,
+      mode: app.mode,
+      status: app.status,
     };
-  }, [appointmentsList]);
 
-  const handleStartNext = () => {
-    if (inProgressPatient) {
-      toast.error(
-        `Complete current call with ${inProgressPatient.name} first.`
-      );
-      return;
-    }
-    if (!nextUpPatient) {
-      toast.error("No patient in queue.");
-      return;
-    }
+    localStorage.setItem("current", JSON.stringify(details));
 
-    handleUpdateStatus(nextUpPatient._id, "in_progress", "next_up");
+    navigate(
+      `/waiting-room/${app.doctor.roomid}?consultationId=${app._id}&user=doctor`
+    );
   };
 
-  // ---------- UPDATE STATUS ----------
+  // --------------------------------------------------------------------
+  // -------------------------- UPDATE STATUS -----------------------------
+  // --------------------------------------------------------------------
   const handleUpdateStatus = async (
     appointmentID,
     newStatus,
-    fromStatus
+    fromStatus,
+    skipConfirmation = false
   ) => {
     let endpoint = "http://localhost:8000/appointment/changestatus";
     let confirmNeeded = false;
@@ -399,14 +472,14 @@ export default function DoctorAppointments() {
       msg = "Complete & proceed payment?";
     }
 
-    if (confirmNeeded) {
+    if (confirmNeeded && !skipConfirmation) {
       const res = await Swal.fire({
         title: "Are you sure?",
         text: msg,
         icon: "warning",
         showCancelButton: true,
       });
-      if (!res.isConfirmed) return;
+      if (!res.isConfirmed) return false;
     }
 
     const t = toast.loading("Updating...");
@@ -421,32 +494,32 @@ export default function DoctorAppointments() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message);
 
+      
       setAppointmentsList((prev) =>
-        prev.map((a) => (a._id === appointmentID ? { ...a, status: newStatus } : a))
+        prev.map((a) =>
+          a._id === appointmentID ? { ...a, status: newStatus } : a
+        )
       );
 
       toast.success("Updated", { id: t });
+      return true;
     } catch (err) {
       toast.error(err.message, { id: t });
+      return false;
     }
   };
 
-  const handleJoin = (app) => {
-    const details = {
-      name: app.name,
-      age: app.age,
-      gender: app.gender,
-      email: app.email,
-      phone: app.phone,
-      symptoms: app.symptoms,
-      mode: app.mode,
-      status: app.status,
-    };
+  
+  const handleStartCall = async (app) => {
 
-    localStorage.setItem("current", JSON.stringify(details));
-    navigate(`/waiting-room/${app.doctor.roomid}?consultationId=${app._id}&user=doctor`
-);
+    console.log(app)
+    console.log("clicked join")
+    socket.emit("doctor_clicked_join", {
+      patientid: app.patient,
+      appt_id: app._id,
+    });
 
+    navigateToRoom(app);
   };
 
   const clearDate = () => {
@@ -459,7 +532,7 @@ export default function DoctorAppointments() {
       <Toaster position="top-right" />
 
       <section className="appointments-layout">
-        {/* SIDEBAR */}
+        {/* Sidebar */}
         <aside className="appointments-sidebar">
           <h2 className="sidebar-title">Filters</h2>
 
@@ -502,7 +575,7 @@ export default function DoctorAppointments() {
             )}
           </div>
 
-          {/* Mode */}
+          {/* Mode Filter */}
           <div className="mode-filters">
             <span className="filter-label">Mode</span>
 
@@ -527,11 +600,18 @@ export default function DoctorAppointments() {
             ))}
           </div>
 
-          {/* Status */}
+          {/* Status Filter */}
           <div className="status-filters">
             <span className="filter-label">Status</span>
 
-            {["pending", "accepted", "completed", "skipped", "rejected", "all"].map((f) => (
+            {[
+              "pending",
+              "accepted",
+              "completed",
+              "skipped",
+              "rejected",
+              "all",
+            ].map((f) => (
               <button
                 key={f}
                 className={`filter-chip ${statusFilter === f ? "active" : ""}`}
@@ -542,7 +622,9 @@ export default function DoctorAppointments() {
                 {f === "completed" && <FiCheckSquare />}
                 {f === "rejected" && <FiXCircle />}
                 {f === "skipped" && <FiSkipForward />}
-                {f === "accepted" ? "Live Queue" : f.charAt(0).toUpperCase() + f.slice(1)}
+                {f === "accepted"
+                  ? "Live Queue"
+                  : f.charAt(0).toUpperCase() + f.slice(1)}
               </button>
             ))}
           </div>
@@ -553,31 +635,16 @@ export default function DoctorAppointments() {
               className="sort-button"
               onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
             >
-              {sortOrder === "asc" ? <FiArrowUp /> : <FiArrowDown />} Sort by Time
+              {sortOrder === "asc" ? <FiArrowUp /> : <FiArrowDown />} Sort by
+              Time
             </button>
           </div>
         </aside>
 
-        {/* RIGHT CONTENT */}
+        {/* Main Content */}
         <main className="appointments-content">
           <div className="content-header">
             <h2 className="section-title">Appointments</h2>
-
-            {statusFilter === "accepted" && (
-              <button
-                className="btn-action btn-accept"
-                style={{ marginLeft: "auto", minWidth: "220px" }}
-                onClick={handleStartNext}
-                disabled={!nextUpPatient || !!inProgressPatient}
-              >
-                <FiMic style={{ marginRight: 8 }} />
-                {inProgressPatient
-                  ? `In Call: ${inProgressPatient.name}`
-                  : nextUpPatient
-                  ? `Start Call: ${nextUpPatient.name}`
-                  : "No Patient Next Up"}
-              </button>
-            )}
 
             {selectedDate && (
               <div className="active-date-chip">
@@ -593,7 +660,9 @@ export default function DoctorAppointments() {
           <div className="appointments-list-container">
             {isLoading && <Bubbles />}
 
-            {!isLoading && error && <div className="error-message">{error}</div>}
+            {!isLoading && error && (
+              <div className="error-message">{error}</div>
+            )}
 
             {!isLoading && !error && filteredAppointments.length === 0 && (
               <div className="no-appointments">
@@ -625,7 +694,7 @@ export default function DoctorAppointments() {
                       key={app._id}
                       app={app}
                       onUpdateStatus={handleUpdateStatus}
-                      onJoin={handleJoin}
+                      onStartCall={handleStartCall}
                     />
                   );
                 })}

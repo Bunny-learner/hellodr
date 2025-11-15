@@ -12,6 +12,8 @@ import { Patient } from "../models/patient.js"
 import doctorSocketHandler from "../sockets/doctor.sockets.js";
 import { scheduleJobsForAppointment } from "../scheduling/schedule_appointment.js"
 import { scheduleRemindersForAppointment } from "../scheduling/schedule_reminder.js";
+import { scheduleTimeoutJobs} from "../scheduling/schedule_timeout.js";
+import { removeAppointmentJobs } from "../scheduling/remove_job.js";
 
 
 
@@ -176,38 +178,47 @@ const book_appointment = asynchandler(async (req, res) => {
 
 
 
-
-
 const get_all_appointments = asynchandler(async (req, res) => {
   const userID = req.user.id;
-  const userType = req.userType;     // 'doctor' or 'patient'
-  let { status, date } = req.query;  // <-- pick filters from query
+  const userType = req.userType;     
+  let { status, date } = req.query;
 
-  // Build base query
   const query = { [userType]: userID };
 
-  
+  // ---------------------------
+  // 🔥 STATUS FILTER HANDLING
+  // ---------------------------
   if (status && status.toLowerCase() !== "all") {
-    // normalize lowercase
     status = status.toLowerCase();
 
-    // UI sends "rejected" → DB may store "cancelled"
-    if (status === "rejected") {
+    if (status === "livequeue") {
+      // LIVE QUEUE = accepted + next_up + in_progress
+      query["status"] = { 
+        $in: ["accepted", "next_up", "in_progress"] 
+      };
+    } 
+    
+    else if (status === "rejected") {
       query["status"] = { $in: ["rejected", "cancelled"] };
-    } else {
+    } 
+    
+    else {
       query["status"] = status;
     }
   }
-if (date) {
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
 
-  const next = new Date(d);
-  next.setDate(d.getDate() + 1);
+  // ---------------------------
+  // 🔥 DATE FILTER HANDLING
+  // ---------------------------
+  if (date) {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
 
-  query["date"] = { $gte: d, $lte: next };   
-}
+    const next = new Date(d);
+    next.setDate(d.getDate() + 1);
 
+    query["date"] = { $gte: d, $lte: next };
+  }
 
   const appointments = await Appointment.find(query)
     .populate("doctor", "name speciality fee profilePic address roomid")
@@ -266,7 +277,7 @@ const update_appointment_status = asynchandler(async (req, res) => {
 
     await scheduleJobsForAppointment(appointment)
     await scheduleRemindersForAppointment(appointment)
-    
+    await scheduleTimeoutJobs(appointment)
 
   }
 
@@ -308,7 +319,7 @@ const update_appointment_status = asynchandler(async (req, res) => {
 
   if (status.toLowerCase() === "cancelled") {
     try {
-      // ✅ slot update
+     
       const slot = await TimeSlot.findById(appointment.TimeSlot._id);
 
       if (slot) {
@@ -320,7 +331,11 @@ const update_appointment_status = asynchandler(async (req, res) => {
 
         await slot.save();
 
-        // ✅ FIX VALUES
+        //removing the jobs from the scheduler also removing the timeoutjob
+
+        await removeAppointmentJobs(appointmentID)
+
+        
         const patient = appointment.patient;
         const mode = appointment.mode;
         const age = appointment.age;   // you stored age above
@@ -342,10 +357,10 @@ const update_appointment_status = asynchandler(async (req, res) => {
             },
           })
         );
-
-        console.log(
+         console.log(
           `Slot ${slot._id} updated: booked=${slot.booked}, status=${slot.status}`
         );
+
       } else {
         console.warn(`TimeSlot not found for appointment ${appointmentID}`);
       }
@@ -353,6 +368,9 @@ const update_appointment_status = asynchandler(async (req, res) => {
       console.error("Error updating timeslot after cancellation:", err);
     }
   }
+
+  
+   
 
 
   res.status(201).json({

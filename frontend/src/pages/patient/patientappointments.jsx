@@ -1,17 +1,17 @@
 // src/components/PatientAppointments.jsx
 import React, { useState, useEffect, useContext } from 'react'; // Added useContext
-import "../../css/patientappointments.css"; 
+import "../../css/patientappointments.css";
 import toast from 'react-hot-toast';
-import HeartLoader from '../../components/Loaders/heartloader'; 
+import HeartLoader from '../../components/Loaders/heartloader';
 import { useNavigate } from 'react-router-dom';
 import { useSocket } from "../../pages/SocketContext.jsx";
-import { 
-    FiCalendar, FiClock, FiMapPin, FiVideo, FiStar, 
-    FiMessageSquare, FiWifi, FiHome 
+import {
+    FiCalendar, FiClock, FiMapPin, FiVideo, FiStar,
+    FiMessageSquare, FiWifi, FiHome
 } from 'react-icons/fi';
-import { PatientContext } from './patientcontext'; // --- IMPORTED CONTEXT ---
+import { PatientContext } from './patientcontext'; 
 
-// --- Helper Functions (No Change) ---
+
 const getTodayString = () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Set to midnight
@@ -31,9 +31,7 @@ const formatTime = (timeString) => {
 };
 
 
-// --- UPDATED TodayOnlineCard ---
-// Changed onJoin(app._id) to onJoin(app)
-const TodayOnlineCard = ({ app, onJoin }) => (
+const TodayOnlineCard = ({ app, onJoin, isJoinable }) => (
     <div className="pa-card today-card today-online">
         <div className="pa-card-header">
             <img src={app.doctor.profilePic || "/default-doctor.png"} alt={app.doctor.name} className="pa-doctor-image" />
@@ -47,9 +45,21 @@ const TodayOnlineCard = ({ app, onJoin }) => (
             <div className="pa-card-detail"><FiClock /><span>{formatTime(app.TimeSlot?.StartTime)} - {formatTime(app.TimeSlot?.EndTime)}</span></div>
         </div>
         <div className="pa-card-footer">
-            {/* --- THIS IS THE FIX: Pass the whole 'app' object --- */}
-            <button className="pa-btn pa-btn-primary" onClick={() => onJoin(app)}><FiMessageSquare />Join Chat</button>
-            <button className="pa-btn pa-btn-secondary"><FiVideo /> VideoCall</button>
+          
+            <button
+    className="pa-btn pa-btn-primary"
+    onClick={() => onJoin(app)}
+    disabled={!isJoinable}
+    style={{
+        opacity: isJoinable ? 1 : 0.4,
+        cursor: isJoinable ? "pointer" : "not-allowed"
+    }}
+>
+    <FiMessageSquare />
+    {isJoinable ? "Join Chat" : 
+        (app.status.toLowerCase() === "accepted" ? "Scheduled" : "Waiting...")}
+</button>
+
         </div>
     </div>
 );
@@ -123,12 +133,12 @@ const PastAppointmentCard = ({ app, onAddReview }) => (
 
 export default function PatientAppointments() {
     const [loading, setLoading] = useState(false);
-    const [page, setPage] = useState('today'); 
-    const [modeFilter, setModeFilter] = useState('all'); 
+    const [page, setPage] = useState('today');
+    const [modeFilter, setModeFilter] = useState('all');
     const navigate = useNavigate();
-     const {socketId, socket}=useSocket()
+    const { socketId, socket } = useSocket()
     // --- ACCESSED CONTEXT ---
-    const { doctors } = useContext(PatientContext); 
+    const { doctors } = useContext(PatientContext);
 
     // Store appointments by category
     const [todayAppointments, setTodayAppointments] = useState([]);
@@ -143,6 +153,10 @@ export default function PatientAppointments() {
     const [reviewRating, setReviewRating] = useState(5);
     const [reviewText, setReviewText] = useState("");
 
+    // --- NEW STATE ---
+    // Stores a Set of appointment IDs that are allowed to join
+    const [joinableAppointments, setJoinableAppointments] = useState(new Set());
+
     // --- fetchAppointments (No Change) ---
     useEffect(() => {
         const fetchAppointments = async () => {
@@ -153,7 +167,7 @@ export default function PatientAppointments() {
                     credentials: 'include',
                 });
                 const data = await res.json();
-                
+
                 if (res.status === 401) {
                     navigate('/patient/login?alert=Session expired please login again !');
                     return;
@@ -161,11 +175,13 @@ export default function PatientAppointments() {
 
                 if (res.status === 200) {
                     const today = getTodayString();
-                    
-                    const todayApps = data.data.filter(doc => 
-                        doc.status === "accepted" && doc.date.startsWith(today)
-                    );
-                    const upcomingApps = data.data.filter(doc => 
+
+                  const todayApps = data.data.filter(doc =>
+    ["accepted", "next_up", "in_progress"].includes(doc.status.toLowerCase()) &&
+    doc.date.startsWith(today)
+);
+
+                    const upcomingApps = data.data.filter(doc =>
                         doc.status === "accepted" && !doc.date.startsWith(today)
                     );
                     const pendingApps = data.data.filter(doc => doc.status === "pending");
@@ -188,6 +204,33 @@ export default function PatientAppointments() {
         };
         fetchAppointments();
     }, [navigate]);
+
+
+    useEffect(() => {
+        if (!socket) return; 
+
+        const handleEnableJoin = (data) => {
+            console.log("Socket event 'enable_join_button' received:", data);
+            if (data && data.appt_id) {
+                toast.success("Doctor is ready, please join!");
+                
+                // Add the appointmentId to the set of joinable appointments
+                setJoinableAppointments(prevSet => {
+                    const newSet = new Set(prevSet); 
+                    newSet.add(data.appt_id);
+                    return newSet;
+                });
+            }
+        };
+
+        socket.on("enable_join_button", handleEnableJoin);
+
+        // Cleanup listener on component unmount
+        return () => {
+            socket.off("enable_join_button", handleEnableJoin);
+        };
+    }, [socket]); // Re-run this effect if the socket instance changes
+
 
     // --- Review Modal Handlers (No Change) ---
     const handleOpenReviewModal = (app) => {
@@ -233,18 +276,18 @@ export default function PatientAppointments() {
         }
     };
 
-    // --- UPDATED handleJoinCall ---
+    // --- UPDATED handleJoinCall (No Change from your version) ---
     // Now uses the context to find the roomid
     const handleJoinCall = (appointment) => {
-       
+
         if (!doctors || doctors.length === 0) {
             toast.error("Doctor list not available. Please refresh the page.");
             return;
         }
 
         // Get the doctor's ID from the appointment object
-        const doctorId = appointment.doctor._id; 
-        
+        const doctorId = appointment.doctor._id;
+
         // Find the full doctor profile from the context list
         const fullDoctorProfile = doctors.find(doc => doc._id === doctorId);
 
@@ -257,17 +300,17 @@ export default function PatientAppointments() {
             toast.error("This doctor's chat room is not available.");
             return;
         }
-        
-        socket.emit("join_room",{
-            roomid:fullDoctorProfile.roomid
+
+        socket.emit("join_room", {
+            roomid: fullDoctorProfile.roomid
         })
         toast.success("Joining the room...");
-      navigate(`/waiting-room/${fullDoctorProfile.roomid}?consultationId=${appointment._id}&user=patient`);
+        navigate(`/waiting-room/${fullDoctorProfile.roomid}?consultationId=${appointment._id}&user=patient`);
 
     };
 
 
-    // --- renderPageContent (No Change) ---
+    
     const renderPageContent = () => {
         if (loading) return <HeartLoader />;
 
@@ -290,12 +333,22 @@ export default function PatientAppointments() {
                     <div className='pa-no-appointments'>{noAppsMessage('today\'s')}</div>
                 ) : (
                     filteredToday.map((app) => (
-                        app.mode === 'online' ? 
-                        <TodayOnlineCard key={app._id} app={app} onJoin={handleJoinCall} /> :
-                        <TodayOfflineCard key={app._id} app={app} />
+                        app.mode === 'online' ?
+                            // --- THIS IS THE FIX: Pass isJoinable prop ---
+                            <TodayOnlineCard
+                                key={app._id}
+                                app={app}
+                                onJoin={handleJoinCall}
+                              isJoinable={
+    app.status.toLowerCase() === "next_up" ||
+    app.status.toLowerCase() === "in_progress"
+}
+
+                            /> :
+                            <TodayOfflineCard key={app._id} app={app} />
                     ))
                 );
-            
+
             case 'upcoming':
                 const filteredUpcoming = filterByMode(upcomingAppointments);
                 return filteredUpcoming.length === 0 ? (
@@ -311,7 +364,7 @@ export default function PatientAppointments() {
                 ) : (
                     filteredPending.map((app) => <AppointmentCard key={app._id} app={app} />)
                 );
-            
+
             case 'completed':
                 const filteredCompleted = filterByMode(completedAppointments);
                 return filteredCompleted.length === 0 ? (
@@ -348,7 +401,7 @@ export default function PatientAppointments() {
                 </div>
             </div>
 
-        
+
             <div className="pa-mode-filters">
                 <span className="pa-filter-label">Mode:</span>
                 {['all', 'offline', 'online'].map(f => (
@@ -374,7 +427,7 @@ export default function PatientAppointments() {
                     <div className="pa-review-modal" onClick={(e) => e.stopPropagation()}>
                         <button className="pa-close-modal-btn" onClick={() => setShowReviewModal(false)}>×</button>
                         <h3>Review Dr. {selectedAppointment.doctor.name}</h3>
-                        
+
                         <div className="pa-rating-input">
                             <label>Rating:</label>
                             <div className="pa-star-rating">
@@ -392,7 +445,7 @@ export default function PatientAppointments() {
                             className="pa-review-textarea"
                             placeholder="Write your review here..."
                             value={reviewText}
-                            onChange={(e) => setReviewText(e.default-doctor.png)}
+                            onChange={(e) => setReviewText(e.target.value)} // Corrected this line from your original code
                         ></textarea>
 
                         <button className="pa-btn pa-btn-primary" onClick={submitReview}>

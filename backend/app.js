@@ -32,6 +32,7 @@ import socketMain from "./sockets/index.js";
 import {  reminderQueue } from "./queues/reminder.queue.js";
 import { startQueue } from "./queues/start.queue.js";
 import { hydratorQueue } from "./queues/hydrator.queue.js";
+import { timeoutQueue } from "./queues/timeout.queue.js";
 
 
 const app = express()
@@ -51,7 +52,7 @@ app.use(express.json({limit:'100mb'}));
 const serverAdapter = new ExpressAdapter();
 serverAdapter.setBasePath("/admin/queues"); 
 createBullBoard({
-  queues: [new BullMQAdapter(startQueue),new BullMQAdapter(hydratorQueue),new BullMQAdapter(reminderQueue)],
+  queues: [new BullMQAdapter(startQueue),new BullMQAdapter(hydratorQueue),new BullMQAdapter(reminderQueue),new BullMQAdapter(timeoutQueue)],
   serverAdapter,
 });
 app.use('/admin/queues', serverAdapter.getRouter()); 

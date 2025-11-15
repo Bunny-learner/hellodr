@@ -1,22 +1,20 @@
 import { Notification } from "../models/notification.js";
-import { sendEmail } from "../utils/sendEmail.js"
+import { sendEmail } from "../utils/sendEmail.js";
 
-export default function registerRedisListener(redisSub, userConnections) {
-  console.log("✅ Redis global listener registered");
+export default function registerRedisListener(redisSub, userConnections, io) {
+  console.log(" Redis global listener registered");
 
   redisSub.on("message", async (channel, message) => {
-    console.log("message recieved:", message)
+    console.log("📨 Redis message:", message);
+
     try {
       const payload = JSON.parse(message);
-      const userId = channel.split(":")[1];
+      const channelUserId = channel.split(":")[1]; // receiver by redis channel
 
-      console.log(`📩 Redis → ${channel}:`, payload.data?.message);
-
-      
       let notif;
 
-      if (payload.type != "reminder" ) {
-
+      // SAVE NOTIFICATION ONLY IF NOT REMINDER
+      if (payload.type !== "reminder") {
         notif = new Notification({
           doctorid: payload.data.doctorid,
           patientid: payload.data.patientid,
@@ -30,47 +28,55 @@ export default function registerRedisListener(redisSub, userConnections) {
         await notif.save();
       }
 
-     
+      // IMPORTANT — Determine actual target user
+      let targetUserId =
+        payload.data.to === "doctor"
+          ? payload.data.doctorid
+          : payload.data.patientid;
 
-      const socket = userConnections.get(userId);
+      const targetSocketId = userConnections.get(targetUserId?.toString());
 
-      if (payload.type == "cancelled") {
+      //  If appointment cancelled, send email
+      if (payload.type === "cancelled") {
         const appointment = payload.data.appointment;
 
         const indiaTime = new Date(appointment.date).toLocaleString("en-IN", {
           timeZone: "Asia/Kolkata",
         });
 
-        const msg = `Dear ${appointment.patient.name}, your ${appointment.mode.toLowerCase()} appointment on ${indiaTime} has been cancelled due to doctor unavailability.`
+        const msg = `Dear ${appointment.patient.name}, your ${appointment.mode.toLowerCase()} appointment on ${indiaTime} has been cancelled due to doctor unavailability.`;
 
-        await sendEmail(appointment.patient.email,"Appointment Cancelled",msg);
-
-
+        await sendEmail(
+          appointment.patient.email,
+          "Appointment Cancelled",
+          msg
+        );
       }
 
-      //for reminder not socket notifications comes becomes i took they will not be saved to db
-      if (socket&&notif) {
+      
+      if (targetSocketId) {
+        console.log("📨 Delivering socket to", targetUserId);
 
-        if(notif.from=="system"){
-
-          if(notif.to=="patient")
-            socket.emit("patientnotification", payload.data);
-          else
-            socket.emit("doctornotification", payload.data);
-
-
+        if (payload.data.to === "patient") {
+          io.to(targetSocketId).emit("patientnotification", payload.data);
+        } else {
+          io.to(targetSocketId).emit("doctornotification", payload.data);
         }
-        else if (notif.from == "patient")
-          socket.emit("doctornotification", payload.data);
-        else if (notif.from == "doctor")
-          socket.emit("patientnotification", payload.data);
 
-        console.log("📨 Delivered via socket");
+
+        if (payload.type === "appointment:StatusChanged") {
+          io.to(targetSocketId).emit("appointment:StatusChanged", {
+            appointmentID: payload.data.appointmentid,
+            status: payload.data.status,
+          });
+        }
       } else {
-        console.log("⚠️ socket is not defined so the user is Offline; hence stored only in db");
+        console.log(
+          ` User ${targetUserId} offline — notification saved only`
+        );
       }
     } catch (err) {
-      console.log("❌ Redis parse error", err);
+      console.log("Redis parse error:", err);
     }
   });
 }
