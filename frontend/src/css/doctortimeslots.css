@@ -1,174 +1,264 @@
+/* ===== GLOBAL PAGE LAYOUT ===== */
 .timeslots-page {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-    padding: 1rem;
-    max-width: 1400px;
-    margin: auto;
-}
-@media (min-width: 1000px){
-    .timeslots-page { grid-template-columns: 380px 1fr; }
+  display: flex;
+  gap: 2rem;
+  padding: 2rem;
+  width: 100%;
+  margin-top: 1rem;
+  font-family: "Poppins", sans-serif;
 }
 
-/* Form Card */
+/* ===== LEFT PANEL (FORM) ===== */
 .timeslot-form-card {
-    background: #fff;
-    padding: 1.4rem;
-    border-radius: 14px;
-    border: 1px solid #eee;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.05);
-    position: sticky;
-    top: 1rem;
-}
-.timeslot-form-card h2 { margin-bottom: 1rem; }
-
-/* Form */
-.form-group { margin-bottom: 1rem; }
-.form-group label { display: block; margin-bottom: .4rem; font-weight: 600; }
-.form-group input, select {
-    width: 100%; padding: .6rem .8rem;
-    border: 1px solid #ddd; border-radius: 8px;
+  width: 32%;
+  background: white;
+  padding: 1.8rem;
+  border-radius: 18px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+  border: 1px solid #e7e7e7;
 }
 
-/* Calendar */
-.calendar-ui {
-    width: 100%;
-    border-radius: 10px !important;
-    border: none !important;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+.form-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
 }
 
-/* Mode Toggle */
-.mode-toggle { display: flex; gap: .6rem; margin: .6rem 0; }
+.calendar-styled {
+  border-radius: 12px !important;
+  padding: 1rem !important;
+  border: none !important;
+  background: #f9fcff !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin-bottom: 1.5rem;
+}
+
+.label-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.form-group {
+  margin-bottom: 1.2rem;
+}
+
+.form-group label {
+  font-weight: 500;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.65rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  transition: 0.2s;
+}
+
+.form-group input:focus {
+  border-color: #38a3e3;
+  box-shadow: 0 0 4px rgba(56,163,227,0.3);
+}
+
+/* MODE TOGGLE BUTTONS */
+.mode-toggle {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
 .mode-toggle button {
-    flex: 1; padding: .6rem; border-radius: 6px;
-    background: #eee; border: none; cursor: pointer; font-weight: 600;
+  width: 100%;
+  padding: 0.7rem;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background: #f5f5f5;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s;
 }
-.mode-toggle button.active { background: #349ce3; color: white; }
 
-/* Submit Button */
+.mode-toggle button.active {
+  background: #38a3e3;
+  color: white;
+  border-color: #38a3e3;
+}
+
 .submit-btn {
-    width: 100%; padding: .8rem;
-    background: #349ce3; color: white; border: none;
-    border-radius: 8px; font-weight: 600; margin-top: .5rem;
+  margin-top: 1rem;
+  width: 100%;
+  padding: 0.8rem;
+  border: none;
+  background: #38a3e3;
+  color: white;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s;
 }
 
-/* Schedule */
-.schedule-header { display: flex; justify-content: space-between; align-items: center; }
-
-.slots-grid {
-    display: grid; gap: 1rem;
-    grid-template-columns: repeat(auto-fill, minmax(260px,1fr));
+.submit-btn:hover {
+  background: #1174b7;
 }
 
-.slot-card {
-    background: white;
-    border-radius: 10px;
-    padding: 1rem;
-    border-left: 5px solid #349ce3;
-    box-shadow: 0 2px 8px rgba(0,0,0,.05);
-    position: relative;
-}
-.slot-card .time { font-weight: 600; }
-
-/* Cancelled Badge */
-.cancel-badge {
-    position: absolute;
-    top: .6rem;
-    right: .6rem;
-    background: #d63f3f;
-    color: white;
-    font-size: .75rem;
-    padding: 3px 8px;
-    border-radius: 6px;
-    font-weight: 600;
+/* ===== RIGHT PANEL (SLOTS LIST) ===== */
+.schedule-container {
+  width: 68%;
 }
 
-/* Cancelled Slot */
-.slot-card.cancelled {
-    background: #ffe9e9 !important;
-    border-left-color: #d63f3f !important;
-    opacity: 0.88;
+.schedule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
-
-/* Limit Editing Row */
-.limit-edit-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: .4rem 0;
-}
-.limit-input {
-    width: 60px;
-    padding: .3rem;
-    border-radius: 6px;
-    border: 1px solid #888;
-}
-.edit-limit-btn, .save-limit-btn {
-    background: none;
-    border: none;
-    font-size: 1.1rem;
-    cursor: pointer;
-    color: #349ce3;
-}
-.save-limit-btn { color: #28a745; }
-
-/* Footer Buttons */
-.slot-footer {
-    display: flex;
-    justify-content: space-between;
-    margin-top: .6rem;
-}
-
-/* Mode button */
-.mode-btn {
-    padding: 4px 10px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    display: flex; align-items: center; gap: .3rem;
-    background: #eef7ff; color: #006dcc;
-}
-.mode-btn:hover { background: #d9eeff; }
-.mode-btn:disabled { background: #ddd !important; color: #999 !important; cursor: not-allowed; }
-
-/* Cancel & Activate */
-.cancel-btn, .activate-btn {
-    background: none;
-    border: none;
-    font-size: 1.3rem;
-    cursor: pointer;
-}
-.cancel-btn { color: #d63f3f; }
-.cancel-btn:disabled { color: #d8a5a5; cursor: not-allowed; }
-.activate-btn { color: #28a745; }
-
-.no-slots { color: #666; padding-top: 1rem; font-style: italic; }
 
 .filter-bar {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-    flex-wrap: wrap;
+  display: flex;
+  gap: 0.6rem;
 }
 
 .filter-bar button {
-    padding: 6px 14px;
-    border-radius: 8px;
-    border: 1px solid #d0d0d0;
-    background: #ffffff;
-    cursor: pointer;
-    font-size: 0.85rem;
-    font-weight: 500;
-    transition: 0.2s;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #f6f6f6;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.25s;
 }
 
-.filter-bar button:hover {
-    background: #eef6ff;
+.filter-bar button.filter-active {
+  background: #38a3e3;
+  color: white;
+  border-color: #38a3e3;
 }
 
-.filter-active {
-    background: #007bff !important;
-    color: white !important;
-    border-color: #007bff !important;
+/* ===== SLOT CARDS ===== */
+.slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.slot-card {
+  background: #fff;
+  border: 1px solid #ececec;
+  border-radius: 15px;
+  padding: 1rem;
+  box-shadow: 0 2px 7px rgba(0,0,0,0.08);
+  position: relative;
+  transition: 0.3s;
+}
+
+.slot-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+}
+
+.slot-card.cancelled {
+  opacity: 0.65;
+  background: #fff4f4;
+  border-color: #ffb5b5;
+}
+
+.badge-cancel {
+  background: #ff4f4f;
+  color: white;
+  font-size: 0.7rem;
+  padding: 3px 7px;
+  border-radius: 6px;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+.slot-time {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.slot-fee {
+  font-size: 1rem;
+  color: #0a7cc7;
+  margin-bottom: 0.5rem;
+}
+
+/* LIMIT EDIT SECTION */
+.limit-edit-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.limit-input {
+  width: 60px;
+  padding: 0.4rem;
+  border-radius: 8px;
+}
+
+.slot-booking {
+  color: #444;
+}
+
+.save-limit-btn,
+.edit-limit-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+/* FOOTER BUTTONS */
+.slot-footer {
+  margin-top: 0.7rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.mode-btn,
+.cancel-btn,
+.activate-btn {
+  border: none;
+  padding: 0.5rem 0.7rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.mode-btn {
+  background: #e7f4ff;
+  color: #1174b7;
+}
+
+.cancel-btn {
+  background: #ffdfdf;
+  color: #c40000;
+}
+
+.activate-btn {
+  background: #dcffe2;
+  color: #008a1e;
+}
+
+/* NO SLOTS MESSAGE */
+.no-slots {
+  margin-top: 2rem;
+  text-align: center;
+  font-size: 1.1rem;
+  color: #888;
+}
+
+/* RESPONSIVE */
+@media(max-width: 900px) {
+  .timeslots-page {
+    flex-direction: column;
+  }
+  .timeslot-form-card,
+  .schedule-container {
+    width: 100%;
+  }
 }

@@ -420,6 +420,7 @@ export default function DoctorAppointments() {
   // -------------------------- NAVIGATION LOGIC -------------------------
   // --------------------------------------------------------------------
   const navigateToRoom = (app) => {
+    console.log(app)
     const details = {
       name: app.name,
       age: app.age,
