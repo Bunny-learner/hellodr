@@ -87,7 +87,6 @@ useEffect(() => {
       const res = await fetch("http://localhost:8000/patient/filterdoctors", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({ 
           filters: finalFilters,   
           text 
@@ -109,7 +108,7 @@ useEffect(() => {
   };
 
   filterDoctors();
-}, [location.search, filters, text]);
+}, [location.search, filters]);
 
 
   if (loading) return <Bubbles />
@@ -190,7 +189,7 @@ useEffect(() => {
                       </p>
                     </div>
                     <div className="doctor-card-action">
-                      <p className="doctor-card-fee">₹{doc.fee} <span>Fee</span></p>
+                      <p className="doctor-card-fee"> ₹{doc.fee} Consultation Fee</p>
                       <Link to={`/patient/${doc._id}`} className="doctor-card-btn-profile">
                         View Profile
                       </Link>

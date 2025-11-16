@@ -526,3 +526,230 @@
     grid-template-columns: 1fr; /* Stack cards on mobile */
   }
 }
+
+
+
+/* =========================================================
+   ULTRA-RESPONSIVE IMPROVEMENTS (ALL DEVICES)
+   ========================================================= */
+@media (max-width: 1200px) {
+  .pa-container {
+    padding: 1rem;
+    gap: 1.5rem;
+  }
+
+  .pa-sidebar {
+    flex: 0 0 220px;
+  }
+
+  .pa-main-header h2 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .pa-container {
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+    gap: 0;
+  }
+
+  /* Sidebar becomes top-scroll bar */
+  .pa-sidebar {
+    position: static;
+    width: 100%;
+    flex: 0 0 auto;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    border-bottom: 1px solid var(--pa-border);
+    box-shadow: none;
+    padding: 0.5rem 0;
+  }
+
+  .pa-sidebar-header {
+    display: none;
+  }
+
+  .pa-sidebar-nav {
+    display: flex;
+    overflow-x: auto;
+    gap: 1rem;
+    padding: 0.5rem 1rem;
+    white-space: nowrap;
+  }
+
+  .pa-nav-link {
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.6rem;
+    min-width: 80px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 10px;
+    margin: 0 !important;
+  }
+
+  .pa-nav-count {
+    top: -3px;
+    right: -5px;
+    font-size: 0.65rem;
+    padding: 2px 5px;
+  }
+
+  .pa-main-content {
+    padding: 1rem;
+  }
+
+  .pa-main-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.7rem;
+  }
+
+  .pa-main-header h2 {
+    font-size: 1.4rem;
+  }
+
+  .pa-mode-filters {
+    width: 100%;
+    justify-content: space-evenly;
+  }
+
+  .pa-mode-chip {
+    flex: 1;
+    text-align: center;
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .pa-filter-label {
+    display: none;
+  }
+
+  .pa-appointments-grid {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+
+  .pa-card-header {
+    padding: 1rem;
+  }
+
+  .pa-doctor-image {
+    width: 50px;
+    height: 50px;
+  }
+
+  .pa-card-body {
+    padding: 1rem;
+  }
+
+  .pa-card-detail {
+    font-size: 0.9rem;
+  }
+
+  .pa-card-footer {
+    padding: 0.9rem 1rem;
+  }
+
+  .pa-btn {
+    padding: 0.55rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .pa-btn-primary,
+  .pa-btn-secondary {
+    font-size: 0.9rem;
+  }
+}
+
+/* VERY SMALL MOBILES (UNDER 480px) */
+@media (max-width: 480px) {
+  .pa-main-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .pa-mode-chip {
+    padding: 0.45rem;
+    font-size: 0.8rem;
+  }
+
+  .pa-card-header {
+    padding: 0.8rem;
+    gap: 0.7rem;
+  }
+
+  .pa-doctor-image {
+    width: 46px;
+    height: 46px;
+  }
+
+  .pa-doctor-info h4 {
+    font-size: 1rem;
+  }
+
+  .pa-card-body {
+    padding: 0.8rem;
+  }
+
+  .pa-card-detail {
+    font-size: 0.85rem;
+  }
+
+  .pa-status-badge {
+    font-size: 0.75rem;
+    padding: 4px 10px;
+  }
+
+  .pa-card-tag-online,
+  .pa-card-tag-offline {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+  }
+
+  .pa-btn {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.8rem;
+  }
+
+  .pa-review-modal {
+    width: 92%;
+    padding: 1.5rem;
+  }
+
+  .pa-review-modal h3 {
+    font-size: 1.25rem;
+  }
+
+  .pa-review-textarea {
+    font-size: 0.9rem;
+  }
+}
+
+/* SUPER SMALL (360px - old phones) */
+@media (max-width: 360px) {
+  .pa-main-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .pa-card-detail svg {
+    font-size: 1rem;
+  }
+
+  .pa-card-detail {
+    font-size: 0.78rem;
+  }
+
+  .pa-btn {
+    padding: 0.45rem 0.8rem;
+    font-size: 0.75rem;
+  }
+
+  .pa-doctor-image {
+    width: 40px;
+    height: 40px;
+  }
+}

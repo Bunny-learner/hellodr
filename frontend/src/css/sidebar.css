@@ -1,8 +1,4 @@
-/* =========================
-Super Professional Sidebar CSS
-========================= */
 
-/* --- Backdrop --- */
 .sidebar-backdrop {
 position: fixed;
 top: 0;
@@ -190,6 +186,17 @@ margin-bottom: 0.5rem;
 margin: 0.25rem 0;
 }
 
+.sidebar-back{
+  padding:1rem;
+  border:0px;
+  border-radius: 12px;
+  width:100px;
+  margin-left: 7px;
+}
+.sidebar-back:hover{
+  background-color: #007bff;
+  color:white;
+}
 .sidebar-empty-state span {
 font-size: 0.85rem;
 color: #888;
@@ -229,4 +236,170 @@ width: 6px;
 .sidebar-body::-webkit-scrollbar-thumb {
 background-color: rgba(0,0,0,0.2);
 border-radius: 3px;
+}
+
+
+/* =========================================================
+   RESPONSIVE SIDEBAR — OPTIMIZED FOR ALL DEVICES
+   ========================================================= */
+
+/* Medium devices (tablets & small laptops) */
+@media (max-width: 900px) {
+  .sidebar-panel {
+    width: 300px;
+    font-size: 13.5px;
+  }
+
+  .sidebar-header h2 {
+    font-size: 1.15rem;
+  }
+
+  .sidebar-close-btn {
+    font-size: 1.15rem;
+  }
+
+  .sidebar-body {
+    padding: 0.9rem;
+  }
+
+  .sidebar-notification-item {
+    padding: 0.55rem 0.45rem;
+  }
+
+  .sidebar-notif-message {
+    font-size: 0.9rem;
+  }
+
+  .sidebar-notif-timestamp {
+    font-size: 0.75rem;
+  }
+
+  .sidebar-notif-icon-wrapper {
+    font-size: 1.3rem;
+  }
+
+  .sidebar-empty-icon {
+    font-size: 1.8rem;
+  }
+}
+
+/* Small Mobile Devices */
+@media (max-width: 600px) {
+  .sidebar-panel {
+    right: -100%;
+    width: 100%;
+    max-width: 100%;
+    font-size: 13px;
+  }
+
+  .sidebar-panel.sidebar-panel-open {
+    right: 0;
+  }
+
+  .sidebar-header {
+    padding: 0.9rem 1rem;
+  }
+
+  .sidebar-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .sidebar-mark-all-btn {
+    font-size: 0.8rem;
+  }
+
+  .sidebar-notification-item {
+    padding: 0.55rem 0.4rem;
+  }
+
+  .sidebar-notif-icon-wrapper {
+    font-size: 1.25rem;
+  }
+
+  .sidebar-notif-message {
+    font-size: 0.88rem;
+  }
+
+  .sidebar-notif-timestamp {
+    font-size: 0.75rem;
+  }
+
+  .sidebar-unread-dot {
+    width: 9px;
+    height: 9px;
+    right: 10px;
+  }
+
+  .sidebar-view-all-btn {
+    width: 95%;
+    padding: 0.55rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* Very Small Mobile Devices (360px → older phones) */
+@media (max-width: 400px) {
+  .sidebar-header h2 {
+    font-size: 1rem;
+  }
+
+  .sidebar-mark-all-btn {
+    font-size: 0.75rem;
+  }
+
+  .sidebar-body {
+    padding: 0.75rem;
+  }
+
+  .sidebar-notification-item {
+    padding: 0.5rem 0.35rem;
+  }
+
+  .sidebar-notif-message {
+    font-size: 0.82rem;
+  }
+
+  .sidebar-notif-icon-wrapper {
+    font-size: 1.2rem;
+  }
+
+  .sidebar-notif-timestamp {
+    font-size: 0.7rem;
+  }
+
+  .sidebar-footer {
+    padding: 0.8rem;
+  }
+
+  .sidebar-view-all-btn {
+    font-size: 0.8rem;
+  }
+}
+
+/* Ultra Small Devices (320px → old budget phones) */
+@media (max-width: 330px) {
+  .sidebar-header h2 {
+    font-size: 0.95rem;
+  }
+
+  .sidebar-notification-item {
+    padding: 0.45rem 0.3rem;
+  }
+
+  .sidebar-notif-message {
+    font-size: 0.78rem;
+  }
+
+  .sidebar-notif-icon-wrapper {
+    font-size: 1.1rem;
+  }
+
+  .sidebar-notif-timestamp {
+    font-size: 0.68rem;
+  }
+
+  .sidebar-unread-dot {
+    width: 8px;
+    height: 8px;
+  }
 }

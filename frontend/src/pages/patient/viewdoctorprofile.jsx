@@ -37,7 +37,6 @@ export default function ViewDoctorProfile() {
   async function getReviews(id) {
     try {
       const res = await fetch(`http://localhost:8000/patient/reviews/${id}`, {
-        credentials: "include",
         method: "GET",
       });
       const data = await res.json();

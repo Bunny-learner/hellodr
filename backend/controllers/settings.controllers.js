@@ -49,7 +49,7 @@ const set_preferences = asynchandler(async (req, res) => {
 const subscribe_push = asynchandler(async (req, res) => {
   const { subscription } = req.body;
 
-  const userId = req.user?._id; 
+  const userId = req.userId; 
 
   if (!userId) {
     res.status(401);

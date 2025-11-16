@@ -12,11 +12,10 @@ import Resetpassword from './pages/patient/resetpass';
 import Doctorlogin from './pages/doctor/doctorlogin';
 import PatientLayout from './pages/patient/patientlayout';
 import DoctorLayout from './pages/doctor/doctorlayout'
-import Success from './pages/patient/sucess'
-import Failure from './pages/patient/failure'
 import Notification from './pages/notifications';
 import ChatPage from './pages/chatpage';
 import WaitingRoom from './pages/WaitingRoom'
+import Welcome1 from "./pages/patient/welcome1"
 
 
 const AppointmentReview =lazy(()=>import('./pages/patient/appointmentreview'))
@@ -80,9 +79,7 @@ function App() {
          <Route path="/patient/appointment/review" element={<AppointmentReview/>} />
 
         <Route path="/patient/profile" element={<PatientProfile />} />
-        <Route path="/patient/success" element={<Success/>}/>
-        <Route path="/patient/failure" element={<Failure/>}/>
-        
+        <Route path="/hello" element={<Welcome1/>}/>
         
        
       </Routes>

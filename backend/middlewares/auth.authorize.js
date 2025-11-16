@@ -16,6 +16,7 @@ export const authJWT = (req, res, next) => {
     req.userId = decoded._id;
     req.role=decoded.role
 
+    console.log("req.role",req.role)
     next();
   } catch (error) {
     if (error.name === "TokenExpiredError") {

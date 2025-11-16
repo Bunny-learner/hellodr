@@ -41,10 +41,10 @@ export default function PatientLayout() {
         if (res.status === 200) {
           setDoctors(response.doctors || []);
         } 
-        else if(res.status==401)
+        // else if(res.status==401)
           
           
-          navigate('/patient/login?alert=Session expired please login again !')
+        //   navigate('/patient/login?alert=Session expired please login again !')
         else {
           console.log("Failed to fetch doctors");
         }
@@ -63,8 +63,7 @@ export default function PatientLayout() {
         if (res.status === 200) {
           setProfile(data.profile);
         }
-        if(res.status==401)
-          navigate('/patient/login?alert=Session expired please login again !')
+      
       } catch (err) {
         console.log(err);
       } finally {
@@ -81,7 +80,7 @@ export default function PatientLayout() {
   return (
     <PatientContext.Provider value={{ profile, doctors }}>
       <main className="main-content">
-        <Toaster position="top-left" toastOptions={{ className: "my-toast" }} />
+        <Toaster position="top-center" toastOptions={{ className: "my-toast" }} />
         <header className="main-header">
           <NavBar id="navbar" src={profile?.profilePic} usertype="patient" />
         </header>

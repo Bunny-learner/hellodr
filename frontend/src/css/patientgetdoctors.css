@@ -15,7 +15,7 @@
   color: #333;
 }
 
-/* === SEARCH BAR (Your Existing Styles) === */
+/* === SEARCH BAR === */
 .navbar-center {
   display: flex;
   justify-content: center;
@@ -40,7 +40,6 @@
   cursor: pointer;
   margin-right: 0.75rem;
   transition: stroke 0.2s;
-  right:0px;
 }
 
 .navbar-search input {
@@ -57,7 +56,7 @@
   margin-left: 0.5rem;
 }
 
-/* === NEW DOCTOR LIST VIEW === */
+/* === DOCTOR LIST VIEW === */
 .doctor-list-view {
   display: flex;
   flex-direction: column;
@@ -75,7 +74,7 @@
   border: 1px dashed #ddd;
 }
 
-/* === NEW RECTANGLE CARD STYLE === */
+/* === DOCTOR CARD (DESKTOP) === */
 .doctor-list-card {
   display: flex;
   width: 100%;
@@ -84,23 +83,23 @@
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   transition: box-shadow 0.3s ease;
-  overflow: hidden; /* To keep image corners rounded */
+  overflow: hidden;
 }
 
 .doctor-list-card:hover {
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
+/* === PERFECT IMAGE FIX === */
 .doctor-card-image {
-  flex-shrink: 0;
-  width: 180px;
-  height: 200px;
-  object-fit: cover;
+  width: 220px;
+  aspect-ratio: 3 / 4;      /* portrait ratio */
+  object-fit: cover;        /* image is clean & not stretched */
   border-right: 1px solid #f0f0f0;
+  background-color: #f6f6f6; /* fallback for blank images */
 }
 
-
-
+/* === DETAILS SECTION === */
 .doctor-card-details {
   flex: 1;
   padding: 1.5rem;
@@ -136,7 +135,7 @@
   gap: 0.3rem;
 }
 .doctor-card-stats svg {
-  color: #f39c12; /* Star color */
+  color: #f39c12;
 }
 
 .doctor-card-location {
@@ -145,9 +144,10 @@
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  margin-top: auto; /* Pushes to bottom */
+  margin-top: auto;
 }
 
+/* === ACTIONS SECTION === */
 .doctor-card-action {
   flex-basis: 220px;
   display: flex;
@@ -205,7 +205,7 @@
   background: #0056b3;
 }
 
-/* === NEW PAGINATION STYLES === */
+/* === PAGINATION === */
 .pagination-container {
   display: flex;
   justify-content: center;
@@ -248,48 +248,70 @@
   color: #777;
 }
 
-/* --- RESPONSIVE --- */
+/* === RESPONSIVE (MOBILE) === */
 @media (max-width: 768px) {
   .doctor-list-card {
     flex-direction: column;
   }
+
   .doctor-card-image {
     width: 100%;
-    height: 200px; /* Adjust height for mobile */
+    aspect-ratio: 16 / 9;   /* mobile wide image */
     border-right: none;
     border-bottom: 1px solid #f0f0f0;
   }
+
   .doctor-card-details {
     padding: 1rem;
   }
+
   .doctor-card-action {
-    flex-basis: auto;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
     border-left: none;
     border-top: 1px solid #f0f0f0;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+    padding: 1rem;
   }
-  .doctor-card-fee {
-    text-align: left;
-  }
+
   .doctor-card-btn-profile,
   .doctor-card-btn-book {
     width: auto;
     padding: 0.6rem 1rem;
   }
+
+  .doctor-card-fee {
+    text-align: left;
+  }
 }
 
 @media (max-width: 480px) {
-    .pagination-container {
-        gap: 0.25rem;
-    }
-    .pagination-btn {
-        padding: 0.4rem 0.6rem;
-        font-size: 0.8rem;
-    }
-    .doctor-card-action {
-        flex-direction: column;
-        align-items: stretch;
-    }
+  .pagination-container {
+    gap: 0.25rem;
+  }
+
+  .pagination-btn {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+  }
+
+  .doctor-card-action {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .doctor-list-card {
+    width: 92%;              /* smaller width */
+    margin: 0 auto;          /* center card */
+    border-radius: 14px;     /* more rounded for mobile */
+  }
+
+  .doctor-card-image {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border-bottom: 1px solid #eee;
+  }
 }

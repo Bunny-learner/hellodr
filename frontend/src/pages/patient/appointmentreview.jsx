@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LinearProgress } from "@mui/material";
 import { loadStripe } from "@stripe/stripe-js";
+import { useAuth } from "../AuthContext";
 import toast, { Toaster } from "react-hot-toast";
 import Swal from "sweetalert2";
 import "../../css/finalappointment.css";
@@ -18,6 +19,7 @@ const renderStars = (rating = 0) => (
 
 export default function AppointmentReview() {
   const navigate = useNavigate();
+  const {isAuthenticated}=useAuth();
   const [loading, setLoading] = useState(false);
   const [appointment, setAppointment] = useState(null);
 
@@ -31,6 +33,11 @@ export default function AppointmentReview() {
   );
 
   const bookNow = async () => {
+    if(!isAuthenticated){
+      localStorage.setItem("redirecturl","/patient/appointment/review")
+      navigate("/patient/login?alert=please login ")
+    return;}
+
     if (!appointment) return;
  
    

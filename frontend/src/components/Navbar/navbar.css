@@ -1,53 +1,76 @@
+/* MAIN NAVBAR */
 .main-navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   background: #ffffff;
   border-bottom: 1px solid #e0e0e0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
   position: sticky;
   top: 0;
-  width: 100%;
+  padding: 0.6rem 1rem;
   z-index: 1000;
-  /* padding: 0.8rem 1.5rem; */
 }
 
+
+.l {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 14px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.l:hover {
+  background: #2383c9;
+}
+
+
+
+
+.hamburger svg{
+  width:28px;
+}
+/* LEFT SECTION */
 .navbar-left {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.7rem;
 }
 
 .navbar-logo {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  font-size: 1.4rem;
+  gap: 0.3rem;
+  font-size: 1.1rem;
   font-weight: 600;
-  text-decoration: none;
   color: #333;
+  margin-right:10px;
+  text-decoration: none;
 }
 
 .navbar-logo-img {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
 }
 
-.hamburger {
-  display: none;
-  font-size: 2rem;
-  cursor: pointer;
-}
-
+/* DESKTOP LINKS */
 .desktop-only {
   display: flex;
-  gap: 1.7rem;
+  gap: 1.3rem;
 }
 
 .navbar-links a {
-  text-decoration: none;
   color: #555;
-  font-size: 1.05rem;
+  text-decoration: none;
+  font-size: 0.95rem;
   position: relative;
 }
 
@@ -61,56 +84,63 @@
   position: absolute;
   left: 0;
   bottom: -3px;
-  height: 2px;
   width: 100%;
+  height: 2px;
   background: #3498db;
 }
 
+/* RIGHT SECTION */
 .navbar-right {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.8rem;
+  margin-right:2.5rem;
 }
 
 .icon-button {
-  border: none;
+  font-size: 1.4rem;
   background: none;
-  font-size: 1.7rem;
+  border: none;
   cursor: pointer;
   position: relative;
 }
 
 .notification-badge {
   position: absolute;
-  top: -6px;
+  top: -4px;
   right: -4px;
   background: red;
   color: white;
-  padding: 2px 6px;
-  font-size: 10px;
+  padding: 1px 5px;
+  font-size: 8px;
   border-radius: 50%;
 }
 
+/* PROFILE PIC */
 .profile-pic {
-  width: 45px;
-  height: 45px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   border: 2px solid #3498db;
   object-fit: cover;
 }
 
-.profile-default {
-  font-size: 2rem;
+/* HAMBURGER */
+.hamburger {
+  display: none;
+  font-size: 1.8rem;
+  cursor: pointer;
 }
 
+/* MOBILE MENU */
 .mobile-menu {
   position: fixed;
   top: 0;
   left: -260px;
-  width: 260px;
+  width: 240px;
   height: 100%;
   background: white;
-  box-shadow: 3px 0 15px rgba(0,0,0,0.15);
+  box-shadow: 3px 0 12px rgba(0,0,0,0.15);
   transition: left .3s ease;
   z-index: 2000;
   padding-top: 1rem;
@@ -127,31 +157,24 @@
 }
 
 .close-icon {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   cursor: pointer;
 }
 
 .mobile-menu-links {
   display: flex;
   flex-direction: column;
-  gap: 1.4rem;
-  padding-left: 1.5rem;
+  gap: 1.1rem;
+  padding-left: 1.3rem;
 }
 
 .mobile-menu-links a {
-  text-decoration: none;
-  color: #333;
-  font-size: 1.15rem;
-}
-
-.mobile-menu-links a {
-  text-decoration: none;
-  color: #444;
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 500;
+  color: #444;
+  text-decoration: none;
 }
 
-/* Active link style for mobile */
 .mobile-menu-links a.active {
   color: #3498db;
   font-weight: 600;
@@ -163,25 +186,63 @@
   position: absolute;
   bottom: -4px;
   left: 0;
-  width: 100%;
+  width: 80%;
   height: 2px;
   background: #3498db;
-  border-radius: 2px;
 }
 
-
+/* RESPONSIVE */
 @media (max-width: 768px) {
   .desktop-only {
     display: none !important;
   }
+
   .hamburger {
     display: block;
   }
-  .navbar-logo span {
-    display: none;
+
+
+  .navbar-right{
+    margin-right: 1.25rem;
   }
+
   .navbar-logo-img {
-    width: 42px;
-    height: 42px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .profile-pic {
+    width: 32px;
+    height: 32px;
+  }
+
+  .icon-button {
+    font-size: 1.3rem;
+  }
+}
+
+/* VERY SMALL MOBILES */
+@media (max-width: 420px) {
+  .main-navbar {
+    padding: 0.5rem 0.7rem;
+  }
+
+  .navbar-right {
+    gap: 0.6rem;
+    margin-right:10px;
+  }
+
+  .profile-pic {
+    width: 34px;
+    height: 34px;
+  }
+
+  .icon-button {
+    font-size: 1.2rem;
+  }
+
+  .navbar-logo-img {
+    width: 32px;
+    height: 32px;
   }
 }

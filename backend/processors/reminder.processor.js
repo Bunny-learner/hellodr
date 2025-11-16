@@ -1,5 +1,3 @@
-// workers/reminder.processor.js
-
 import { Appointment } from "../models/appointment.js";
 import { redisPub } from "../db/redisconnect.js";
 import { Notification } from "../models/notification.js";
@@ -10,6 +8,7 @@ import { TimeSlot } from "../models/timeslot.js";
 import { sendWhatsApp } from "../utils/sendWhatsApp.js";
 import { sendSMS } from "../utils/sendSMS.js";
 import { sendEmail } from "../utils/sendEmail.js";
+import { sendPushNotification } from "../utils/sendPushNotification.js";
 
 function getId(ref) {
   if (!ref) return null;
@@ -50,25 +49,33 @@ export async function reminderProcessor(job) {
       return;
     }
 
-    
     const date = new Date(appt.date);
     const dateStr = date.toLocaleDateString("en-IN", {
       timeZone: "Asia/Kolkata",
     });
     const timeStr = appt?.TimeSlot?.StartTime ?? "";
-
-    
     const appointmentUrl = `https://hellodr.com/appointment/${appointmentId}`;
 
-  
-    let message =
+    // Base message for the push notification body
+    let messageBody =
       recipient === "doctor"
         ? `Reminder: You have a consultation scheduled on ${dateStr} at ${timeStr} with ${patient.name}.`
         : `Reminder: Your consultation with Dr. ${doctor.name} is scheduled on ${dateStr} at ${timeStr}.`;
 
-    message += `\nView appointment: ${appointmentUrl}`;
+    
+    const pushPayload = JSON.stringify({
+        title: "Appointment Reminder",
+        body: messageBody,
+        icon: "https://hellodr.com/icon-192.png", // Optional
+        data: {
+            url: appointmentUrl,
+        },
+    });
 
-    // Contact details (recipient-based)
+    // Message for SMS, WhatsApp, and Email
+    const messageWithLink = messageBody + `\nView appointment: ${appointmentUrl}`;
+
+    // Contact details
     const contact = {
       whatsapp:
         prefs.whatsappNumber ||
@@ -78,11 +85,7 @@ export async function reminderProcessor(job) {
       email: prefs.email || recipientUser.email,
     };
 
-  
-     //const targetUserId = recipient === "doctor" ? doctorId : patientId;
-
-    // // ✅ Publish to Redis
-    // await redisPub.publish(
+       // await redisPub.publish(
     //   `user:${targetUserId}`,
     //   JSON.stringify({
     //     type: "reminder",
@@ -98,24 +101,46 @@ export async function reminderProcessor(job) {
     //   })
     // );
 
-    // ✅ Process channels
+
     for (let ch of channels) {
       ch = ch.toLowerCase();
 
       if (ch === "whatsapp" && contact.whatsapp) {
-        await sendWhatsApp(contact.whatsapp, message);
+        await sendWhatsApp(contact.whatsapp, messageWithLink);
         console.log(`📨 WhatsApp sent → ${recipient}`);
       }
 
       if (ch === "sms" && contact.sms) {
-        await sendSMS(contact.sms, message);
+        await sendSMS(contact.sms, messageWithLink);
         console.log(`📨 SMS sent → ${recipient}`);
       }
 
       if (ch === "email" && contact.email) {
-        await sendEmail(contact.email, "Appointment Reminder", message);
+        await sendEmail(contact.email, "Appointment Reminder", messageWithLink);
         console.log(`📨 Email sent → ${recipient}`);
       }
+
+      
+      if (ch === "push") {
+        // Get the single subscription object from the user
+        const subscription = recipientUser.pushSubscription; 
+
+        // Check if the subscription object exists and has an endpoint
+        if (subscription && subscription.endpoint) {
+          try {
+            console.log(`📨 Sending push to ${recipient}`);
+            await sendPushNotification(subscription, pushPayload);
+            console.log(`📨 Push notification sent → ${recipient}`);
+          } catch (err) {
+            console.error(`❌ Failed to send push to ${recipient}:`, err);
+            // NOTE: If err.statusCode === 410 (Gone),
+            // you should set recipientUser.pushSubscription = null in your DB.
+          }
+        } else {
+          console.log(`⚠️ ${recipient} has 'push' channel but no subscription in DB`);
+        }
+      }
+     
     }
 
     console.log(

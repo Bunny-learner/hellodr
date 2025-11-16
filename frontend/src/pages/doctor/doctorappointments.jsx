@@ -2,8 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
+import CustomCalendar from "../../components/Calendar/customcalendar.jsx";
 
 import {
   FiSearch,
@@ -538,7 +537,7 @@ export default function DoctorAppointments() {
 
             {showDateFilter && (
               <div className="calendar-popover">
-                <Calendar
+                <CustomCalendar
                   onChange={(d) => {
                     setSelectedDate(d);
                     setShowDateFilter(false);

@@ -16,9 +16,9 @@ import {
 } from 'react-icons/fi';
 import { FaRupeeSign } from "react-icons/fa";
 import "../../css/doctortimeslots.css";
+import CustomCalendar from '../../components/Calendar/customcalendar';
 import HeartLoader from '../../components/Loaders/heartloader';
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
+
 
 const DAYS_OF_WEEK = [
     'Sunday',
@@ -202,7 +202,7 @@ export default function DoctorTimeSlots() {
                     <h2 className="form-title">Add Time Slot</h2>
 
                     <label className="label-title"><FiCalendar /> Select Date</label>
-                    <Calendar
+                    <CustomCalendar
                         value={selectedDate}
                         onChange={setSelectedDate}
                         minDate={new Date()}    // DISABLE PAST DATES

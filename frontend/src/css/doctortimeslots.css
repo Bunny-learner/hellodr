@@ -3,20 +3,12 @@
   display: flex;
   gap: 2rem;
   padding: 2rem;
-  width: 100%;
+  width:100%;
   margin-top: 1rem;
   font-family: "Poppins", sans-serif;
 }
 
-/* ===== LEFT PANEL (FORM) ===== */
-.timeslot-form-card {
-  width: 32%;
-  background: white;
-  padding: 1.8rem;
-  border-radius: 18px;
-  box-shadow: 0 3px 12px rgba(0,0,0,0.1);
-  border: 1px solid #e7e7e7;
-}
+
 
 .form-title {
   font-size: 1.5rem;
@@ -259,6 +251,93 @@
   }
   .timeslot-form-card,
   .schedule-container {
-    width: 100%;
+    width: 85%;
+  }
+}
+
+
+
+/* ===== GLOBAL PAGE LAYOUT ===== */
+.timeslots-page {
+  display: flex;
+  gap: 2rem;
+  padding: 2rem;
+  margin-top: 1rem;
+  font-family: "Poppins", sans-serif;
+  width: 100%;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+/* ===== LEFT PANEL (FORM) ===== */
+.timeslot-form-card {
+  width: 100%;
+  max-width: 420px;      /* prevents overflow */
+  background: white;
+  padding: 1.25rem 1.5rem; /* safe padding */
+  border-radius: 18px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+  border: 1px solid #e7e7e7;
+
+  overflow: hidden;        /* prevents calendar bleed */
+  box-sizing: border-box;
+}
+
+/* Make sure every element fits nicely inside */
+.timeslot-form-card * {
+  box-sizing: border-box;
+}
+
+
+/* ===== RIGHT PANEL ===== */
+.schedule-container {
+  flex: 1;
+  min-width: 0; /* IMPORTANT FIX */
+  box-sizing: border-box;
+}
+
+/* ===== SLOT GRID ===== */
+.slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+/* ===== RESPONSIVE BREAKPOINT ===== */
+@media(max-width: 1024px) {
+  .timeslots-page {
+    flex-direction: column;
+  }
+
+  .timeslot-form-card,
+  .schedule-container {
+    width: 100% !important;
+  }
+
+  .timeslot-form-card {
+    margin-bottom: 1.5rem;
+  }
+
+  .schedule-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .filter-bar {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 600px) {
+  .filter-bar button {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.8rem;
+  }
+
+  .slots-grid {
+    grid-template-columns: 1fr; /* One column on small screens */
   }
 }

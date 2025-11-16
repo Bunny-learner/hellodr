@@ -1,0 +1,103 @@
+
+
+.cal-container {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+  animation: fadeIn 0.2s ease;
+}
+
+.cal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: .8rem;
+}
+
+.cal-header button {
+  background: #f1f5f9;
+  border: none;
+  color: #475569;
+  padding: 0.35rem 0.7rem;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.cal-header button:hover {
+  background: #e2e8f0;
+}
+
+.month-label {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #1e293b;
+}
+
+.cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  color: #64748b;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: .5rem;
+  font-size: 0.85rem;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: .4rem;
+}
+
+.cal-day {
+  padding: 0.6rem 0;
+  text-align: center;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  background: #f8fafc;
+  transition: .2s;
+}
+
+.cal-day:hover {
+  background: #e0f2fe;
+}
+
+.cal-day.selected {
+  background: #2563eb;
+  color: white;
+  font-weight: 700 !important;
+  transform: scale(1.05);
+}
+
+.cal-empty {
+  height: 40px;
+}
+
+/* Fade animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .cal-day {
+    padding: 0.45rem 0;
+    font-size: 0.85rem;
+  }
+
+  .month-label {
+    font-size: 0.95rem;
+  }
+}

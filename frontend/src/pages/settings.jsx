@@ -5,7 +5,7 @@ import { FiBell, FiMail, FiMessageSquare, FiLoader, FiCheck, FiXCircle } from "r
 import { useAuth } from "./AuthContext";
 import "../css/settings.css"; // We will use the new CSS
 import toast from "react-hot-toast";
-import Circle1 from "../components/Loaders/circle1";
+import Bubbles from "../components/Loaders/bubbles";
 import { useNavigate } from "react-router-dom";
 
 
@@ -44,7 +44,7 @@ export default function Settings() {
     whatsapp: false,
   });
 
-  // --- NEW STATE for Push Notification Permission ---
+  
   const [pushPermission, setPushPermission] = useState(Notification.permission);
   const [isSubscribing, setIsSubscribing] = useState(false);
 
@@ -116,7 +116,6 @@ export default function Settings() {
         return;
       }
 
-      // 3. Subscribe the user
       const subscription = await swRegistration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlB64ToUint8Array(VAPID_PUBLIC_KEY),
@@ -148,7 +147,7 @@ export default function Settings() {
     toast.success("Push channel disabled. Don't forget to save.");
   };
 
-  // ✅ SAVE (Unchanged)
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -200,8 +199,8 @@ export default function Settings() {
 
   if (loading)
     return (
-      <div className="settings-container">
-        <Circle1 />
+      <div className="settings-container" style={{justifyContent:"center",alignItems:"center"}} >
+        <Bubbles/>
       </div>
     );
 
