@@ -64,46 +64,52 @@ export default function PatientGetDoctors() {
       setfilteredDoctors(temp);
     }
   }
+useEffect(() => {
+  const searchParams = new URLSearchParams(location.search);
+  const specialityParam = searchParams.get('speciality');
 
-  // Your existing useEffect (with one addition)
-  useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    const specialityParam = searchParams.get('speciality');
+  
+  const mergedSpecialities = [
+    ...(filters.specialities || []),
+    ...(specialityParam ? [specialityParam.trim()] : [])
+  ];
 
-    const newFilters = specialityParam ? {
-      languages: [],
-      fees: [],
-      ratings: [],
-      experiences: [],
-      specialities: [specialityParam.trim()],
-      sortBy: ''
-    } : filters;
+  
+  const finalFilters = {
+    ...filters,
+    specialities: mergedSpecialities
+  };
 
-    const filterdoctors = async () => {
-      try {
-        setLoading(true);
-        const res = await fetch("http://localhost:8000/patient/filterdoctors", {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ filters: newFilters, text })
-        });
-        const response = await res.json();
-        if (res.status === 200) {
-          setfilteredDoctors(response.doctors || []);
-          setfilterDoctors(response.doctors || []);
-        }
-      } catch (err) {
-        console.log(err);
-      } finally {
-        setLoading(false);
-        setCurrentPage(1); // --- NEW: Reset to page 1 on filter ---
-        toast.success("Filters have been applied successfully");
+  const filterDoctors = async () => {
+    try {
+      setLoading(true);
+
+      const res = await fetch("http://localhost:8000/patient/filterdoctors", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ 
+          filters: finalFilters,   
+          text 
+        }),
+      });
+
+      const response = await res.json();
+      if (res.status === 200) {
+        setfilteredDoctors(response.doctors || []);
+        setfilterDoctors(response.doctors || []);
       }
-    };
 
-    filterdoctors();
-  }, [location.search, filters]); // Your existing dependencies
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+      setCurrentPage(1);
+    }
+  };
+
+  filterDoctors();
+}, [location.search, filters, text]);
 
 
   if (loading) return <Bubbles />

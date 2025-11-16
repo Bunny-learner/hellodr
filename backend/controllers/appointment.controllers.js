@@ -16,8 +16,6 @@ import { scheduleTimeoutJobs} from "../scheduling/schedule_timeout.js";
 import { removeAppointmentJobs } from "../scheduling/remove_job.js";
 
 
-
-
 /**
  
  * @param {string} dateString - The date string in "DD-MM-YYYY" format.
@@ -247,6 +245,8 @@ const update_appointment_status = asynchandler(async (req, res) => {
     .populate("TimeSlot")
     .populate("patient");
 
+    console.log("appointment fetched sucessfully->",status)
+
   if (!appointment) {
     res.status(404);
     throw new ApiError("Appointment not found");
@@ -254,6 +254,7 @@ const update_appointment_status = asynchandler(async (req, res) => {
 
   appointment.status = status;
   await appointment.save();
+  console.log("saved")
 
   let indiaTime = await itime(appointment)
 
@@ -272,7 +273,7 @@ const update_appointment_status = asynchandler(async (req, res) => {
     }
   }));
 
-  //ACCEPTED
+  //Accepted
   if (status.toLowerCase() === "accepted") {
 
     await scheduleJobsForAppointment(appointment)
@@ -281,7 +282,59 @@ const update_appointment_status = asynchandler(async (req, res) => {
 
   }
 
-  // ... (rest of your logic for Stripe) ...
+  //Cancelled
+  else if (status.toLowerCase() === "cancelled") {
+    try {
+     
+      const slot = await TimeSlot.findById(appointment.TimeSlot._id);
+
+      if (slot) {
+        slot.booked = Math.max(0, slot.booked - 1);
+
+        if (slot.booked < slot.limit) {
+          slot.status = "available";
+        }
+
+        await slot.save();
+
+        //removing the jobs from the scheduler also removing the timeoutjob
+
+        await removeAppointmentJobs(appointmentID)
+
+        
+        const patient = appointment.patient;
+        const mode = appointment.mode;
+        const age = appointment.age;   // you stored age above
+        const gender = patient.gender || "N/A";
+
+        redisPub.publish(
+          `user:${patient._id}`,
+          JSON.stringify({
+            type: "cancelled",
+            data: {
+              message: `Dear ${patient.name.toLowerCase()}, your ${mode.toLowerCase()} appointment has been cancelled due to doctor unavailability.`,
+              appointment,
+              doctorid: appointment.doctor,
+              patientid: appointment.patient._id,
+              appointmentid: appointment._id,
+              isappointment: true,
+              from: "doctor",
+              to: "patient",
+            },
+          })
+        );
+         console.log(
+          `Slot ${slot._id} updated: booked=${slot.booked}, status=${slot.status}`
+        );
+
+      } else {
+        console.warn(`TimeSlot not found for appointment ${appointmentID}`);
+      }
+    } catch (err) {
+      console.error("Error updating timeslot after cancellation:", err);
+    }
+  }
+
   if (info) {
     const transaction = await Transaction.findOne({
       appointment: appointmentID,
@@ -316,62 +369,6 @@ const update_appointment_status = asynchandler(async (req, res) => {
       }
     }
   }
-
-  if (status.toLowerCase() === "cancelled") {
-    try {
-     
-      const slot = await TimeSlot.findById(appointment.TimeSlot._id);
-
-      if (slot) {
-        slot.booked = Math.max(0, slot.booked - 1);
-
-        if (slot.booked < slot.limit) {
-          slot.status = "available";
-        }
-
-        await slot.save();
-
-        //removing the jobs from the scheduler also removing the timeoutjob
-
-        await removeAppointmentJobs(appointmentID)
-
-        
-        const patient = appointment.patient;
-        const mode = appointment.mode;
-        const age = appointment.age;   // you stored age above
-        const gender = patient.gender || "N/A";
-
-        redisPub.publish(
-          `user:${patient._id}`,
-          JSON.stringify({
-            type: "cancelled",
-            data: {
-              message: `Dear ${patient.name}, your ${mode.toLowerCase()} appointment on ${indiaTime} has been cancelled due to doctor unavailability.`,
-              appointment,
-              doctorid: appointment.doctor,
-              patientid: appointment.patient._id,
-              appointmentid: appointment._id,
-              isappointment: true,
-              from: "system",
-              to: "patient",
-            },
-          })
-        );
-         console.log(
-          `Slot ${slot._id} updated: booked=${slot.booked}, status=${slot.status}`
-        );
-
-      } else {
-        console.warn(`TimeSlot not found for appointment ${appointmentID}`);
-      }
-    } catch (err) {
-      console.error("Error updating timeslot after cancellation:", err);
-    }
-  }
-
-  
-   
-
 
   res.status(201).json({
     message: "Appointment status updated successfully",
@@ -504,4 +501,33 @@ const authorize = asynchandler(async (req, res) => {
   res.status(200).json({ message: "User is authenticated", role: role, id: userId, user: user })
 })
 
-export { book_appointment, authorize, gettransactions, getsession, get_all_appointments, update_appointment_status, get_appiontment }
+
+
+const update_inprogress=asynchandler(async(req,res)=>{
+const { appointmentID, status } = req.body;
+
+  if (!status) {
+    res.status(400);
+    throw new ApiError("Status is required");
+  }
+
+
+  const appointment = await Appointment.findById(appointmentID)
+    .populate("TimeSlot")
+    .populate("patient");
+
+  if (!appointment) {
+    res.status(404);
+    throw new ApiError("Appointment not found");
+  }
+
+  appointment.status = status;
+  await appointment.save();
+ 
+  res.status(200).json({
+  success:true
+  });
+  
+
+}) 
+export { book_appointment,update_inprogress, authorize, gettransactions, getsession, get_all_appointments, update_appointment_status, get_appiontment }

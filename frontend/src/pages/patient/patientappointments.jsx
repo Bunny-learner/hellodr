@@ -257,7 +257,7 @@ export default function PatientAppointments() {
         }
     };
 
-    const handleJoinCall = (appointment) => {
+    const handleJoinCall =async (appointment) => {
         if (!doctors || doctors.length === 0) {
             toast.error("Doctor list not available. Please refresh the page.");
             return;
@@ -277,8 +277,21 @@ export default function PatientAppointments() {
         socket.emit("join_room", {
             roomid: fullDoctorProfile.roomid
         })
-        toast.success("Joining the room...");
-        navigate(`/waiting-room/${fullDoctorProfile.roomid}?consultationId=${appointment._id}&user=patient`);
+        await fetch("http://localhost:8000/appointment/in_progress",{
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ appointmentID:appointment._id, status: "in_progress" }),
+
+        })
+        .then((res)=>{        
+        if(res.ok)
+                 navigate(`/waiting-room/${fullDoctorProfile.roomid}?consultationId=${appointment._id}&user=patient`);                
+        })
+        .catch(err=>{
+            console.log(err)
+        })
+       
     };
 
 

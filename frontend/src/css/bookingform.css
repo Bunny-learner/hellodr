@@ -1,0 +1,221 @@
+/* ---
+  bookingform.css
+  Styles for the BookingForm component
+  - Clean, professional, and responsive
+--- */
+
+/* 1. Root Variables
+   --------------------------------- */
+:root {
+    --primary-blue: #2563EB;
+    --primary-blue-light: #EFF6FF;
+    --gray: #6B7280;
+    --gray-light: #F3F4F6;
+    --border-color: #E5E7EB;
+    --text-dark: #1F2937;
+    --text-light: #4B5563;
+    --page-bg: #F9FAFB;
+    --red: #EF4444;
+    --red-light: #FEF2F2;
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.07);
+    --border-radius-card: 12px;
+    --border-radius-btn: 8px;
+}
+
+/* 2. Page Layout
+   --------------------------------- */
+.booking-form-page {
+    font-family: var(--font-family);
+    background-color: var(--page-bg);
+    min-height: 100vh;
+    padding: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Aligns card to the top */
+}
+
+.book-card {
+    background-color: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-card);
+    box-shadow: var(--shadow-soft);
+    padding: 24px 32px;
+    width: 100%;
+    max-width: 800px; /* Wider card for 2-col layout */
+}
+
+/* 3. Form Header
+   --------------------------------- */
+.form-header {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+}
+
+.form-header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+.form-header p {
+    font-size: 14px;
+    color: var(--text-light);
+    margin: 4px 0 0 0;
+}
+
+/* 4. Form Body & Sections
+   --------------------------------- */
+.form-section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin: 24px 0 16px 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+.form-body h3:first-of-type {
+    margin-top: 0;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+/* 5. Input Groups
+   --------------------------------- */
+.input-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.input-group label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+}
+
+.dform-input {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 14px;
+    font-family: var(--font-family);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-btn);
+    background-color: #fff;
+    transition: all 0.2s ease;
+    -webkit-appearance: none; /* Fix for iOS safari select */
+}
+
+.dform-input:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 2px var(--primary-blue-light);
+}
+
+/* Special styling for select to show arrow */
+select.dform-input {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.75rem center;
+    background-repeat: no-repeat;
+    background-size: 1.25em;
+    padding-right: 2.5rem;
+}
+
+textarea.dform-input {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.full-width-input {
+    grid-column: 1 / -1; /* Makes element span both columns */
+}
+
+/* 6. Error States
+   --------------------------------- */
+.dform-input.input-error {
+    border-color: var(--red);
+}
+.dform-input.input-error:focus {
+    box-shadow: 0 0 0 2px var(--red-light);
+    border-color: var(--red);
+}
+
+.error-message {
+    color: var(--red);
+    font-size: 13px;
+    margin: 6px 0 0 0;
+}
+
+/* 7. Navigation Buttons
+   --------------------------------- */
+.form-navigation-buttons {
+    display: flex;
+    justify-content: flex-end; /* Aligns buttons to the right */
+    gap: 12px;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border-color);
+}
+
+.sbtn {
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: var(--border-radius-btn);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sbtn-primary {
+    background-color: var(--primary-blue);
+    color: #fff;
+}
+.sbtn-primary:hover {
+    background-color: #1D4ED8; /* Darker blue */
+}
+
+.sbtn-secondary {
+    background-color: #fff;
+    color: var(--text-dark);
+    border-color: var(--border-color);
+}
+.sbtn-secondary:hover {
+    background-color: var(--gray-light);
+}
+
+/* 8. Responsive Design (Mobile)
+   --------------------------------- */
+@media (max-width: 768px) {
+    .booking-form-page {
+        padding: 16px;
+    }
+    .book-card {
+        padding: 20px;
+    }
+    
+    /* Stack grid items on mobile */
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .form-header h1 {
+        font-size: 20px;
+    }
+    
+    /* Make buttons full width on mobile */
+    .form-navigation-buttons {
+        flex-direction: column-reverse; /* Puts "Next" on top */
+    }
+    .sbtn {
+        width: 100%;
+    }
+}

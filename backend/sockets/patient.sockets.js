@@ -27,64 +27,25 @@ export default async function patientSocket(
   }
 
 
-  // socket.on("join_room", ({ roomid }) => {
-  //   const role = "patient";      
-
-  //   socket.join(roomid);
-
-  //   patientConnections.set(id, {
-  //     socket,
-  //     inRoom: true,
-  //     roomId: roomid,
-  //   });
-
-  //   if (!roomPresence[roomid]) {
-  //     roomPresence[roomid] = { patient: false, doctor: false };
-  //   }
-
-  //   roomPresence[roomid].patient = true;   // ✅ enforce
-
-  //   socket.to(roomid).emit("presence_change", {
-  //     who: "patient",
-  //     present: true
-  //   });
-
-  //   socket.emit("room_presence", roomPresence[roomid]);
-
-  //   console.log("roomPresence:", roomPresence);
-  // });
 
 
+ socket.on("msg_frompat", ({ msg, roomid, patientId }) => {
+  console.log(`💬 Patient(${patientId}) to room(${roomid}):`, msg);
 
-  // socket.on("leave_room", ({ roomid }) => {
-  //   if (roomPresence[roomid]) {
-  //     roomPresence[roomid].patient = false;
-  //   }
+  const payload = {
+    msg,
+    senderId: patientId,
+    senderRole: "patient",
+    roomid,
+    timestamp: Date.now(),
+  };
 
-  //   socket.to(roomid).emit("presence_change", {
-  //     who: "patient",
-  //     present: false
-  //   });
+  socket.to(roomid).emit("sending", payload);
+});
 
-  //   socket.leave(roomid);
-
-  //   const old = patientConnections.get(id);
-  //   if (old) old.inRoom = false;
-
-  //   console.log(`🚪 patient left room ${roomid}`);
-  // });
-
-
-
-  socket.on("msg_frompat", ({ msg, roomid }) => {
-    console.log(`💬 Patient says to room(${roomid}):`, msg);
-    socket.to(roomid).emit("send_todoc", msg);
-  });
-
-
-  socket.on("patient_typing", ({ roomid }) => {
-    socket.to(roomid).emit("pat_types", "patient is typing");
-  });
+socket.on("patient_typing", ({ roomid }) => {
+  socket.broadcast.to(roomid).emit("pat_types");
+});
 
 
   socket.on("disconnect", () => {

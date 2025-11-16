@@ -24,7 +24,8 @@ import {
   FiSkipForward,
 } from "react-icons/fi";
 
-import "../../css/doctorappointments.css";
+// Make sure this path is correct
+import "../../css/doctorappointments.css"; 
 import Bubbles from "../../components/Loaders/bubbles";
 import { useSocket } from "../../pages/SocketContext.jsx";
 
@@ -46,74 +47,64 @@ const formatDatePretty = (d) =>
   });
 
 // --------------------------------------------------------------------
-// ---------------------- PENDING APPOINTMENT CARD ---------------------
+// ---------------------- PENDING APPOINTMENT CARD (Redesigned) ---------------------
 // --------------------------------------------------------------------
 const PendingAppointmentCard = ({ app, onUpdateStatus }) => (
-  <div className="pending-card">
-    <div className="pending-card-header">
-      <div className="patient-avatar">
-        <FiUser size={30} />
+  <div className="da-card da-card-pending">
+    {/* --- Section 1: Patient Info --- */}
+    <div className="da-card-section patient-info">
+      <div className="da-patient-avatar">
+        <FiUser size={24} />
       </div>
-      <div className="patient-info">
-        <h3>{app.name}</h3>
-        <span>
+      <div className="da-patient-details">
+        <h3 className="da-patient-name">{app.name}</h3>
+        <span className="da-patient-meta">
           {app.age} yrs, {app.gender}
         </span>
       </div>
-      <span className={`mode-badge mode-${(app.mode || "").toLowerCase()}`}>
-        {(app.mode || "").toLowerCase() === "online" ? (
+    </div>
+
+    {/* --- Section 2: Appointment Details --- */}
+    <div className="da-card-section appt-details">
+      <div className="da-detail-item">
+        <FiCalendar size={14} />
+        <span>{formatDatePretty(app.date)}</span>
+      </div>
+      <div className="da-detail-item">
+        <FiClock size={14} />
+        <strong>
+          {app.TimeSlot
+            ? `${app.TimeSlot.StartTime} - ${app.TimeSlot.EndTime}`
+            : "N/A"}
+        </strong>
+      </div>
+      <div className="da-detail-item">
+        {app.mode?.toLowerCase() === "online" ? (
           <FiWifi size={14} />
         ) : (
           <FiHome size={14} />
         )}
-        {app.mode}
-      </span>
-    </div>
-
-    <div className="pending-card-body">
-      <div className="patient-details">
-        <h4>Patient Details</h4>
-        <p>
-          <FiMail size={14} /> <span>{app.email}</span>
-        </p>
-        <p>
-          <FiPhone size={14} /> <span>{app.phone}</span>
-        </p>
-      </div>
-
-      <div className="appointment-details">
-        <h4>Appointment Details</h4>
-        <p>
-          <FiCalendar size={14} /> <span>{formatDatePretty(app.date)}</span>
-        </p>
-        <p>
-          <FiClock size={14} />
-          <strong>
-            {app.TimeSlot
-              ? `${app.TimeSlot.StartTime} - ${app.TimeSlot.EndTime}`
-              : new Date(app.date).toLocaleTimeString("en-US", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-          </strong>
-        </p>
-        <p className="symptoms">
-          <FiAlertCircle size={14} />
-          <strong>Symptoms:</strong> {app.symptoms}
-        </p>
+        <span>{app.mode}</span>
       </div>
     </div>
 
-    <div className="pending-card-actions">
+    {/* --- Section 3: Symptoms --- */}
+    <div className="da-card-section symptoms-details">
+      <p className="da-symptoms">
+        <strong>Symptoms:</strong> {app.symptoms}
+      </p>
+    </div>
+
+    {/* --- Section 4: Actions --- */}
+    <div className="da-card-section da-card-actions">
       <button
-        className="btn-action btn-reject"
+        className="da-btn da-btn-reject"
         onClick={() => onUpdateStatus(app._id, "cancelled", "pending")}
       >
         <FiXCircle /> Reject
       </button>
-
       <button
-        className="btn-action btn-accept"
+        className="da-btn da-btn-accept"
         onClick={() => onUpdateStatus(app._id, "accepted", "pending")}
       >
         <FiCheckSquare /> Accept
@@ -123,135 +114,125 @@ const PendingAppointmentCard = ({ app, onUpdateStatus }) => (
 );
 
 // --------------------------------------------------------------------
-// ---------------------- ARCHIVED (LIVE QUEUE) CARD -------------------
+// ---------------------- APPOINTMENT CARD (Redesigned) -------------------
 // --------------------------------------------------------------------
 const ArchivedAppointmentCard = ({ app, onUpdateStatus, onStartCall }) => {
   const status = (app.status || "").toLowerCase();
   const isOnline = (app.mode || "").toLowerCase() === "online";
+  
+  // --- LOGIC CHANGE HERE ---
+  // Button is enabled if it's 'next_up' OR 'in_progress' (and online)
+  const isJoinEnabled = isOnline && (status === "next_up" || status === "in_progress");
 
-  const isJoinEnabled = isOnline && status === "next_up";
+  // Helper to determine which buttons to show
+  // Show "Join" if it's online and accepted, next_up, or in_progress
+  const showJoin = (status === "accepted" || status === "next_up" || status === "in_progress") && isOnline;
+  // Show "Complete" ONLY if it's in_progress AND offline
+  const showComplete = status === "in_progress" && !isOnline;
+  // --- END OF LOGIC CHANGE ---
+
+  const showSkip = status === "next_up";
+  const showCancel = ["accepted", "next_up", "in_progress"].includes(status);
+  const isArchived = ["completed", "cancelled", "rejected", "no_show", "skipped"].includes(status);
 
   const getStatusLabel = (s) => {
     switch (s) {
-      case "next_up":
-        return "Next Up";
-      case "in_progress":
-        return "In Progress";
-      case "accepted":
-        return "Waiting";
-      case "skipped":
-        return "Skipped";
-      case "no_show":
-        return "No-Show";
-      case "completed":
-        return "Completed";
-      case "cancelled":
-        return "Cancelled";
-      case "rejected":
-        return "Rejected";
-      default:
-        // Capitalize any other status
-        return s.charAt(0).toUpperCase() + s.slice(1);
+      case "next_up": return "Next Up";
+      case "in_progress": return "In Progress";
+      case "accepted": return "Waiting";
+      case "no_show": return "No-Show";
+      default: return s.charAt(0).toUpperCase() + s.slice(1);
     }
   };
 
   return (
-    <div className={`appointment-card status-${status}`}>
-      <div className="card-header">
-        <div className="patient-avatar">
+    <div className={`da-card da-card-archive status-${status}`}>
+      {/* --- Section 1: Patient Info --- */}
+      <div className="da-card-section patient-info">
+        <div className="da-patient-avatar">
           <FiUser size={24} />
         </div>
-
-        <div className="patient-info">
-          <h3>{app.name}</h3>
-          <span>
+        <div className="da-patient-details">
+          <h3 className="da-patient-name">{app.name}</h3>
+          <span className="da-patient-meta">
             {app.age} yrs, {app.gender}
           </span>
-          <span
-            className={`mode-badge-small mode-${(app.mode || "").toLowerCase()}`}
-            style={{ marginLeft: 8 }}
-          >
-            {isOnline ? <FiWifi size={12} /> : <FiHome size={12} />} {app.mode}
-          </span>
         </div>
-
-        <span className={`status-badge status-${status}`}>
-          {getStatusLabel(status)}
-        </span>
       </div>
 
-      <div className="card-body">
-        <p>
-          <strong>Symptoms:</strong> {app.symptoms}
-        </p>
-      </div>
-
-      <div className="card-footer">
-        <div className="time-slot">
-          <FiCalendar /> <span>{formatDatePretty(app.date)}</span>
-          <strong style={{ marginLeft: "10px" }}>
-            <FiClock
-              size={14}
-              style={{ marginRight: "4px", verticalAlign: "middle" }}
-            />
+      {/* --- Section 2: Appointment Details --- */}
+      <div className="da-card-section appt-details">
+        <div className="da-detail-item">
+          <FiCalendar size={14} />
+          <span>{formatDatePretty(app.date)}</span>
+        </div>
+        <div className="da-detail-item">
+          <FiClock size={14} />
+          <strong>
             {app.TimeSlot
               ? `${app.TimeSlot.StartTime} - ${app.TimeSlot.EndTime}`
-              : new Date(app.date).toLocaleTimeString("en-US", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+              : "N/A"}
           </strong>
         </div>
-
-        <div className="action-buttons">
-          {(status === "accepted" || status === "next_up") && isOnline && (
-            <button
-              className="btn-action btn-join"
-              title={isJoinEnabled ? "Start Chat" : "Waiting for queue..."}
-              disabled={!isJoinEnabled}
-              onClick={() => onStartCall(app)}
-              style={{
-                opacity: isJoinEnabled ? 1 : 0.4,
-                cursor: isJoinEnabled ? "pointer" : "not-allowed",
-              }}
-            >
-              <FiMessageSquare />
-              {isJoinEnabled ? "Start Chat" : "Waiting..."}
-            </button>
-          )}
-
-          {status === "in_progress" && (
-            <button
-              className="btn-action btn-complete"
-              onClick={() =>
-                onUpdateStatus(app._id, "completed", "in_progress")
-              }
-            >
-              Complete
-            </button>
-          )}
-
-          {status === "next_up" && (
-            <button
-              className="btn-action btn-skip"
-              onClick={() => onUpdateStatus(app._id, "skipped", "next_up")}
-              title="Skip this patient"
-            >
-              <FiSkipForward /> Skip
-            </button>
-          )}
-
-          {(status === "accepted" ||
-            status === "next_up" ||
-            status === "in_progress") && (
-            <button
-              className="btn-action btn-cancel"
-              onClick={() => onUpdateStatus(app._id, "cancelled", "accepted")}
-            >
-              Cancel
-            </button>
-          )}
+        <div className="da-detail-item">
+          {isOnline ? <FiWifi size={14} /> : <FiHome size={14} />}
+          <span>{app.mode}</span>
         </div>
+      </div>
+
+      {/* --- Section 3: Status & Actions --- */}
+      <div className="da-card-section da-card-status-actions">
+        <div className={`da-status-badge status-${status}`}>
+          {getStatusLabel(status)}
+        </div>
+        
+        {isArchived ? (
+            <p className="da-symptoms-small">{app.symptoms}</p>
+        ) : (
+          <div className="da-action-buttons">
+            
+            {/* --- UPDATED JOIN BUTTON --- */}
+            {showJoin && (
+              <button
+                className="da-btn da-btn-join"
+                title={isJoinEnabled ? "Join Chat" : "Waiting for queue..."}
+                disabled={!isJoinEnabled}
+                onClick={() => onStartCall(app)}
+              >
+                <FiMessageSquare />
+                {status === 'in_progress' ? 'Re-join' : (isJoinEnabled ? 'Start Chat' : 'Waiting...')}
+              </button>
+            )}
+
+            {/* --- UPDATED COMPLETE BUTTON --- */}
+            {showComplete && (
+              <button
+                className="da-btn da-btn-complete"
+                onClick={() => onUpdateStatus(app._id, "completed", "in_progress")}
+              >
+                Complete
+              </button>
+            )}
+
+            {showSkip && (
+              <button
+                className="da-btn da-btn-skip"
+                onClick={() => onUpdateStatus(app._id, "skipped", "next_up")}
+                title="Skip this patient"
+              >
+                <FiSkipForward />
+              </button>
+            )}
+            {showCancel && (
+              <button
+                className="da-btn da-btn-cancel"
+                onClick={() => onUpdateStatus(app._id, "cancelled", "accepted")}
+              >
+                <FiXCircle />
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -438,9 +419,7 @@ export default function DoctorAppointments() {
     );
   };
 
-  // --------------------------------------------------------------------
-  // -------------------------- UPDATE STATUS -----------------------------
-  // --------------------------------------------------------------------
+  
   const handleUpdateStatus = async (
     appointmentID,
     newStatus,

@@ -5,40 +5,56 @@ export default function registerRedisListener(redisSub, userConnections, io) {
   console.log(" Redis global listener registered");
 
   redisSub.on("message", async (channel, message) => {
-    console.log("📨 Redis message:", message);
+    
+    // 1. Log the raw message string
+    console.log("Raw Redis message received:", message); 
 
+    let payload;
     try {
-      const payload = JSON.parse(message);
-      const channelUserId = channel.split(":")[1]; // receiver by redis channel
+      // 2. Try to parse the message
+      payload = JSON.parse(message);
 
+    } catch (err) {
+      // If parsing fails, log the error and the message that caused it
+      console.error("REDIS JSON.PARSE ERROR!");
+      console.error("The message string that failed to parse was:", message);
+      console.error("Parse error:", err);
+      return; // Stop processing this broken message
+    }
+
+    // 3. Process the parsed payload in its own try...catch
+    try {
+      const channelUserId = channel.split(":")[1]; 
       let notif;
 
-      // SAVE NOTIFICATION ONLY IF NOT REMINDER
-      if (payload.type !== "reminder") {
-        notif = new Notification({
-          doctorid: payload.data.doctorid,
-          patientid: payload.data.patientid,
-          appointmentid: payload.data.appointmentid,
-          message: payload.data.message,
-          from: payload.data.from,
-          to: payload.data.to,
-          isappointment: payload.data.isappointment || false,
-        });
+      // 4. THE DEFENSIVE FIX:
+      // Check if payload.data exists. If not, use the payload itself.
+      const data = payload.data ? payload.data : payload;
+      const type = payload.type ? payload.type : "default"; // Set a default type
 
+      // 5. Use the new `data` and `type` variables from now on
+      if (type !== "reminder") {
+        notif = new Notification({
+          doctorid: data.doctorid,
+          patientid: data.patientid,
+          appointmentid: data.appointmentid,
+          message: data.message,
+          from: data.from,
+          to: data.to,
+          isappointment: data.isappointment || false,
+        });
         await notif.save();
       }
 
-      // IMPORTANT — Determine actual target user
       let targetUserId =
-        payload.data.to === "doctor"
-          ? payload.data.doctorid
-          : payload.data.patientid;
+        data.to === "doctor"
+          ? data.doctorid
+          : data.patientid;
 
       const targetSocketId = userConnections.get(targetUserId?.toString());
 
-      //  If appointment cancelled, send email
-      if (payload.type === "cancelled") {
-        const appointment = payload.data.appointment;
+      if (type === "cancelled") {
+        const appointment = data.appointment;
 
         const indiaTime = new Date(appointment.date).toLocaleString("en-IN", {
           timeZone: "Asia/Kolkata",
@@ -52,22 +68,23 @@ export default function registerRedisListener(redisSub, userConnections, io) {
           msg
         );
       }
-
+      
+      // Log the object you're actually using
+      console.log("Processing data object:::", data); 
       
       if (targetSocketId) {
         console.log("📨 Delivering socket to", targetUserId);
 
-        if (payload.data.to === "patient") {
-          io.to(targetSocketId).emit("patientnotification", payload.data);
+        if (data.to === "patient") {
+          io.to(targetSocketId).emit("patientnotification", data);
         } else {
-          io.to(targetSocketId).emit("doctornotification", payload.data);
+          io.to(targetSocketId).emit("doctornotification", data);
         }
 
-
-        if (payload.type === "appointment:StatusChanged") {
+        if (type === "appointment:StatusChanged") {
           io.to(targetSocketId).emit("appointment:StatusChanged", {
-            appointmentID: payload.data.appointmentid,
-            status: payload.data.status,
+            appointmentID: data.appointmentid,
+            status: data.status,
           });
         }
       } else {
@@ -76,7 +93,10 @@ export default function registerRedisListener(redisSub, userConnections, io) {
         );
       }
     } catch (err) {
-      console.log("Redis parse error:", err);
+      // This will catch errors like "Cannot read 'to' of undefined"
+      console.error("Redis payload processing error:", err);
+      // Log the payload that failed to be processed
+      console.error("The payload that caused the error was:", payload); 
     }
   });
 }

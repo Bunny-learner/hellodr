@@ -87,7 +87,7 @@ app.use("/settings",setter)
 const server = createServer(app)
 
 
-const io = new Server(server, {
+ const io = new Server(server, {
   cors: {
     origin: "http://localhost:5173",
     methods: ["GET", "POST"],
@@ -104,5 +104,7 @@ redisSub.on('error', (err) => {
 
 
 socketMain(io,redisSub)
+
+export {io};
 
 export default server;

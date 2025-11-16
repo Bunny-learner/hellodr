@@ -7,7 +7,7 @@ import {
   FaCheckCircle,
   FaTrash,
 } from "react-icons/fa";
-import Circle1 from "../components/Loaders/circle1";
+import Round from "../components/Loaders/round";
 import "../css/notifications.css"; 
 
 const Notifications = () => {
@@ -133,7 +133,7 @@ const Notifications = () => {
   
 
   if (loading) {
-    return <div className="notification-panel-loading"><Circle1/></div>;
+    return <div className="notification-panel-loading"><Round/></div>;
   }
 
   return (

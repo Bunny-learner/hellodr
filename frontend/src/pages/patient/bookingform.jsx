@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import '../../css/signup.css';
+import '../../css/bookingform.css'; // Changed to a new CSS file
 
 export default function BookingForm() {
   const navigate = useNavigate();
@@ -16,20 +16,24 @@ export default function BookingForm() {
       gender: savedAppointment.gender || '',
       email: savedAppointment.email || '',
       phoneNumber: savedAppointment.phone || '',
-      dob: savedAppointment.dob || '',
+      dob: savedAppointment.dob ? new Date(savedAppointment.dob).toISOString().split('T')[0] : '', // Format for date input
       symptoms: savedAppointment.symptoms || ''
     }
   });
 
+  // useEffect is fine, but the defaultValues in useForm is the preferred way
+  // This useEffect is still good as a fallback
   useEffect(() => {
     if (savedAppointment) {
       Object.keys(savedAppointment).forEach(key => {
         if (key === 'name') setValue('patientName', savedAppointment[key]);
         else if (key === 'phone') setValue('phoneNumber', savedAppointment[key]);
+        else if (key === 'dob') setValue('dob', savedAppointment[key] ? new Date(savedAppointment[key]).toISOString().split('T')[0] : '');
         else setValue(key, savedAppointment[key]);
       });
     }
   }, [savedAppointment, setValue]);
+
 
   const back = () => navigate(-1);
 
@@ -41,26 +45,26 @@ export default function BookingForm() {
   };
 
   return (
-    <div className="booking-form">
-      <div className='back'>
-        <svg onClick={back} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="#044141ff" className="size-6">
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
-        </svg>
-      </div>
-
+    <div className="booking-form-page">
       <div className="book-card">
+        
         <div className="form-header">
-          <h1>Patient Booking</h1>
+          <h1>Patient Details</h1>
+          <p>Please fill in your information to confirm the booking.</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="form-body" noValidate>
-          <h3>Patient Information</h3>
-          <div className="personal-info">
-
+          
+          <h2 className="form-section-title">Patient Information</h2>
+          
+          {/* --- NEW 2-COLUMN GRID --- */}
+          <div className="form-grid">
             <div className="input-group">
+              <label htmlFor="patientName">Full Name</label>
               <input
+                id="patientName"
                 type="text"
-                placeholder="Full Name"
+                placeholder="e.g., John Doe"
                 className={`dform-input ${errors.patientName ? 'input-error' : ''}`}
                 {...register("patientName", { required: "Patient name is required" })}
               />
@@ -68,17 +72,11 @@ export default function BookingForm() {
             </div>
 
             <div className="input-group">
+              <label htmlFor="age">Age</label>
               <input
-                type="date"
-                className={`dform-input ${errors.dob ? 'input-error' : ''}`}
-                {...register("dob")}
-              />
-            </div>
-
-            <div className="input-group">
-              <input
+                id="age"
                 type="number"
-                placeholder="Age"
+                placeholder="e.g., 35"
                 className={`dform-input ${errors.age ? 'input-error' : ''}`}
                 {...register("age", { 
                   required: "Age is required",
@@ -90,30 +88,9 @@ export default function BookingForm() {
             </div>
 
             <div className="input-group">
-              <input
-                type="email"
-                placeholder="Email"
-                className={`dform-input ${errors.email ? 'input-error' : ''}`}
-                {...register("email", { 
-                  required: "Email is required",
-                  pattern: { value: /^\S+@\S+$/i, message: "Invalid email format" }
-                })}
-              />
-              {errors.email && <p className="error-message">{errors.email.message}</p>}
-            </div>
-
-            <div className="input-group">
-              <input
-                type="tel"
-                placeholder="Phone Number"
-                className={`dform-input ${errors.phoneNumber ? 'input-error' : ''}`}
-                {...register("phoneNumber", { required: "Phone number is required" })}
-              />
-              {errors.phoneNumber && <p className="error-message">{errors.phoneNumber.message}</p>}
-            </div>
-
-            <div className="input-group">
+              <label htmlFor="gender">Gender</label>
               <select
+                id="gender"
                 className={`dform-input ${errors.gender ? 'input-error' : ''}`}
                 {...register("gender", { required: "Gender is required" })}
               >
@@ -125,24 +102,77 @@ export default function BookingForm() {
               {errors.gender && <p className="error-message">{errors.gender.message}</p>}
             </div>
 
+            <div className="input-group">
+              <label htmlFor="dob">Date of Birth (Optional)</label>
+              <input
+                id="dob"
+                type="date"
+                className={`dform-input ${errors.dob ? 'input-error' : ''}`}
+                {...register("dob")}
+              />
+            </div>
+
           </div>
 
-          <h3>Symptoms</h3>
-          <div className="profile-input-group profile-textarea-group">
+          <h2 className="form-section-title">Contact Details</h2>
+
+          <div className="form-grid">
+            <div className="input-group">
+              <label htmlFor="email">Email</label>
+              <input
+                id="email"
+                type="email"
+                placeholder="e.g., you@example.com"
+                className={`dform-input ${errors.email ? 'input-error' : ''}`}
+                {...register("email", { 
+                  required: "Email is required",
+                  pattern: { value: /^\S+@\S+$/i, message: "Invalid email format" }
+                })}
+              />
+              {errors.email && <p className="error-message">{errors.email.message}</p>}
+            </div>
+
+            <div className="input-group">
+              <label htmlFor="phoneNumber">Phone Number</label>
+              <input
+                id="phoneNumber"
+                type="tel"
+                placeholder="e.g., 9876543210"
+                className={`dform-input ${errors.phoneNumber ? 'input-error' : ''}`}
+                {...register("phoneNumber", { 
+                    required: "Phone number is required",
+                    pattern: { value: /^\d{10}$/, message: "Must be 10 digits" }
+                })}
+              />
+              {errors.phoneNumber && <p className="error-message">{errors.phoneNumber.message}</p>}
+            </div>
+          </div>
+
+
+          <h2 className="form-section-title">Reason for Visit</h2>
+          
+          <div className="input-group full-width-input">
+            <label htmlFor="symptoms">Symptoms (Optional)</label>
             <textarea
-              rows="5"
-              placeholder="Mention your symptoms .."
+              id="symptoms"
+              rows="4"
+              placeholder="Briefly describe your symptoms..."
               className={`dform-input ${errors.symptoms ? 'input-error' : ''}`}
               {...register("symptoms")}
             />
             {errors.symptoms && <p className="error-message">{errors.symptoms.message}</p>}
           </div>
 
-<div className='backnext'>
-   <button onClick={()=>{navigate(-1)}} className="sbtn">Back</button>
-   <button type="submit" className="sbtn">Next</button>
-</div>
-         
+          {/* --- NEW BUTTON CONTAINER --- */}
+          <div className='form-navigation-buttons'>
+            <button type="button" onClick={back} className="sbtn sbtn-secondary">
+              Back
+            </button>
+            <button type="submit" className="sbtn sbtn-primary">
+              Next: Review
+            </button>
+          </div>
+          
         </form>
       </div>
     </div>

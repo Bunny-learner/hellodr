@@ -1,5 +1,4 @@
 import { Doctor } from "../models/doctor.js";
-import { redisPub } from '../db/redisconnect.js';
 import { userConnections } from "./index.js";
 import { Appointment} from "../models/appointment.js";
 
@@ -53,14 +52,23 @@ io.to(socket_patient).emit("enable_join_button", {
 
 
 
-  socket.on("msg_fromdoc", ({ msg, roomid }) => {
-    socket.to(roomid).emit("send_topat", msg);
-  });
+ socket.on("msg_fromdoc", ({ msg, roomid, doctorId }) => {
+  console.log(`💬 Doctor(${doctorId}) to room(${roomid}):`, msg);
 
+  const payload = {
+    msg,
+    senderId: doctorId,
+    senderRole: "doctor",
+    roomid,
+    timestamp: Date.now(),
+  };
 
-  socket.on("doctor_typing", ({ roomid }) => {
-    socket.to(roomid).emit("doc_types", "doctor is typing");
-  });
+  socket.to(roomid).emit("sending", payload);
+});
+
+socket.on("doctor_typing", ({ roomid }) => {
+  socket.to(roomid).emit("doc_types");
+});
 
 
   socket.on("disconnect", () => {

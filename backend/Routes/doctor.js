@@ -1,5 +1,5 @@
 import express,{Router} from "express"
-import {doc_login,doc_signup,logout,uploadimg,profile,add_timeslot,get_timeslots,change_timeslot_status, updateDoctorProfile,doctor_dashboard_details} from "../controllers/doctorcontrollers.js"
+import {doc_login,doc_signup,logout, generatePrescription,uploadimg,profile,add_timeslot,get_timeslots,change_timeslot_status, updateDoctorProfile,doctor_dashboard_details} from "../controllers/doctorcontrollers.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js"
 import { get_all_appointments } from "../controllers/appointment.controllers.js"
 const doctor=Router()
@@ -16,5 +16,6 @@ doctor.get('/profile',verifyJWT('doctor'),profile)
 doctor.get('/logout',verifyJWT('doctor'),logout)
 doctor.post('/uploadimg',verifyJWT('doctor'),uploadimg)
 doctor.put('/updateprofile',verifyJWT('doctor'),updateDoctorProfile)
+doctor.post('/generate-prescription', generatePrescription);
 
 export default doctor

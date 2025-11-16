@@ -34,8 +34,7 @@ export async function scheduleJobsForAppointment(appointment) {
         doctorId: appointment.doctor,
         patientId: appointment.patient._id ?? appointment.patient,
       },
-      {
-        delay: startDelayMs,
+      {        delay: startDelayMs,
         jobId: safeId,
         removeOnComplete: true,
         removeOnFail: true,

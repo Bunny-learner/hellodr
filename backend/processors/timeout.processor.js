@@ -1,27 +1,5 @@
 import { Appointment } from "../models/appointment.js";
 import { redisPub } from "../db/redisconnect.js";
-
-/**
- * timeoutProcessor (No-Show Detector)
- * Triggered by a scheduled job ~15-20 minutes AFTER start time.
- *
- * ─ Logic ─
- * Its only job is to find and cancel appointments that got "stuck"
- * and were never started by the doctor.
- *
- * 1) If appointment not found → skip
- * 2) If status IS 'in_progress', 'completed', 'cancelled' → skip
- * (This means the call started, finished, or was cancelled. Good!)
- *
- * 3) If status is STILL 'accepted' or 'next_up' → BAD!
- * (This is a "stuck" appointment. The patient is waiting,
- * the doctor never joined. It will block the queue.)
- *
- * 4) ACTION:
- * → Mark appointment as 'no_show' (or 'missed').
- * → Notify both doctor and patient that the appointment was missed.
- * → This un-sticks the queue for the next 'startProcessor' job.
- */
 export async function timeoutProcessor(job) {
   try {
     const { appointmentId, doctorId, patientId } = job.data;
@@ -67,28 +45,39 @@ export async function timeoutProcessor(job) {
     const doctorChannel = `user:${doctorId}`;
     const patientChannel = `user:${patientId}`;
 
-    
+    // --- THIS IS THE FIX ---
+    // You must define the payloads before using them.
+
+    // 1. Define the payload for the DOCTOR
     const doctorPayload = {
-      type: "appointment:statusChanged",
+      type: "appointment:StatusChanged", // Use a relevant type
       data: {
-        appointmentID: appointmentId,
-        status: "no_show",
-        message:
-          "An appointment was missed (no one joined) and has been removed from your queue.",
+        message: `Appointment with patient ${patientId} was missed and automatically marked 'no_show'.`,
+        appointmentid: appt._id,
+        status: appt.status, // "no_show"
+        doctorid: doctorId,
+        patientid: patientId,
+        isappointment: true,
+        from: "system",
+        to: "doctor",
       },
     };
 
+    // 2. Define the payload for the PATIENT
     const patientPayload = {
-      type: "missed",
+      type: "appointment:StatusChanged", // Use a relevant type
       data: {
-        message:
-          "We are sorry, but your appointment was missed as the connection could not be established. Please contact the clinic to reschedule.",
-        appointmentid: appointmentId,
+        message: `Your appointment was missed as the doctor did not join in time. It has been marked 'no_show'.`,
+        appointmentid: appt._id,
+        status: appt.status, // "no_show"
+        doctorid: doctorId,
+        patientid: patientId,
         isappointment: true,
         from: "system",
         to: "patient",
       },
     };
+    
 
     await redisPub.publish(doctorChannel, JSON.stringify(doctorPayload));
     await redisPub.publish(patientChannel, JSON.stringify(patientPayload));

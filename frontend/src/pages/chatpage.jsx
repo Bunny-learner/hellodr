@@ -19,7 +19,8 @@ import toast from "react-hot-toast";
 import "../css/chatpage.css";
 import Message from "../components/Loaders/message.jsx";
 import { useSocket } from "./SocketContext.jsx";
-import { jsPDF } from "jspdf";
+import { useAuth } from "./AuthContext.jsx";
+import Circle1 from "../components/Loaders/circle1.jsx"
 
 const formatChatTimestamp = (dateString) => {
   const date = new Date(dateString);
@@ -39,10 +40,11 @@ export default function ChatPage() {
   const role = params.get("user"); // "patient" or "doctor"
   const consultationId = params.get("consultationId");
   const { roomid } = useParams();
+  const { userID: currentUserID } = useAuth();   // <-- FIXED
   const navigate = useNavigate();
-  const currentUserID = params.get("user");
+  
 
-  /* ========= PATIENT DETAILS (from localStorage 'current') ========= */
+  /* ========= PATIENT DETAILS ========= */
   const [patientInfo] = useState(() => {
     const stored = localStorage.getItem("current");
     if (stored) {
@@ -68,6 +70,7 @@ export default function ChatPage() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [filesToUpload, setFilesToUpload] = useState([]);
+  const [generating,setGenerating]=useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const messagesEndRef = useRef(null);
 
@@ -81,34 +84,28 @@ export default function ChatPage() {
   const [timerSeconds, setTimerSeconds] = useState(0);
   const timerRef = useRef(null);
 
-  /* ========= PRESCRIPTION OVERLAY ========= */
   const [prescriptionOpen, setPrescriptionOpen] = useState(false);
 
-  /* SCROLL DOWN ON NEW MESSAGE */
+  /* Auto scroll */
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isOtherTyping]);
 
-  /* LOAD OR INITIALIZE TIMER (persists across reloads) */
+  /* Timer setup */
   useEffect(() => {
     const key = "consult_start_" + roomid;
     const savedStart = localStorage.getItem(key);
-    if (savedStart) {
-      startTimerFromSaved(parseInt(savedStart, 10));
-    }
+    if (savedStart) startTimerFromSaved(parseInt(savedStart, 10));
 
-    // Prevent back navigation away from chat during consultation
     const pushBack = () => window.history.pushState(null, "", window.location.href);
     window.history.pushState(null, "", window.location.href);
     window.addEventListener("popstate", pushBack);
 
-    // Prevent refresh/navigation
     const beforeUnload = (e) => {
-      // show confirmation only if consult active
       if (localStorage.getItem(key)) {
         e.preventDefault();
-        e.returnValue = "Consultation is in progress. Reloading will lose unsaved data.";
-        return "Consultation is in progress. Reloading will lose unsaved data.";
+        e.returnValue = "Consultation is in progress.";
+        return "Consultation is in progress.";
       }
     };
     window.addEventListener("beforeunload", beforeUnload);
@@ -117,7 +114,6 @@ export default function ChatPage() {
       window.removeEventListener("popstate", pushBack);
       window.removeEventListener("beforeunload", beforeUnload);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const startTimerFresh = () => {
@@ -151,72 +147,61 @@ export default function ChatPage() {
     return `${mm}:${ss}`;
   };
 
-  /* SOCKET HANDLERS: join room, receive messages, presence, typing, consultation end */
+
   useEffect(() => {
     if (!socket || !isConnected || !roomid || !role) return;
 
     socket.emit("join_room", { roomid, role });
 
-    // ensure start time exists
     const key = "consult_start_" + roomid;
-    if (!localStorage.getItem(key)) {
-      startTimerFresh();
-    }
+    if (!localStorage.getItem(key)) startTimerFresh();
 
-    const handleReceiveMessage = (data) => {
-      setMessages((p) => [...p, data]);
-    };
+    const handleReceiveMessage = (payload) => {
+if (payload.isSystem) {
+    const msgData = payload.msg || payload;
+    setMessages(prev => [...prev, msgData]);
+    return;
+  }
+    if(payload.senderRole==role)return;
+  const data = payload.msg ? payload.msg : payload; 
+  setMessages((p) => [...p, data]);
+};
+
 
     const handleTyping = () => {
       setIsOtherTyping(true);
       clearTimeout(typingTimer.current);
-      typingTimer.current = setTimeout(() => {
-        setIsOtherTyping(false);
-      }, 2000);
+      typingTimer.current = setTimeout(() => setIsOtherTyping(false), 2000);
     };
 
-    const handleRoomPresence = (presence) => {
-      // presence: { doctor: bool, patient: bool }
-      setRoomPresence(presence);
-      if (role === "patient") setOtherPresent(presence.doctor);
-      else setOtherPresent(presence.patient);
-
-      // stop timer only when both have left
-      if (!presence.doctor && !presence.patient) {
-        endTimer();
-      } else {
-        // ensure timer is running if someone present
-        const savedStart = localStorage.getItem(key);
-        if (savedStart) startTimerFromSaved(parseInt(savedStart, 10));
-      }
-    };
-
-    const handleConsultationOver = () => {
-      toast("Consultation ended");
-      endTimer();
-      if (role === "patient") navigate("/patient/home");
-      else navigate("/doctor/appointments");
-    };
-
-    socket.on("send_topat", handleReceiveMessage);
-    socket.on("send_todoc", handleReceiveMessage);
+    socket.on("sending", handleReceiveMessage);
     socket.on("pat_types", handleTyping);
     socket.on("doc_types", handleTyping);
+
+    const handleRoomPresence = (presence) => {
+      setRoomPresence(presence);
+      setOtherPresent(role === "patient" ? presence.doctor : presence.patient);
+      if (!presence.doctor && !presence.patient) endTimer();
+    };
+
     socket.on("room_presence", handleRoomPresence);
-    socket.on("consultation_over", handleConsultationOver);
+
+    socket.on("consultation_over", () => {
+      endTimer();
+      navigate(role === "patient" ? "/patient/home" : "/doctor/appointments");
+    });
 
     return () => {
       socket.emit("leave_room", { roomid, role });
-      socket.off("send_topat", handleReceiveMessage);
-      socket.off("send_todoc", handleReceiveMessage);
+      socket.off("sending", handleReceiveMessage);
       socket.off("pat_types", handleTyping);
       socket.off("doc_types", handleTyping);
       socket.off("room_presence", handleRoomPresence);
-      socket.off("consultation_over", handleConsultationOver);
+      socket.off("consultation_over");
     };
   }, [socket, isConnected, roomid, role, navigate]);
 
-  /* FILE PREVIEW REMOVE */
+  /* Remove file preview */
   const handleRemoveFile = (previewKey) => {
     setFilesToUpload((prev) => {
       const f = prev.find((x) => x.previewKey === previewKey);
@@ -225,23 +210,19 @@ export default function ChatPage() {
     });
   };
 
-  /* END CONSULTATION (doctor) -> call backend, emit socket, stop timer, navigate */
+  /* End consultation */
   const handleEndConsultation = async () => {
     try {
-      const res = await fetch(
-        `http://localhost:8000/appointment/changestatus?info=proceed`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({
-            appointmentID: consultationId,
-            status: "completed",
-          }),
-        }
-      );
+      await fetch(`http://localhost:8000/appointment/changestatus?info=proceed`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          appointmentID: consultationId,
+          status: "completed",
+        }),
+      });
 
-      if (!res.ok) throw new Error("Failed");
       socket.emit("remove_patient", {
         roomid,
         appointmentId: consultationId,
@@ -253,12 +234,11 @@ export default function ChatPage() {
       toast.success("Consultation Completed");
       navigate("/doctor/appointments");
     } catch (err) {
-      console.error(err);
       toast.error("Error completing consultation");
     }
   };
 
-  /* SEND MESSAGE (with Cloudinary uploads) */
+  /* SEND MESSAGE */
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim() && filesToUpload.length === 0) return;
@@ -292,28 +272,29 @@ export default function ChatPage() {
       const uploaded = await Promise.all(filesToUpload.map(uploadFile));
       const newMsg = {
         id: `msg_${Date.now()}`,
-        senderId: currentUserID,
+        senderId: currentUserID,        // <-- FIXED
         text: newMessage,
         timestamp: new Date().toISOString(),
         files: uploaded,
       };
 
-      if (role === "patient") socket.emit("msg_frompat", { msg: newMsg, roomid });
-      else socket.emit("msg_fromdoc", { msg: newMsg, roomid });
+      socket.emit(
+        role === "patient" ? "msg_frompat" : "msg_fromdoc",
+        { msg: newMsg, roomid }         // <-- FIXED
+      );
 
       setMessages((p) => [...p, newMsg]);
       setNewMessage("");
       filesToUpload.forEach((f) => URL.revokeObjectURL(f.objectUrl));
       setFilesToUpload([]);
     } catch (err) {
-      console.error("send message error", err);
       toast.error("Failed to send message");
     } finally {
       setIsUploading(false);
     }
   };
 
-  /* ========== Prescription handling (opened from right sidebar) ========== */
+  /* PRESCRIPTION HANDLING */
   const [prescription, setPrescription] = useState({
     doctorName: "",
     clinicName: "",
@@ -323,8 +304,12 @@ export default function ChatPage() {
   });
 
   const addMedication = () => {
-    setPrescription((p) => ({ ...p, medications: [...p.medications, { name: "", dose: "", qty: "" }] }));
+    setPrescription((p) => ({
+      ...p,
+      medications: [...p.medications, { name: "", dose: "", qty: "" }],
+    }));
   };
+
   const updateMedication = (idx, field, val) => {
     setPrescription((p) => {
       const meds = [...p.medications];
@@ -332,122 +317,65 @@ export default function ChatPage() {
       return { ...p, medications: meds };
     });
   };
+
   const removeMedication = (idx) => {
-    setPrescription((p) => ({ ...p, medications: p.medications.filter((_, i) => i !== idx) }));
+    setPrescription((p) => ({
+      ...p,
+      medications: p.medications.filter((_, i) => i !== idx),
+    }));
   };
 
- const generateAndSendPDF = async () => {
-  try {
-    const doc = new jsPDF({ unit: "pt", format: "a4" });
+  const generateAndSendPDF = async (e) => {
+    setGenerating(true)
+    e.target.disabled=true;
+    try {
+      const payload = {
+        prescriptionData: prescription,
+        patientData: patientInfo,
+        consultationId: consultationId,
+        roomid: roomid,
+        doctorId: currentUserID,
+      };
 
-    let y = 40;
-    doc.setFontSize(18);
-    doc.text(prescription.clinicName || "Clinic / Hospital", 40, y);
-    y += 28;
+      if (!payload.doctorId || payload.doctorId === "doctor") {
+        throw new Error("Invalid Doctor ID");
+      }
 
-    doc.setFontSize(12);
-    doc.text(`Doctor: ${prescription.doctorName}`, 40, y); y += 18;
-    doc.text(`Patient: ${patientInfo.name}`, 40, y); y += 18;
-    doc.text(`Age/Gender: ${patientInfo.age} / ${patientInfo.gender}`, 40, y); y += 22;
-
-    doc.text("Diagnosis:", 40, y); y += 16;
-    doc.setFontSize(10);
-    doc.text(prescription.diagnosis || "-", 40, y); 
-    y += 18;
-
-    doc.setFontSize(12);
-    doc.text("Medications:", 40, y); 
-    y += 16;
-
-    if (prescription.medications.length === 0) {
-      doc.setFontSize(10);
-      doc.text("- None -", 40, y);
-      y += 18;
-    } else {
-      prescription.medications.forEach((m, i) => {
-        doc.setFontSize(10);
-        doc.text(
-          `${i + 1}. ${m.name} — Dose/day: ${m.dose}, Qty: ${m.qty}`,
-          40,
-          y
-        );
-        y += 16;
-      });
-    }
-
-    doc.setFontSize(12);
-    doc.text("Notes:", 40, y);
-    y += 16;
-    doc.setFontSize(10);
-    doc.text(prescription.notes || "-", 40, y);
-
-    // ---- Convert PDF to Blob ----
-    const pdfBlob = doc.output("blob");
-
-    // ---- Upload to Cloudinary as RAW file ----
-    const formData = new FormData();
-    formData.append("file", pdfBlob, "prescription.pdf");
-    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-
-    const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/raw/upload`;
-
-    const uploadRes = await fetch(uploadUrl, {
-      method: "POST",
-      body: formData
-    });
-
-    const uploadData = await uploadRes.json();
-
-    if (!uploadData.secure_url) {
-      toast.error("PDF upload failed");
-      return;
-    }
-
-    // ---- Create chat message for the PDF ----
-    const pdfMsg = {
-      id: `msg_${Date.now()}`,
-      senderId: currentUserID,
-      text: "Prescription PDF",
-      timestamp: new Date().toISOString(),
-      files: [
+      const res = await fetch(
+        `http://localhost:8000/doctor/generate-prescription`,
         {
-          url: uploadData.secure_url,
-          name: "prescription.pdf",
-          type: "application/pdf"
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(payload),
         }
-      ]
-    };
+      );
 
-    // ---- Emit to chat room ----
-    if (role === "doctor") {
-      socket.emit("msg_fromdoc", { msg: pdfMsg, roomid });
+      if (!res.ok) throw new Error("Backend failed");
+      setGenerating(false)
+      e.target.disabled=false;
+      toast.success("Prescription sent!");
+      setPrescriptionOpen(false);
+    } catch (err) {
+      toast.error(`Failed: ${err.message}`, { id: toastId });
     }
+  };
 
-    // ---- Add to UI ----
-    setMessages(prev => [...prev, pdfMsg]);
-
-    toast.success("Prescription sent in chat");
-    setPrescriptionOpen(false);
-
-  } catch (err) {
-    console.error(err);
-    toast.error("Error sending prescription PDF");
-  }
-};
-
-
-  /* ========= RENDER ========== */
+  /* ===================== UI RENDER ===================== */
   return (
     <div className="pro-chat-layout">
       <div className="chat-conversation-area">
-
         {/* HEADER */}
         <div className="chat-header">
           <div className="patient-info">
             <div className="info-text">
-              <span className="patient-name">Consultation with {patientInfo.name}</span>
+              <span className="patient-name">
+                Consultation with {patientInfo.name}
+              </span>
               <span className="patient-status">
-                <span className={`status-dot ${otherPresent ? "online" : "offline"}`} />
+                <span
+                  className={`status-dot ${otherPresent ? "online" : "offline"}`}
+                />
                 {otherPresent ? "Active Now" : "Disconnected"}
               </span>
             </div>
@@ -456,15 +384,27 @@ export default function ChatPage() {
           <div className="chat-actions">
             <div className="timer-badge">
               <strong>{formatTimer(timerSeconds)}</strong>
-              <div style={{ fontSize: "0.7rem", opacity: 0.7 }}>Consultation</div>
+              <div style={{ fontSize: "0.7rem", opacity: 0.7 }}>
+                Consultation
+              </div>
             </div>
 
-            <button className="action-btn"><FiPhone /> Call</button>
-            <button className="action-btn btn-video"><FiVideo /> Video</button>
+            <button className="action-btn">
+              <FiPhone /> Call
+            </button>
+            <button className="action-btn btn-video">
+              <FiVideo /> Video
+            </button>
 
-            {role === "doctor" && <button className="action-btn btn-end" onClick={handleEndConsultation}>End</button>}
+            {role === "doctor" && (
+              <button className="action-btn btn-end" onClick={handleEndConsultation}>
+                End
+              </button>
+            )}
 
-            <button className="action-btn-icon"><FiMoreVertical /></button>
+            <button className="action-btn-icon">
+              <FiMoreVertical />
+            </button>
           </div>
         </div>
 
@@ -485,7 +425,9 @@ export default function ChatPage() {
         </div>
 
         {/* FILE PREVIEW */}
-        {filesToUpload.length > 0 && <FilePreviewArea files={filesToUpload} onRemove={handleRemoveFile} />}
+        {filesToUpload.length > 0 && (
+          <FilePreviewArea files={filesToUpload} onRemove={handleRemoveFile} />
+        )}
 
         {/* INPUT */}
         <ChatInputArea
@@ -500,7 +442,7 @@ export default function ChatPage() {
         />
       </div>
 
-      {/* RIGHT SIDEBAR (contains Write Prescription button) */}
+      {/* RIGHT SIDEBAR */}
       {role === "doctor" && (
         <PatientInfoSidebar
           patient={patientInfo}
@@ -514,39 +456,84 @@ export default function ChatPage() {
           <div className="prescription-card">
             <div className="prescription-header">
               <h3>Write Prescription</h3>
-              <button className="close-btn" onClick={() => setPrescriptionOpen(false)}><FiX /></button>
+              <button className="close-btn" onClick={() => setPrescriptionOpen(false)}>
+                <FiX />
+              </button>
             </div>
 
             <div className="prescription-body">
               <label>Doctor Name</label>
-              <input value={prescription.doctorName} onChange={(e) => setPrescription({...prescription, doctorName: e.target.value})} />
+              <input
+                value={prescription.doctorName}
+                onChange={(e) =>
+                  setPrescription({ ...prescription, doctorName: e.target.value })
+                }
+              />
 
               <label>Clinic Name</label>
-              <input value={prescription.clinicName} onChange={(e) => setPrescription({...prescription, clinicName: e.target.value})} />
+              <input
+                value={prescription.clinicName}
+                onChange={(e) =>
+                  setPrescription({ ...prescription, clinicName: e.target.value })
+                }
+              />
 
               <label>Diagnosis</label>
-              <textarea value={prescription.diagnosis} onChange={(e) => setPrescription({...prescription, diagnosis: e.target.value})} />
+              <textarea
+                value={prescription.diagnosis}
+                onChange={(e) =>
+                  setPrescription({ ...prescription, diagnosis: e.target.value })
+                }
+              />
 
               <div className="med-section">
                 <h4>Medications</h4>
-                <button className="add-med-btn" onClick={addMedication}>+ Add</button>
+                <button className="add-med-btn" onClick={addMedication}>
+                  + Add
+                </button>
               </div>
 
               {prescription.medications.map((m, idx) => (
                 <div className="med-row" key={idx}>
-                  <input placeholder="Medicine name" value={m.name} onChange={(e) => updateMedication(idx, "name", e.target.value)} />
-                  <input placeholder="Dose (per day)" value={m.dose} onChange={(e) => updateMedication(idx, "dose", e.target.value)} />
-                  <input placeholder="Quantity" value={m.qty} onChange={(e) => updateMedication(idx, "qty", e.target.value)} />
-                  <button className="remove-med-btn" onClick={() => removeMedication(idx)}><FiX /></button>
+                  <input
+                    placeholder="Medicine name"
+                    value={m.name}
+                    onChange={(e) => updateMedication(idx, "name", e.target.value)}
+                  />
+                  <input
+                    placeholder="Dose (per day)"
+                    value={m.dose}
+                    onChange={(e) => updateMedication(idx, "dose", e.target.value)}
+                  />
+                  <input
+                    placeholder="Quantity"
+                    value={m.qty}
+                    onChange={(e) => updateMedication(idx, "qty", e.target.value)}
+                  />
+                  <button
+                    className="remove-med-btn"
+                    onClick={() => removeMedication(idx)}
+                  >
+                    <FiX />
+                  </button>
                 </div>
               ))}
 
               <label>Additional Notes</label>
-              <textarea value={prescription.notes} onChange={(e) => setPrescription({...prescription, notes: e.target.value})} />
+              <textarea
+                value={prescription.notes}
+                onChange={(e) =>
+                  setPrescription({ ...prescription, notes: e.target.value })
+                }
+              />
 
               <div style={{ display: "flex", gap: 8 }}>
-                <button className="generate-btn" onClick={generateAndSendPDF}>Generate & Send PDF</button>
-                <button className="action-btn" onClick={() => setPrescriptionOpen(false)}>Cancel</button>
+                <button className="generate-btn" onClick={generateAndSendPDF}>
+                  {!generating?<>Generate & Send PDF</>:<Circle1/>}
+                </button>
+                <button className="action-btn" onClick={() => setPrescriptionOpen(false)}>
+                  Cancel
+                </button>
               </div>
             </div>
           </div>
@@ -556,17 +543,28 @@ export default function ChatPage() {
   );
 }
 
-/* ----------------- File rendering components ----------------- */
-
+/* FILE RENDERING */
 const FileRenderer = ({ file }) => {
   if (!file) return null;
-  if (file.type?.startsWith("image/")) {
-    return <a href={file.url} target="_blank" rel="noreferrer"><img src={file.url} className="chat-image" alt={file.name} /></a>;
-  }
-  if (file.type?.startsWith("video/")) {
-    return <a href={file.url} target="_blank" rel="noreferrer"><video src={file.url} controls className="chat-video" /></a>;
-  }
-  return <a href={file.url} target="_blank" rel="noreferrer" className="chat-file-link"><FiFileText /> {file.name}</a>;
+  if (file.type?.startsWith("image/"))
+    return (
+      <a href={file.url} target="_blank" rel="noreferrer">
+        <img src={file.url} className="chat-image" alt={file.name} />
+      </a>
+    );
+
+  if (file.type?.startsWith("video/"))
+    return (
+      <a href={file.url} target="_blank" rel="noreferrer">
+        <video src={file.url} controls className="chat-video" />
+      </a>
+    );
+
+  return (
+    <a href={file.url} target="_blank" rel="noreferrer" className="chat-file-link">
+      <FiFileText /> {file.name}
+    </a>
+  );
 };
 
 const ChatMessage = ({ message, isSender, timestamp }) => (
@@ -574,7 +572,9 @@ const ChatMessage = ({ message, isSender, timestamp }) => (
     <div className="message-bubble">
       {message.files?.length > 0 && (
         <div className="chat-files-container">
-          {message.files.map((f, i) => <FileRenderer key={i} file={f} />)}
+          {message.files.map((f, i) => (
+            <FileRenderer key={i} file={f} />
+          ))}
         </div>
       )}
       {message.text && <p className="message-text">{message.text}</p>}
@@ -583,66 +583,141 @@ const ChatMessage = ({ message, isSender, timestamp }) => (
   </div>
 );
 
-/* ----------------- Input area ----------------- */
-
-const ChatInputArea = ({ newMessage, setNewMessage, onSendMessage, setFilesToUpload, isUploading, role, socket, roomid }) => {
+/* INPUT BOX */
+const ChatInputArea = ({
+  newMessage,
+  setNewMessage,
+  onSendMessage,
+  setFilesToUpload,
+  isUploading,
+  role,
+  socket,
+  roomid,
+}) => {
   const fileRef = useRef(null);
 
   const handleChangeFiles = (e) => {
     const arr = Array.from(e.target.files || []);
-    const tagged = arr.map((file) => ({ file, previewKey: Math.random() + "_p", objectUrl: URL.createObjectURL(file) }));
+    const tagged = arr.map((file) => ({
+      file,
+      previewKey: Math.random() + "_p",
+      objectUrl: URL.createObjectURL(file),
+    }));
     setFilesToUpload((p) => [...p, ...tagged]);
     e.target.value = null;
   };
 
   return (
     <form className="chat-input-area" onSubmit={onSendMessage}>
-      <input ref={fileRef} type="file" multiple accept="image/*,video/*,application/pdf,.doc,.docx" style={{ display: "none" }} onChange={handleChangeFiles} />
-      <button type="button" className="action-btn-icon" onClick={() => fileRef.current.click()}><FiPaperclip /></button>
-      <input className="message-input" placeholder="Type your message..." value={newMessage} onChange={(e) => {
-        setNewMessage(e.target.value);
-        if (socket) socket.emit(role === "patient" ? "patient_typing" : "doctor_typing", { roomid });
-      }} />
-      <button className="send-button" type="submit" disabled={isUploading}>{isUploading ? <FiLoader /> : <FiSend />} {isUploading ? "Sending" : "Send"}</button>
+      <input
+        ref={fileRef}
+        type="file"
+        multiple
+        accept="image/*,video/*,application/pdf,.doc,.docx"
+        style={{ display: "none" }}
+        onChange={handleChangeFiles}
+      />
+
+      <button type="button" className="action-btn-icon" onClick={() => fileRef.current.click()}>
+        <FiPaperclip />
+      </button>
+
+      <input
+        className="message-input"
+        placeholder="Type your message..."
+        value={newMessage}
+        onChange={(e) => {
+          setNewMessage(e.target.value);
+          if (socket)
+            socket.emit(role === "patient" ? "patient_typing" : "doctor_typing", { roomid });
+        }}
+      />
+
+      <button className="send-button" type="submit" disabled={isUploading}>
+        {isUploading ? <FiLoader /> : <FiSend />} {isUploading ? "Sending" : "Send"}
+      </button>
     </form>
   );
 };
 
-/* ----------------- File preview ----------------- */
-
+/* FILE PREVIEW BOX */
 const FilePreviewItem = ({ file, onRemove }) => {
   const isImage = file.file.type.startsWith("image/");
   return (
     <div className="file-preview-item" title={file.file.name}>
-      <button className="remove-file-btn" type="button" onClick={() => onRemove(file.previewKey)}><FiX size={14} /></button>
-      {isImage ? <div className="file-preview-image-bg" style={{ backgroundImage: `url(${file.objectUrl})` }} /> : <div className="file-preview-icon-bg"><FiFile size={28} /></div>}
+      <button className="remove-file-btn" type="button" onClick={() => onRemove(file.previewKey)}>
+        <FiX size={14} />
+      </button>
+
+      {isImage ? (
+        <div
+          className="file-preview-image-bg"
+          style={{ backgroundImage: `url(${file.objectUrl})` }}
+        />
+      ) : (
+        <div className="file-preview-icon-bg">
+          <FiFile size={28} />
+        </div>
+      )}
     </div>
   );
 };
-const FilePreviewArea = ({ files, onRemove }) => (<div className="file-preview-area"><div className="file-preview-list">{files.map(f => <FilePreviewItem key={f.previewKey} file={f} onRemove={onRemove} />)}</div></div>);
 
-/* ----------------- Right Sidebar ----------------- */
+const FilePreviewArea = ({ files, onRemove }) => (
+  <div className="file-preview-area">
+    <div className="file-preview-list">
+      {files.map((f) => (
+        <FilePreviewItem key={f.previewKey} file={f} onRemove={onRemove} />
+      ))}
+    </div>
+  </div>
+);
 
+/* RIGHT SIDEBAR */
 const PatientInfoSidebar = ({ patient, onWritePrescription }) => (
   <div className="patient-info-sidebar">
     <div className="patient-profile-header">
-      <div className="patient-avatar-large">{patient.avatarUrl ? <img src={patient.avatarUrl} alt="avatar" /> : <FiUser size={40} />}</div>
+      <div className="patient-avatar-large">
+        {patient.avatarUrl ? <img src={patient.avatarUrl} alt="avatar" /> : <FiUser size={40} />}
+      </div>
       <h3>{patient.name}</h3>
-      <p>{patient.gender}, {patient.age} years</p>
-      <button className="action-btn btn-full-profile"><FiFileText /> View Full Profile</button>
+      <p>
+        {patient.gender}, {patient.age} years
+      </p>
+      <button className="action-btn btn-full-profile">
+        <FiFileText /> View Full Profile
+      </button>
     </div>
 
     <div className="patient-details-body">
       <h4>Key Information</h4>
+
       <div className="info-grid">
-        <div className="info-item"><label className="info-label">Blood Group</label><span className="info-value">{patient.bloodGroup}</span></div>
-        <div className="info-item"><label className="info-label">Allergies</label><span className="info-value allergy">{patient.allergies}</span></div>
-        <div className="info-item"><label className="info-label">Last Visit</label><span className="info-value">{patient.lastAppointment}</span></div>
+        <div className="info-item">
+          <label className="info-label">Blood Group</label>
+          <span className="info-value">{patient.bloodGroup}</span>
+        </div>
+
+        <div className="info-item">
+          <label className="info-label">Allergies</label>
+          <span className="info-value allergy">{patient.allergies}</span>
+        </div>
+
+        <div className="info-item">
+          <label className="info-label">Last Visit</label>
+          <span className="info-value">{patient.lastAppointment}</span>
+        </div>
       </div>
 
       <h4>Consultation Tools</h4>
-      <button className="tool-btn" onClick={onWritePrescription}><FiHeart /> Write Prescription</button>
-      <button className="tool-btn"><FiCalendar /> Book Follow-up</button>
+
+      <button className="tool-btn" onClick={onWritePrescription}>
+        <FiHeart /> Write Prescription
+      </button>
+
+      <button className="tool-btn">
+        <FiCalendar /> Book Follow-up
+      </button>
     </div>
   </div>
 );
