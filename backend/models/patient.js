@@ -74,6 +74,10 @@ const userSchema = new mongoose.Schema({
             default: null,
         },
     },
+    pushSubscription: {
+        type: Object,
+        default: null
+    },
 
     resetCodeExpires: Date,
     refreshtoken: {

@@ -1,57 +1,260 @@
-/* Base layout */
-.settings-container { display:flex; justify-content:center; padding:2rem; background:#f5f7fa; min-height:100vh; }
-.settings-card { background:#fff; padding:2rem; border-radius:16px; max-width:720px; width:100%; box-shadow:0 4px 15px rgba(0,0,0,.1); border:1px solid #e5e7eb; }
-.section-block { border-bottom:1px solid #e5e7eb; padding-bottom:1.5rem; margin-bottom:1.5rem; }
-.section-title { font-size:1.25rem; font-weight:700; margin-bottom:1rem; color:#0f172a; }
-.row-item { display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:1rem; }
-.label { font-size:.9rem; color:#6b7280; }
-.hint { font-size:.85rem; color:#64748b; margin:.25rem 0 .5rem; }
-.value { font-size:1rem; font-weight:500; color:#111827; }
-
-/* Buttons */
-.btn-secondary { background:#eef2f7; color:#0f172a; border-radius:10px; padding:.5rem 1rem; font-size:.9rem; border:1px solid #e2e8f0; cursor:pointer; transition:all .2s ease; }
-.btn-secondary:hover { background:#e2e8f0; }
-.btn-primary { background:#2563eb; color:#fff; width:100%; border-radius:10px; padding:.8rem 1rem; font-size:1rem; border:none; cursor:pointer; margin-top:.5rem; transition:background .2s ease; }
-.btn-primary:hover { background:#1d4ed8; }
-
-/* Groups */
-.setting-group { margin-bottom:1.25rem; }
-.option-group, .checkbox-group { display:flex; gap:1rem; flex-wrap:wrap; margin-top:.5rem; }
-
-/* Number inputs */
-.number-group { display:grid; grid-template-columns: repeat(3, minmax(120px, 1fr)); gap:1rem; margin-top:.5rem; }
-.num-field { display:flex; flex-direction:column; gap:.35rem; }
-.num-field span { font-size:.85rem; color:#475569; }
-.num-field input[type="number"] { appearance:textfield; padding:.65rem .75rem; border:1px solid #d1d5db; border-radius:10px; font-size:.95rem; background:#f9fafb; transition:border-color .15s ease, box-shadow .15s ease; }
-.num-field input[type="number"]:focus { outline:none; border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,.15); background:#fff; }
-
-/* WhatsApp */
-.whatsapp-label { display:flex; align-items:center; gap:.4rem; }
-.whatsapp-icon { color:#25D366; }
-
-/* Toggle (optional availability switch) */
-.switch { position:relative; display:inline-block; width:46px; height:26px; }
-.switch input { opacity:0; width:0; height:0; }
-.slider { position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background:#e5e7eb; transition:.2s; border-radius:26px; }
-.slider:before { position:absolute; content:""; height:20px; width:20px; left:3px; bottom:3px; background:#fff; transition:.2s; border-radius:50%; box-shadow:0 1px 3px rgba(0,0,0,.2); }
-.switch input:checked + .slider { background:#2563eb; }
-.switch input:checked + .slider:before { transform:translateX(20px); }
-
-/* Disabled reminders when no channel selected */
-.disabled-block { opacity:.45; pointer-events:none; filter:saturate(0.6); }
-
-/* Responsive */
-@media (max-width: 900px) { .settings-card { padding:1.5rem; } }
-@media (max-width: 768px) {
-  .row-item { flex-direction:column; align-items:flex-start; }
-  .number-group { grid-template-columns: repeat(2, minmax(120px, 1fr)); }
+/* === Page Container === */
+.settings-container {
+  display: flex;
+  flex-direction: column;
+  align-items:center;
+  padding: 2rem 1rem;
+  background-color: #f7f9fc;
+  min-height: 90vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
-@media (max-width: 480px) {
-  .settings-container { padding:1rem; }
-  .section-title { font-size:1.15rem; }
-  .label { font-size:.85rem; }
-  .value { font-size:.95rem; }
-  .option-group, .checkbox-group { flex-direction:column; gap:.75rem; }
-  .number-group { grid-template-columns: 1fr; }
-  .btn-secondary { width:100%; }
+
+.backbutton{
+  width:100%;
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* === Main Card === */
+.settings-card {
+  width: 100%;
+  max-width: 800px;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.settings-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #333;
+  margin: 0;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* === Sections === */
+.settings-section {
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+.settings-section:last-of-type {
+  border-bottom: none;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.section-description {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: -0.25rem;
+  margin-bottom: 1.5rem;
+}
+
+/* === Account Section Rows === */
+.row-item {
+  padding: 0.5rem 0;
+}
+.label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #555;
+  margin: 0 0 0.25rem 0;
+}
+.value {
+  font-size: 1rem;
+  color: #111;
+  margin: 0;
+}
+
+/* === Channel List === */
+.channel-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.channel-toggle {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fdfdfd;
+}
+
+.channel-icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1.25rem;
+}
+.channel-icon.push { background-color: #e6f2ff; color: #007bff; }
+.channel-icon.email { background-color: #eef1f5; color: #495057; }
+.channel-icon.sms { background-color: #fff4e6; color: #fd7e14; }
+.channel-icon.whatsapp { background-color: #e6fff0; color: #20c997; }
+
+.channel-info {
+  flex: 1;
+}
+.channel-info label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  display: block;
+}
+.channel-info span {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+.channel-action {
+  margin-left: auto;
+}
+
+/* === Modern Toggle Switch === */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 51px;
+  height: 31px;
+}
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 34px;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 23px;
+  width: 23px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+input:checked + .slider {
+  background-color: #007bff;
+}
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+/* === Push Permission Buttons === */
+.btn-enable {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.btn-enable:hover {
+  background-color: #0056b3;
+}
+.btn-enable:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+.permission-denied {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #dc3545;
+}
+
+/* === Reminder Section === */
+.disabled-section {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.option-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.radio-button {
+  display: block;
+  position: relative;
+}
+.radio-button input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.radio-label {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.radio-button input:checked + .radio-label {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+  font-weight: 600;
+}
+.radio-button input:disabled + .radio-label {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+}
+
+/* === Footer Button === */
+.settings-footer {
+  padding: 1.5rem 2rem;
+  background-color: #f8f9fa;
+  display: flex;
+  justify-content: flex-end;
+}
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.btn-primary:hover {
+  background-color: #0056b3;
+}
+.btn-primary:disabled {
+  background-color: #ccc;
 }

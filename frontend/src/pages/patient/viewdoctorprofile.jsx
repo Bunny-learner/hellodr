@@ -2,25 +2,24 @@ import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { PatientContext } from "./patientcontext";
 import HeartLoader from "../../components/Loaders/heartloader";
-// We will render reviews directly, so ReviewCard component is no longer needed here
-// import ReviewCard from "../../components/reviewcard"; 
 import Map from "../../components/map";
-import "../../css/doctorprofile.css"; // We will use this new CSS file
+import "../../css/viewdoctorprofile.css"; // This will now use the new CSS file below
 
-// Simple Star Rating component (you can place this in another file if you want)
+// Simple Star Rating component
 const StarRating = ({ rating }) => {
   const stars = [];
   const roundedRating = Math.round(rating * 2) / 2; // Round to nearest 0.5
   for (let i = 1; i <= 5; i++) {
     if (i <= roundedRating) {
-      stars.push(<span key={i} className="star filled">★</span>); // Full star
+      stars.push(<span key={i} className="vdp-star vdp-filled">★</span>);
     } else if (i - 0.5 === roundedRating) {
-      stars.push(<span key={i} className="star half">★</span>); // Half star (if you want)
+      // Assuming you might want a half-star style
+      stars.push(<span key={i} className="vdp-star vdp-half">★</span>); 
     } else {
-      stars.push(<span key={i} className="star empty">☆</span>); // Empty star
+      stars.push(<span key={i} className="vdp-star vdp-empty">☆</span>);
     }
   }
-  return <div className="star-rating">{stars}</div>;
+  return <div className="vdp-star-rating">{stars}</div>;
 };
 
 
@@ -33,7 +32,7 @@ export default function ViewDoctorProfile() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showAllReviews, setShowAllReviews] = useState(false); // State for Read More/Less
+  const [showAllReviews, setShowAllReviews] = useState(false);
 
   async function getReviews(id) {
     try {
@@ -68,7 +67,7 @@ export default function ViewDoctorProfile() {
       setError("Doctor not found");
       setLoading(false);
     }
-  }, [doctors, doctorId]);
+  }, [doctors, doctorId, navigate]); // Added navigate to dependency array
 
   if (loading) return <HeartLoader />;
   if (error) return <p style={{ color: "red", textAlign: "center" }}>{error}</p>;
@@ -77,38 +76,37 @@ export default function ViewDoctorProfile() {
   const gotoAppointment = () =>
     navigate(`/patient/appointment/${doctorProfile._id}`);
 
-  // Logic for Read More/Less
   const visibleReviews = showAllReviews ? reviews : reviews.slice(0, 3);
   const toggleShowAllReviews = () => setShowAllReviews(!showAllReviews);
 
   return (
-    <div className="profile-page-container">
-      <button onClick={() => navigate(-1)} className="back-button">
+    <div className="vdp-page-container">
+      <button onClick={() => navigate(-1)} className="vdp-back-button">
         &larr; Back
       </button>
 
-      <div className="profile-layout">
+      <div className="vdp-layout">
         {/* ===== MAIN CONTENT (LEFT COLUMN) ===== */}
-        <div className="profile-main">
+        <div className="vdp-main">
           
           {/* --- Doctor Intro Card --- */}
-          <div className="profile-card doctor-intro-card">
+          <div className="vdp-card vdp-intro-card">
             <img
               src={doctorProfile.profilePic}
               alt={doctorProfile.name}
-              className="doctor-intro-avatar"
+              className="vdp-intro-avatar"
             />
-            <div className="doctor-intro-details">
-              <h1 className="doctor-name">Dr. {doctorProfile.name}</h1>
-              <p className="doctor-sub">
+            <div className="vdp-intro-details">
+              <h1 className="vdp-doctor-name">Dr. {doctorProfile.name}</h1>
+              <p className="vdp-doctor-sub">
                 {doctorProfile.speciality}
               </p>
-              <div className="doctor-stats">
+              <div className="vdp-doctor-stats">
                 <span>⭐ {doctorProfile.rating || "N/A"}</span>
                 <span>•</span>
                 <span>{doctorProfile.experience} yrs experience</span>
               </div>
-              <p className="doctor-languages">
+              <p className="vdp-doctor-languages">
                 Speaks: {doctorProfile.languages?.join(", ") || "N/A"}
               </p>
             </div>
@@ -116,19 +114,19 @@ export default function ViewDoctorProfile() {
 
           {/* --- About Doctor Card --- */}
           {doctorProfile.bio && (
-            <div className="profile-card">
-              <h2 className="profile-card-title">About Dr. {doctorProfile.name}</h2>
-              <p className="doctor-bio">{doctorProfile.bio}</p>
+            <div className="vdp-card">
+              <h2 className="vdp-card-title">About Dr. {doctorProfile.name}</h2>
+              <p className="vdp-doctor-bio">{doctorProfile.bio}</p>
             </div>
           )}
 
           {/* --- Specializations (Conditions Treated) Card --- */}
           {doctorProfile.conditions?.length > 0 && (
-            <div className="profile-card">
-              <h2 className="profile-card-title">Conditions Treated</h2>
-              <div className="chip-list">
+            <div className="vdp-card">
+              <h2 className="vdp-card-title">Conditions Treated</h2>
+              <div className="vdp-chip-list">
                 {doctorProfile.conditions.map((condition, index) => (
-                  <span key={index} className="chip">
+                  <span key={index} className="vdp-chip">
                     {condition}
                   </span>
                 ))}
@@ -138,11 +136,11 @@ export default function ViewDoctorProfile() {
 
           {/* --- Past Treatments Card --- */}
           {doctorProfile.pasttreatments?.length > 0 && (
-            <div className="profile-card">
-              <h2 className="profile-card-title">Past Treatments</h2>
-              <div className="chip-list">
+            <div className="vdp-card">
+              <h2 className="vdp-card-title">Past Treatments</h2>
+              <div className="vdp-chip-list">
                 {doctorProfile.pasttreatments.map((treatment, index) => (
-                  <span key={index} className="chip">
+                  <span key={index} className="vdp-chip">
                     {treatment}
                   </span>
                 ))}
@@ -152,34 +150,33 @@ export default function ViewDoctorProfile() {
 
           {/* --- Clinic Location Card --- */}
           {doctorProfile.address && (
-            <div className="profile-card">
-              <h2 className="profile-card-title">Clinic Location</h2>
+            <div className="vdp-card">
+              <h2 className="vdp-card-title">Clinic Location</h2>
               <p>{doctorProfile.address}</p>
-              <div className="map-container">
+              <div className="vdp-map-container">
                 <Map address={doctorProfile.address} />
               </div>
             </div>
           )}
 
           {/* --- Reviews Card --- */}
-          <div className="profile-card">
-            <h2 className="profile-card-title">Patient Reviews</h2>
+          <div className="vdp-card">
+            <h2 className="vdp-card-title">Patient Reviews</h2>
             {reviews.length === 0 ? (
               <p>No reviews available for this doctor yet.</p>
             ) : (
-              <div className="review-list">
+              <div className="vdp-review-list">
                 {visibleReviews.map((review) => (
-                  <div key={review._id} className="review-item">
-                    <div className="review-header">
-                      {/* Assuming review object has patientName. Adjust if needed. */}
-                      <strong className="review-patient-name">{review.patient.name || "Anonymous"}</strong>
+                  <div key={review._id} className="vdp-review-item">
+                    <div className="vdp-review-header">
+                      <strong className="vdp-review-patient-name">{review.patient.name || "Anonymous"}</strong>
                       <StarRating rating={review.rating} />
                     </div>
-                    <p className="review-comment">{review.review}</p>
+                    <p className="vdp-review-comment">{review.review}</p>
                   </div>
                 ))}
                 {reviews.length > 3 && (
-                  <button onClick={toggleShowAllReviews} className="read-more-btn">
+                  <button onClick={toggleShowAllReviews} className="vdp-read-more-btn">
                     {showAllReviews ? "Read Less" : `Read ${reviews.length - 3} More Reviews`}
                   </button>
                 )}
@@ -189,23 +186,23 @@ export default function ViewDoctorProfile() {
         </div>
 
         {/* ===== SIDEBAR (RIGHT COLUMN) ===== */}
-        <div className="profile-sidebar">
+        <div className="vdp-sidebar">
           
           {/* --- Booking Card --- */}
-          <div className="profile-card booking-card">
-            <div className="price-display">
+          <div className="vdp-card vdp-booking-card">
+            <div className="vdp-price-display">
               <span>Consultation Fee</span>
               <strong>₹{doctorProfile.fee}</strong>
             </div>
-            <button className="btn-primary" onClick={gotoAppointment}>
+            <button className="vdp-btn-primary" onClick={gotoAppointment}>
               Book Appointment
             </button>
           </div>
 
           {/* --- Additional Info Card --- */}
-          <div className="profile-card">
-            <h2 className="profile-card-title">More Info</h2>
-            <ul className="info-list">
+          <div className="vdp-card">
+            <h2 className="vdp-card-title">More Info</h2>
+            <ul className="vdp-info-list">
               <li>
                 <strong>Hospital</strong>
                 <span>{doctorProfile.hospital || "-"}</span>

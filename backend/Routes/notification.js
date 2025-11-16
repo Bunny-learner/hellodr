@@ -9,5 +9,4 @@ notify.post('/markallread',authJWT,markallread)
 notify.get('/getallnotify',authJWT,get_allnotifications)
 notify.delete('/deletenotify/:notificationId',authJWT,delete_notification)
 notify.get('/markread/:notificationId',authJWT,mark_read)
-
 export default notify
