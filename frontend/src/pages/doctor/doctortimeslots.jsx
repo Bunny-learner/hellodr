@@ -1,3 +1,5 @@
+// === DoctorTimeSlots.jsx (FULL UPDATED UI + LOGIC SAFE) === //
+
 import React, { useState, useEffect, useMemo } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import {
@@ -18,7 +20,15 @@ import HeartLoader from '../../components/Loaders/heartloader';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 
-const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const DAYS_OF_WEEK = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday'
+];
 
 const formatDisplayTime = (timeStr) => {
     if (!timeStr) return "";
@@ -44,7 +54,7 @@ export default function DoctorTimeSlots() {
     const [editSlotId, setEditSlotId] = useState(null);
     const [editedLimit, setEditedLimit] = useState("");
 
-    const selectedDayName = DAYS_OF_WEEK[selectedDate.getDay() - 1] || "Monday";
+    const selectedDayName = DAYS_OF_WEEK[selectedDate.getDay()];  // FIXED DAY BUG
 
     const fetchTimeSlots = async () => {
         setIsLoading(true);
@@ -61,20 +71,13 @@ export default function DoctorTimeSlots() {
     useEffect(() => { fetchTimeSlots(); }, []);
 
     const filteredSlots = useMemo(() =>
-    allTimeSlots.filter(slot => {
-        if (slot.Day !== selectedDayName) return false;
-
-        if (filterMode === "all") return true;
-        if (filterMode === "online") return slot.mode === "online";
-        if (filterMode === "offline") return slot.mode === "offline";
-        if (filterMode === "available") return slot.status === "available";
-        if (filterMode === "cancelled") return slot.status === "cancelled";
-
-        return true;
-    }),
-    [allTimeSlots, selectedDayName, filterMode]
-);
-
+        allTimeSlots.filter(slot => {
+            if (slot.Day !== selectedDayName) return false;
+            if (filterMode === "all") return true;
+            return slot[filterMode] || slot.mode === filterMode || slot.status === filterMode;
+        }),
+        [allTimeSlots, selectedDayName, filterMode]
+    );
 
     const [formData, setFormData] = useState({
         StartTime: "",
@@ -87,7 +90,9 @@ export default function DoctorTimeSlots() {
     });
 
     const handleFormChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
-    const resetForm = () => setFormData({ StartTime: "", EndTime: "", fee: "", mode: formData.mode, duration: "", slots: "", limit: "" });
+
+    const resetForm = () =>
+        setFormData({ StartTime: "", EndTime: "", fee: "", mode: formData.mode, duration: "", slots: "", limit: "" });
 
     const handleAddSlot = async (e) => {
         e.preventDefault();
@@ -112,8 +117,7 @@ export default function DoctorTimeSlots() {
                     })
                 });
 
-                toast.success("Offline slot added ✅");
-
+                toast.success("Offline slot added");
             } else {
                 if (!formData.StartTime || !formData.duration || !formData.slots || !formData.fee)
                     return toast.error("Fill all online fields.");
@@ -141,7 +145,7 @@ export default function DoctorTimeSlots() {
                     current = end;
                 }
 
-                toast.success(`${formData.slots} online slots created ✅`);
+                toast.success(`${formData.slots} online slots created`);
             }
 
             resetForm();
@@ -165,40 +169,45 @@ export default function DoctorTimeSlots() {
         if (slot.booked > 0)
             return toast.error("Cannot cancel. Patients already booked.");
         updateSlot({ timeslotID: slot._id, status: "cancelled" });
-        toast.success("Slot cancelled.");
+        toast.success("Slot cancelled");
     };
 
     const reactivateSlot = (slot) => {
         updateSlot({ timeslotID: slot._id, status: "available" });
-        toast.success("Slot reactivated.");
+        toast.success("Slot reactivated");
     };
 
     const toggleMode = (slot) => {
         updateSlot({ timeslotID: slot._id, mode: slot.mode === "online" ? "offline" : "online" });
-        toast.success("Mode changed.");
+        toast.success("Mode changed");
     };
 
     const saveLimit = (slot) => {
         if (!editedLimit || editedLimit < slot.booked)
-            return toast.error("Limit must be greater than or equal to booked.");
+            return toast.error("Limit must be ≥ booked");
         updateSlot({ timeslotID: slot._id, limit: Number(editedLimit) });
-        toast.success("Limit updated ✅");
+        toast.success("Limit updated");
         setEditSlotId(null);
     };
 
     return (
         <>
             <Toaster position="top-right" />
+
             <section className="timeslots-page">
 
-                {/* LEFT FORM */}
+                {/* === LEFT ADD SLOT FORM === */}
                 <div className="timeslot-form-card">
-                    <h2>Add Time Slot</h2>
 
-                    <div className="form-group">
-                        <label><FiCalendar /> Select Date</label>
-                        <Calendar value={selectedDate} onChange={setSelectedDate} className="calendar-ui" />
-                    </div>
+                    <h2 className="form-title">Add Time Slot</h2>
+
+                    <label className="label-title"><FiCalendar /> Select Date</label>
+                    <Calendar
+                        value={selectedDate}
+                        onChange={setSelectedDate}
+                        minDate={new Date()}    // DISABLE PAST DATES
+                        className="calendar-styled"
+                    />
 
                     <div className="form-group">
                         <label>Day</label>
@@ -206,8 +215,8 @@ export default function DoctorTimeSlots() {
                     </div>
 
                     <div className="mode-toggle">
-                        <button type="button" className={formData.mode === "offline" ? "active" : ""} onClick={() => setFormData({ ...formData, mode: "offline" })}>Offline</button>
-                        <button type="button" className={formData.mode === "online" ? "active" : ""} onClick={() => setFormData({ ...formData, mode: "online" })}>Online</button>
+                        <button className={formData.mode === "offline" ? "active" : ""} onClick={() => setFormData({ ...formData, mode: "offline" })}>Offline</button>
+                        <button className={formData.mode === "online" ? "active" : ""} onClick={() => setFormData({ ...formData, mode: "online" })}>Online</button>
                     </div>
 
                     <form onSubmit={handleAddSlot}>
@@ -251,61 +260,36 @@ export default function DoctorTimeSlots() {
                     </form>
                 </div>
 
-                {/* RIGHT SCHEDULE */}
+                {/* === RIGHT SIDE — SCHEDULE PANEL === */}
                 <div className="schedule-container">
+
                     <div className="schedule-header">
                         <h2>{selectedDayName} Schedule</h2>
 
                         <div className="filter-bar">
-                            <button
-                                className={filterMode === "all" ? "filter-active" : ""}
-                                onClick={() => setFilterMode("all")}
-                            >
-                                All
-                            </button>
-
-                            <button
-                                className={filterMode === "online" ? "filter-active" : ""}
-                                onClick={() => setFilterMode("online")}
-                            >
-                                Online
-                            </button>
-
-                            <button
-                                className={filterMode === "offline" ? "filter-active" : ""}
-                                onClick={() => setFilterMode("offline")}
-                            >
-                                Offline
-                            </button>
-
-                            <button
-                                className={filterMode === "available" ? "filter-active" : ""}
-                                onClick={() => setFilterMode("available")}
-                            >
-                                Available
-                            </button>
-
-                            <button
-                                className={filterMode === "cancelled" ? "filter-active" : ""}
-                                onClick={() => setFilterMode("cancelled")}
-                            >
-                                Cancelled
-                            </button>
+                            {["all", "online", "offline", "available", "cancelled"].map(mode => (
+                                <button
+                                    key={mode}
+                                    className={filterMode === mode ? "filter-active" : ""}
+                                    onClick={() => setFilterMode(mode)}
+                                >
+                                    {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                                </button>
+                            ))}
                         </div>
                     </div>
-
 
                     {isLoading ? (
                         <div className="loader-container"><HeartLoader /></div>
                     ) : (
                         <div className="slots-grid">
                             {filteredSlots.length ? filteredSlots.map(slot => (
-                                <div key={slot._id} className={`slot-card ${slot.status === "cancelled" ? "cancelled" : ""}`}>
+                                <div key={slot._id} className={`slot-card ${slot.status}`}>
 
-                                    {slot.status === "cancelled" && <span className="cancel-badge">Cancelled</span>}
+                                    {slot.status === "cancelled" && <span className="badge-cancel">Cancelled</span>}
 
-                                    <p className="time">{formatDisplayTime(slot.StartTime)} - {formatDisplayTime(slot.EndTime)}</p>
-                                    <p className="fee">₹{slot.fee}</p>
+                                    <p className="slot-time">{formatDisplayTime(slot.StartTime)} - {formatDisplayTime(slot.EndTime)}</p>
+                                    <p className="slot-fee">₹{slot.fee}</p>
 
                                     <div className="limit-edit-row">
                                         {editSlotId === slot._id ? (
@@ -323,7 +307,7 @@ export default function DoctorTimeSlots() {
                                             </>
                                         ) : (
                                             <>
-                                                <p className="book">Booked: {slot.booked || 0} / {slot.limit || 1}</p>
+                                                <p className="slot-booking">Booked: {slot.booked || 0} / {slot.limit || 1}</p>
                                                 <button className="edit-limit-btn" onClick={() => { setEditSlotId(slot._id); setEditedLimit(slot.limit || 1); }}>
                                                     <FiEdit2 />
                                                 </button>
@@ -333,8 +317,7 @@ export default function DoctorTimeSlots() {
 
                                     <div className="slot-footer">
                                         <button className="mode-btn" disabled={slot.status === "cancelled"} onClick={() => toggleMode(slot)}>
-                                            {slot.mode === "online" ? <FiWifi /> : <FiWifiOff />}
-                                            {slot.mode}
+                                            {slot.mode === "online" ? <FiWifi /> : <FiWifiOff />} {slot.mode}
                                         </button>
 
                                         {slot.status === "available" ? (
@@ -348,10 +331,11 @@ export default function DoctorTimeSlots() {
                                         )}
                                     </div>
                                 </div>
-                            )) : <p className="no-slots">No Slots.</p>}
+                            )) : <p className="no-slots">No Slots Found</p>}
                         </div>
                     )}
                 </div>
+
             </section>
         </>
     );
