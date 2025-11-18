@@ -9,7 +9,7 @@ import {
 } from 'react-icons/fa';
 import toast, { Toaster } from 'react-hot-toast';
 import { IoMdSettings, IoMdHelpCircleOutline } from 'react-icons/io';
-import "../../css/patientprofile.css";
+import "../../css/doctorprofile.css";
 import Bubbles from '../../components/Loaders/bubbles';
 
 export default function DoctorProfile() {

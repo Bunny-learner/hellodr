@@ -1,22 +1,71 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FiSearch, FiChevronRight } from "react-icons/fi";
+import { FiSearch, FiChevronRight, FiChevronLeft } from "react-icons/fi";
 import { PatientContext } from "./patientcontext";
 import PopularDoctorCard from "./PopularDoctorCard";
 import FeaturedDoctorCard from "./FeaturedDoctorCard";
 import CategoryCard from "./CategoryCard";
 import "../../css/patienthome.css";
-import Logo from "../logo"
+import Logo from "../logo";
+
+// Dummy testimonial data
+const testimonials = [
+  {
+    id: 1,
+    name: "Sarah Johnson",
+    role: "Patient",
+    rating: 5,
+    text: "HelloDr made it incredibly easy to find a specialist for my condition. The online consultation saved me hours of travel time, and the doctor was professional and attentive.",
+  },
+  {
+    id: 2,
+    name: "Michael Chen",
+    role: "Patient",
+    rating: 5,
+    text: "I was skeptical about online consultations at first, but HelloDr changed my mind completely. The video quality was excellent and my doctor provided comprehensive care from the comfort of my home.",
+  },
+  {
+    id: 3,
+    name: "Priya Sharma",
+    role: "Patient",
+    rating: 5,
+    text: "Booking appointments has never been easier! I can see doctor availability in real-time and choose what works best for me. The platform truly bridges the gap between patients and doctors.",
+  },
+  {
+    id: 4,
+    name: "David Williams",
+    role: "Patient",
+    rating: 5,
+    text: "As someone with a busy schedule, HelloDr's chat consultation feature is a lifesaver. I got quick medical advice without disrupting my workday. Highly recommended!",
+  },
+  {
+    id: 5,
+    name: "Aisha Patel",
+    role: "Patient",
+    rating: 4,
+    text: "The platform is user-friendly and secure. I appreciate being able to access my medical history and prescriptions all in one place. It's modern healthcare done right.",
+  },
+];
 
 export default function PatientHome() {
   const { doctors } = useContext(PatientContext) || [];
   const [text, setText] = useState("");
   const [showing, setShowing] = useState(false);
   const [filteredDoctors, setFilteredDoctors] = useState(doctors);
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
   useEffect(() => {
     setFilteredDoctors(doctors);
   }, [doctors]);
+
+  // Auto-slide testimonials every 5 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+    }, 5000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   // derive featured & popular whenever doctors change
   const [popularDoctors, setPopularDoctors] = useState([]);
@@ -59,6 +108,14 @@ export default function PatientHome() {
     });
     setFilteredDoctors(res);
   }
+
+  const nextTestimonial = () => {
+    setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+  };
+
+  const prevTestimonial = () => {
+    setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+  };
 
   return (
     <div className="ph-page">
@@ -125,7 +182,6 @@ export default function PatientHome() {
             <CategoryCard title="Genetics" image="/genetics.jpg" />
           </div>
         </section>
-
       )}
 
       {/* POPULAR */}
@@ -183,13 +239,89 @@ export default function PatientHome() {
         </section>
       )}
 
+      {/* TESTIMONIALS */}
+      {!showing && (
+        <section className="ph-section testimonial-section">
+          <div className="ph-section-header">
+            <h2>What Patients Say About Us</h2>
+          </div>
+
+          <div className="testimonial-container">
+            <button 
+              className="testimonial-nav testimonial-prev" 
+              onClick={prevTestimonial}
+              aria-label="Previous testimonial"
+            >
+              <FiChevronLeft />
+            </button>
+
+            <div className="testimonial-slider">
+              {testimonials.map((testimonial, index) => (
+                <div
+                  key={testimonial.id}
+                  className={`testimonial-card ${index === currentTestimonial ? 'active' : ''}`}
+                  style={{
+                    transform: `translateX(${(index - currentTestimonial) * 100}%)`,
+                  }}
+                >
+                  <div className="testimonial-quote">"</div>
+                  <p className="testimonial-text">{testimonial.text}</p>
+                  
+                  <div className="testimonial-rating">
+                    {[...Array(5)].map((_, i) => (
+                      <span 
+                        key={i} 
+                        className={`star ${i < testimonial.rating ? 'filled' : ''}`}
+                      >
+                        ★
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="testimonial-author">
+                    <div className="testimonial-avatar">
+                      <div className="avatar-placeholder">
+                        {testimonial.name.charAt(0)}
+                      </div>
+                    </div>
+                    <div className="testimonial-info">
+                      <h4 className="testimonial-name">{testimonial.name}</h4>
+                      <p className="testimonial-role">{testimonial.role}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button 
+              className="testimonial-nav testimonial-next" 
+              onClick={nextTestimonial}
+              aria-label="Next testimonial"
+            >
+              <FiChevronRight />
+            </button>
+          </div>
+
+          <div className="testimonial-dots">
+            {testimonials.map((_, index) => (
+              <button
+                key={index}
+                className={`dot ${index === currentTestimonial ? 'active' : ''}`}
+                onClick={() => setCurrentTestimonial(index)}
+                aria-label={`Go to testimonial ${index + 1}`}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* FOOTER */}
       <footer className="footer">
         <div className="footer-inner">
-
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <div >
-              <Logo size="40"/>
+              <div>
+                <Logo size="40"/>
               </div>
               <h3 className="logo-footer">Hello Dr</h3>
             </div>
@@ -200,15 +332,13 @@ export default function PatientHome() {
 
           <div>
             <h4 className="footer-title">Support</h4>
-
             <ul className="footer-links">
-              <li><button onClick={() => navigate("/help-center")}>Help Center</button></li>
-              <li><button onClick={() => navigate("/privacy-policy")}>Privacy Policy</button></li>
-              <li><button onClick={() => navigate("/coming-soon")}>Terms of Service</button></li>
-              <li><button onClick={() => navigate("/coming-soon")}>Contact Us</button></li>
+              <li><button onClick={() => console.log("Navigate to help center")}>Help Center</button></li>
+              <li><button onClick={() => console.log("Navigate to privacy policy")}>Privacy Policy</button></li>
+              <li><button onClick={() => console.log("Navigate to terms")}>Terms of Service</button></li>
+              <li><button onClick={() => console.log("Navigate to contact")}>Contact Us</button></li>
             </ul>
           </div>
-
         </div>
       </footer>
     </div>
