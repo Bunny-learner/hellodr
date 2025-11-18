@@ -461,109 +461,163 @@ const logout = asynchandler(async (req, res) => {
 
 })
 
+
+
 const filterdoctors = asynchandler(async (req, res) => {
-    try {
-        const filters = req.body.filters || {};
-        const {
-            languages = [],
-            fees = [],
-            ratings = [],
-            experiences = [],
-            specialities = [],
-            availability = [],
-            consultation = [],
-            gender = [],
-            sortBy = ""
-        } = filters;
+  try {
+    // -------------------- INPUTS --------------------
+    const filters = req.body.filters || {};
+    const locationData = req.body.locationData || {};
 
+    const {
+      languages = [],
+      fees = [],
+      ratings = [],
+      experiences = [],
+      specialities = [],
+      availability = [],
+      consultation = [],
+      gender = [],
+      sortBy = ""
+    } = filters;
 
+    // Extract location details
+    const area = locationData.area || "";
+    const city = locationData.city || "";
+    const pincode = locationData.pincode || "";
 
+    const andConditions = [];
 
-        const andConditions = [];
+    // -------------------- FILTERS --------------------
 
-
-        console.log(filters)
-
-        if (languages.length > 0) {
-            andConditions.push({ languages: { $in: languages } });
-        }
-
-
-        if (specialities.length > 0) {
-            andConditions.push({ speciality: { $in: specialities } });
-        }
-
-
-        if (fees.length > 0) {
-            const feeConditions = [];
-            for (const feeRange of fees) {
-                if (feeRange.includes("-")) {
-                    const [min, max] = feeRange.split("-").map(Number);
-                    feeConditions.push({ fee: { $gte: min, $lte: max } });
-                } else if (feeRange === "<500") feeConditions.push({ fee: { $lt: 500 } });
-                else if (feeRange === "500-1000") feeConditions.push({ fee: { $gte: 500, $lte: 1000 } });
-                else if (feeRange === ">1000") feeConditions.push({ fee: { $gt: 1000 } });
-            }
-            if (feeConditions.length > 0) andConditions.push({ $or: feeConditions });
-        }
-
-
-        if (ratings.length > 0) {
-            const minRating = Math.min(...ratings.map(r => parseFloat(r.replace(/[^\d.]/g, ""))));
-            andConditions.push({ rating: { $gte: minRating } });
-        }
-
-
-        if (experiences.length > 0) {
-            const minExp = Math.min(
-                ...experiences.map(exp => parseInt(exp.replace(/\D/g, "")) || 0)
-            );
-            andConditions.push({ experience: { $gte: minExp } });
-        }
-
-
-        if (availability.length > 0) {
-            andConditions.push({ availability: { $in: availability } });
-        }
-
-
-        if (consultation.length > 0) {
-            andConditions.push({ consultation: { $in: consultation } });
-        }
-
-
-        if (gender.length > 0) {
-            andConditions.push({ gender: { $in: gender } });
-        }
-
-
-        const query = andConditions.length > 0 ? { $and: andConditions } : {};
-
-
-        let sortOption = {};
-        switch (sortBy.toLowerCase()) {
-            case "fee":
-                sortOption = { fee: 1 }; // ascending
-                break;
-            case "experience":
-                sortOption = { experience: -1 }; // descending
-                break;
-            case "rating":
-                sortOption = { rating: -1 }; // descending
-                break;
-            default:
-                sortOption = {};
-        }
-
-
-        const doctors = await Doctor.find(query).sort(sortOption);
-
-        res.status(200).json({ doctors });
-    } catch (err) {
-        console.error(" Filter Doctors Error:", err);
-        res.status(500).json({ message: "Server error" });
+    if (languages.length > 0) {
+      andConditions.push({ languages: { $in: languages } });
     }
+
+    if (specialities.length > 0) {
+      andConditions.push({ speciality: { $in: specialities } });
+    }
+
+    if (fees.length > 0) {
+      const feeConditions = [];
+
+      for (const feeRange of fees) {
+        if (feeRange.includes("-")) {
+          const [min, max] = feeRange.split("-").map(Number);
+          feeConditions.push({ fee: { $gte: min, $lte: max } });
+        } else if (feeRange === "<500") feeConditions.push({ fee: { $lt: 500 } });
+        else if (feeRange === "500-1000") feeConditions.push({ fee: { $gte: 500, $lte: 1000 } });
+        else if (feeRange === ">1000") feeConditions.push({ fee: { $gt: 1000 } });
+      }
+
+      if (feeConditions.length > 0) andConditions.push({ $or: feeConditions });
+    }
+
+    if (ratings.length > 0) {
+      const minRating = Math.min(
+        ...ratings.map(r => parseFloat(r.replace(/[^\d.]/g, "")))
+      );
+      andConditions.push({ rating: { $gte: minRating } });
+    }
+
+    if (experiences.length > 0) {
+      const minExp = Math.min(
+        ...experiences.map(exp => parseInt(exp.replace(/\D/g, "")) || 0)
+      );
+      andConditions.push({ experience: { $gte: minExp } });
+    }
+
+    if (availability.length > 0) {
+      andConditions.push({ availability: { $in: availability } });
+    }
+
+    if (consultation.length > 0) {
+      andConditions.push({ consultation: { $in: consultation } });
+    }
+
+    if (gender.length > 0) {
+      andConditions.push({ gender: { $in: gender } });
+    }
+
+    // Build main filter query
+    const mainQuery = andConditions.length > 0 ? { $and: andConditions } : {};
+
+    // -------------------- SORTING --------------------
+
+    let sortOption = {};
+    switch (sortBy.toLowerCase()) {
+      case "fee":
+        sortOption = { fee: 1 };
+        break;
+      case "experience":
+        sortOption = { experience: -1 };
+        break;
+      case "rating":
+        sortOption = { rating: -1 };
+        break;
+      default:
+        sortOption = {};
+    }
+
+    // -------------------- LOCATION PRIORITY LOGIC --------------------
+    let doctors = [];
+
+    console.log("📍 Location Data:", locationData);
+
+    if(locationData ==={}){
+
+    const alldoctors=await Doctor.find()
+    return res.status(200).json({ alldoctors });
+
+    }
+
+
+    
+    if (area) {
+      console.log("🟦 Searching by AREA:", area);
+
+      const areaQuery = {
+        ...mainQuery,
+        address: { $regex: area, $options: "i" }
+      };
+
+      doctors = await Doctor.find(areaQuery).sort(sortOption);
+    }
+
+    
+    if (doctors.length === 0 && pincode) {
+      console.log("🟧 No results in area. Searching by PINCODE:", pincode);
+
+      const pincodeQuery = {
+        ...mainQuery,
+        pincode: pincode
+      };
+
+      doctors = await Doctor.find(pincodeQuery).sort(sortOption);
+    }
+
+    
+    if (doctors.length === 0 && city) {
+      console.log("🟩 No results in pincode. Searching by CITY:", city);
+
+      const cityQuery = {
+        ...mainQuery,
+        city: { $regex: city, $options: "i" }
+      };
+
+      doctors = await Doctor.find(cityQuery).sort(sortOption);
+    }
+
+    
+    console.log(" Final doctors count:", doctors.length);
+    return res.status(200).json({ doctors });
+
+  } catch (err) {
+    console.error("❌ Filter Doctors Error:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
 });
+
 
 
 const addreview = asynchandler(async (req, res) => {

@@ -18,6 +18,22 @@ export default function PatientHome() {
     setFilteredDoctors(doctors);
   }, [doctors]);
 
+  const mylocation = () => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          console.log("Latitude:", position.coords.latitude);
+          console.log("Longitude:", position.coords.longitude);
+        },
+        (error) => {
+          console.log("Error getting location:", error);
+        }
+      );
+    } else {
+      console.log("Geolocation not supported");
+    }
+  }
+
   // derive featured & popular whenever doctors change
   const [popularDoctors, setPopularDoctors] = useState([]);
   const [featuredDoctors, setFeaturedDoctors] = useState([]);
@@ -66,26 +82,22 @@ export default function PatientHome() {
       <section className="ph-hero">
         <div className="ph-hero-inner">
           <div className="ph-hero-left">
-            <h1 className="ph-title">Find trusted doctors near you</h1>
+            {/* Updated Commercial Text */}
+            <h1 className="ph-title">Seamless Access to World-Class Healthcare</h1>
             <p className="ph-sub">
-              Book video or in-person consults, view profiles and choose top-rated specialists effortlessly.
+              Experience a new standard of medical excellence. Connect with top-tier specialists and manage your health journey with confidence and ease.
             </p>
 
-            <div className="ph-search">
-              <FiSearch className="ph-search-icon" />
-              <input
-                className="ph-search-input"
-                value={text}
-                onChange={onSearch}
-                placeholder="Search doctors, specialties, hospitals..."
-                aria-label="Search doctors"
-              />
-            </div>
+            {/* Search bar removed here */}
 
             <div className="ph-quick-links">
               <Link to="/patient/getdoctors?video=true" className="ph-chip">Video Consult</Link>
               <Link to="/patient/getdoctors?experience=10" className="ph-chip">Top Experienced</Link>
               <Link to="/patient/getdoctors?insurance=true" className="ph-chip">Accepts Insurance</Link>
+              {/* Added Location Option */}
+              <Link to="/patient/getdoctors" className="ph-chip">
+                 Doctors Near Me
+              </Link>
             </div>
           </div>
 
@@ -119,6 +131,8 @@ export default function PatientHome() {
             <CategoryCard title="Lungs" image="/lungs.jpg" />
             <CategoryCard title="Eye" image="/eye.jpg" />
             <CategoryCard title="Orthopedic" image="/orthopedic.jpg" />
+            <CategoryCard title="ENT" image="/ear.jpg" />
+            <CategoryCard title="Pediatrician" image="/pedia.jpg" />
             <CategoryCard title="Neurology" image="/neruo.jpg" />
             <CategoryCard title="Cardiology" image="/cardio.jpg" />
             <CategoryCard title="General" image="/general.jpg" />
@@ -189,7 +203,7 @@ export default function PatientHome() {
           <div>
             <div className="flex items-center gap-3 mb-4">
               <div >
-              <Logo size="40"/>
+                <Logo size="40"/>
               </div>
               <h3 className="logo-footer">Hello Dr</h3>
             </div>

@@ -212,9 +212,19 @@ export default function ViewDoctorProfile() {
                 <span>{doctorProfile.gender || "-"}</span>
               </li>
               <li>
+                <strong>City</strong>
+                <span>{doctorProfile.city || "-"}</span>
+              </li>
+              <li>
+                <strong>Pincode</strong>
+                <span>{doctorProfile.pincode || "-"}</span>
+              </li>
+              <li>
                 <strong>Email</strong>
                 <span>{doctorProfile.email}</span>
               </li>
+
+               
             </ul>
           </div>
 
