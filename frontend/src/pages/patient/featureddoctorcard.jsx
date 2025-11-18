@@ -1,48 +1,46 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import "../../css/featured.css";
 import { FaStar, FaInfoCircle } from "react-icons/fa";
+import "../../css/patienthome.css";
 
 export default function FeaturedDoctorCard({
   name,
   hospital,
   speciality,
   _id,
-  rating,
-  experience,
-  fee,
-  imgSrc,
+  rating = 0,
+  experience = 0,
+  fee = "N/A",
+  profilePic,
 }) {
+  const img = profilePic || "/images/doctor-placeholder.png";
   return (
-    <div className="featured-doctor-card">
-      <img src={imgSrc} alt={name} className="fphoto" />
+    <article className="card featured-card">
+      <div className="card-left">
+        <img src={img} alt={name} className="card-avatar" onError={(e)=>{ e.target.src='/images/doctor-placeholder.png'}}/>
+      </div>
 
-      <div className="info">
-        <div className="name-row">
-          <h4 className="name">DR. {name}</h4>
-
-          {/* Info icon that redirects to /patient/:id */}
-          <Link to={`/patient/${_id}`} className="info-icon" title="View Profile">
-            <FaInfoCircle size={18} />
+      <div className="card-body">
+        <div className="card-top">
+          <h3 className="card-name">DR. {name}</h3>
+          <Link to={`/patient/${_id}`} className="view" style={{fontSize:"1rem"}}title="View profile">
+            View profile
           </Link>
         </div>
 
-        <p className="speciality">{speciality}</p>
-        <b className="hospital montserrat-bold">{hospital}</b>
+        <p className="card-special">{speciality}</p>
+        <div className="card-hospital">{hospital}</div>
 
-        <div className="details">
-          <span className="rating">
-            <FaStar /> {rating.toFixed(1)}
-          </span>
-          <span className="experience">{experience} yrs exp</span>
+        <div className="card-meta">
+          <div className="meta-item"><FaStar className="star"/> {Number(rating).toFixed(1)}</div>
+          <div className="meta-item">{experience} yrs</div>
+          <div className="meta-item fee">₹{fee} / session</div>
         </div>
-
-        <p className="fee">₹{fee} / session</p>
       </div>
 
-      <Link className="booknow" to={`/patient/appointment/${_id}`}>
-        Book Now
-      </Link>
-    </div>
+      <div className="card-action">
+        <Link to={`/patient/appointment/${_id}`} className="btn btn-primary">Book</Link>
+      </div>
+    </article>
   );
 }

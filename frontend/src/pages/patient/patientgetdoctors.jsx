@@ -7,6 +7,7 @@ import "../../css/patientgetdoctors.css";
 import Bubbles from '../../components/Loaders/bubbles';
 import DoctorFilters from './doctorfilters';
 import { PatientContext } from './patientcontext';
+import Logo from '../logo';
 
 
 
@@ -45,25 +46,28 @@ export default function PatientGetDoctors() {
     console.log(newFilters)
     setFilters(newFilters);
   }, [])
+function searching(event) {
+  const samp = event.target.value.toLowerCase();
+  setText(samp);
+  setCurrentPage(1);
 
-  function searching(event) {
-    const samp = event.target.value.toLowerCase();
-    setText(samp);
-    setCurrentPage(1); // --- NEW: Reset to page 1 on search ---
+  const base = filterdoctors; // always use the latest filtered data
 
-    if (samp.trim() === "") {
-      setshowresults(false);
-      setfilteredDoctors(filterdoctors)
-    } else {
-      setshowresults(true);
-      const temp = filterdoctors.filter(doc =>
-        doc.name.toLowerCase().includes(samp) ||
-        doc.speciality.toLowerCase().includes(samp)
-      );
-      console.log("filtering based on search")
-      setfilteredDoctors(temp);
-    }
+  if (!samp.trim()) {
+    setshowresults(false);
+    setfilteredDoctors(base);
+    return;
   }
+
+  const filtered = base.filter(doc =>
+    doc.name.toLowerCase().includes(samp) ||
+    doc.speciality.toLowerCase().includes(samp)
+  );
+
+  setshowresults(true);
+  setfilteredDoctors(filtered);
+}
+
 useEffect(() => {
   const searchParams = new URLSearchParams(location.search);
   const specialityParam = searchParams.get('speciality');
@@ -84,7 +88,7 @@ useEffect(() => {
     try {
       setLoading(true);
 
-      const res = await fetch("http://localhost:8000/patient/filterdoctors", {
+      const res = await fetch("http://10.125.182.180:8000/patient/filterdoctors", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
@@ -136,21 +140,25 @@ useEffect(() => {
         {/* --- Your existing search bar (unchanged) --- */}
         <div className="navbar-center">
           <div className="navbar-search">
-            <svg
+            {/* <svg
               className="filter"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24"
               strokeWidth="1.5"
-              stroke={showfilter ? "#f44336" : "#349ce3"}
-              onClick={toggleFilter}
+             
             >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"
               />
-            </svg>
+            </svg> */}
+            <svg xmlns="http://www.w3.org/2000/svg" id='filter' width="30" fill="none" viewBox="0 0 24 24" stroke-width="1.5"  stroke={showfilter ? "#f44336" : "#349ce3"}
+              onClick={toggleFilter} class="size-6">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
+</svg>
+
             <input
               type="text"
               value={text}
@@ -164,7 +172,7 @@ useEffect(() => {
 
       {!showfilter ? (
         <>
-          <section className="content-section">
+          <section className="content-section pagebg">
             <div className="section-header">
               {/* Updated header to show results count */}
               <h3>{sourceDoctors.length} Doctors Found</h3>
@@ -204,7 +212,6 @@ useEffect(() => {
               )}
             </div>
 
-            {/* --- NEW: Pagination Component --- */}
             {totalPages > 1 && (
               <Pagination
                 totalPages={totalPages}
@@ -216,7 +223,7 @@ useEffect(() => {
           </section>
         </>
       ) : (
-        <DoctorFilters apply={applyfilters} globalfilters={filters} />
+        <DoctorFilters apply={applyfilters} globalfilters={filters} close={() => setshowfilter(false)}   />
       )}
     </>
   )
@@ -243,7 +250,7 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
 
   const pageNumbers = getPageNumbers();
 
-  return (
+  return (<>
     <div className="pagination-container">
       {/* Previous Button */}
       <button
@@ -278,5 +285,36 @@ const Pagination = ({ totalPages, currentPage, onPageChange }) => {
         Next &rarr;
       </button>
     </div>
+    
+<footer className="footer">
+        <div className="footer-inner">
+
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <div >
+              <Logo size="40"/>
+              </div>
+              <h3 className="logo-footer">Hello Dr</h3>
+            </div>
+            <p className="footer-text">
+              Connecting patients with healthcare professionals for better outcomes.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="footer-title">Support</h4>
+
+            <ul className="footer-links">
+              <li><button onClick={() => navigate("/help-center")}>Help Center</button></li>
+              <li><button onClick={() => navigate("/privacy-policy")}>Privacy Policy</button></li>
+              <li><button onClick={() => navigate("/coming-soon")}>Terms of Service</button></li>
+              <li><button onClick={() => navigate("/coming-soon")}>Contact Us</button></li>
+            </ul>
+          </div>
+
+        </div>
+      </footer>
+
+</>
   );
 };

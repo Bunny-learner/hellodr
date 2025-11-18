@@ -248,7 +248,7 @@ export default function SlotBooking() {
             />
             <div className="doctor-main">
               <h1 className="doctor-name">
-                {doctorProfile.name}
+                Dr. {doctorProfile.name}
                 <Link to={`/patient/${doctorId}`} className="info-icon-slot">
                   view profile
                 </Link>

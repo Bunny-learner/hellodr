@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from "react-hook-form";
-import "../../css/signup.css";
+import "../../css/patientsignup.css";
 import Timer from './timer';
 import toast, { Toaster } from 'react-hot-toast';
 import { LinearProgress, Button } from '@mui/material';

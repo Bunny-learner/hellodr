@@ -1,11 +1,9 @@
 /* ---
   bookingform.css
-  Styles for the BookingForm component
-  - Clean, professional, and responsive
+  Clean + fully responsive version
 --- */
 
-/* 1. Root Variables
-   --------------------------------- */
+/* ROOT VARIABLES */
 :root {
     --primary-blue: #2563EB;
     --primary-blue-light: #EFF6FF;
@@ -17,14 +15,14 @@
     --page-bg: #F9FAFB;
     --red: #EF4444;
     --red-light: #FEF2F2;
-    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    --shadow-soft: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.07);
+    --font-family: 'Inter', sans-serif;
+    --shadow-soft: 0 4px 6px -1px rgba(0,0,0,0.07),
+                   0 2px 4px -2px rgba(0,0,0,0.07);
     --border-radius-card: 12px;
     --border-radius-btn: 8px;
 }
 
-/* 2. Page Layout
-   --------------------------------- */
+/* PAGE LAYOUT */
 .booking-form-page {
     font-family: var(--font-family);
     background-color: var(--page-bg);
@@ -32,21 +30,20 @@
     padding: 24px;
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Aligns card to the top */
+    align-items: flex-start;
 }
 
 .book-card {
-    background-color: #fff;
+    background: #fff;
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-card);
     box-shadow: var(--shadow-soft);
     padding: 24px 32px;
     width: 100%;
-    max-width: 800px; /* Wider card for 2-col layout */
+    max-width: 800px;
 }
 
-/* 3. Form Header
-   --------------------------------- */
+/* HEADER */
 .form-header {
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 16px;
@@ -56,7 +53,6 @@
 .form-header h1 {
     font-size: 24px;
     font-weight: 700;
-    color: var(--text-dark);
     margin: 0;
 }
 
@@ -66,32 +62,17 @@
     margin: 4px 0 0 0;
 }
 
-/* 4. Form Body & Sections
-   --------------------------------- */
-.form-section-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--text-dark);
-    margin: 24px 0 16px 0;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--border-color);
-}
-.form-body h3:first-of-type {
-    margin-top: 0;
-}
-
+/* FORM GRID */
 .form-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 24px;
 }
 
-/* 5. Input Groups
-   --------------------------------- */
+/* INPUT GROUP */
 .input-group {
     display: flex;
     flex-direction: column;
-    width: 100%;
 }
 
 .input-group label {
@@ -102,62 +83,60 @@
 }
 
 .dform-input {
-    width: 100%;
     padding: 12px 14px;
     font-size: 14px;
-    font-family: var(--font-family);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-btn);
-    background-color: #fff;
-    transition: all 0.2s ease;
-    -webkit-appearance: none; /* Fix for iOS safari select */
+    background: #fff;
+    transition: 0.2s;
 }
 
 .dform-input:focus {
-    outline: none;
     border-color: var(--primary-blue);
     box-shadow: 0 0 0 2px var(--primary-blue-light);
+    outline: none;
 }
 
-/* Special styling for select to show arrow */
+/* Select Arrow */
 select.dform-input {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236B7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-    background-position: right 0.75rem center;
     background-repeat: no-repeat;
+    background-position: right 0.75rem center;
     background-size: 1.25em;
     padding-right: 2.5rem;
 }
 
+/* Textarea */
 textarea.dform-input {
     resize: vertical;
     min-height: 80px;
 }
 
+/* Full width items */
 .full-width-input {
-    grid-column: 1 / -1; /* Makes element span both columns */
+    grid-column: 1 / -1;
 }
 
-/* 6. Error States
-   --------------------------------- */
+/* ERROR STATE */
 .dform-input.input-error {
     border-color: var(--red);
 }
+
 .dform-input.input-error:focus {
-    box-shadow: 0 0 0 2px var(--red-light);
     border-color: var(--red);
+    box-shadow: 0 0 0 2px var(--red-light);
 }
 
 .error-message {
     color: var(--red);
     font-size: 13px;
-    margin: 6px 0 0 0;
+    margin-top: 6px;
 }
 
-/* 7. Navigation Buttons
-   --------------------------------- */
+/* NAVIGATION BUTTONS */
 .form-navigation-buttons {
     display: flex;
-    justify-content: flex-end; /* Aligns buttons to the right */
+    justify-content: flex-end;
     gap: 12px;
     margin-top: 32px;
     padding-top: 24px;
@@ -171,37 +150,40 @@ textarea.dform-input {
     border-radius: var(--border-radius-btn);
     border: 1px solid transparent;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: 0.2s;
 }
 
 .sbtn-primary {
-    background-color: var(--primary-blue);
+    background: var(--primary-blue);
     color: #fff;
 }
+
 .sbtn-primary:hover {
-    background-color: #1D4ED8; /* Darker blue */
+    background: #1D4ED8;
 }
 
 .sbtn-secondary {
-    background-color: #fff;
-    color: var(--text-dark);
+    background: #fff;
     border-color: var(--border-color);
-}
-.sbtn-secondary:hover {
-    background-color: var(--gray-light);
+    color: var(--text-dark);
 }
 
-/* 8. Responsive Design (Mobile)
-   --------------------------------- */
+.sbtn-secondary:hover {
+    background: var(--gray-light);
+}
+
+/* ============================================================
+   RESPONSIVE — TABLETS (≤ 768px)
+============================================================ */
 @media (max-width: 768px) {
     .booking-form-page {
         padding: 16px;
     }
+
     .book-card {
         padding: 20px;
     }
-    
-    /* Stack grid items on mobile */
+
     .form-grid {
         grid-template-columns: 1fr;
         gap: 20px;
@@ -210,12 +192,61 @@ textarea.dform-input {
     .form-header h1 {
         font-size: 20px;
     }
-    
-    /* Make buttons full width on mobile */
-    .form-navigation-buttons {
-        flex-direction: column-reverse; /* Puts "Next" on top */
+
+    .full-width-input {
+        grid-column: auto;
     }
+
+    .form-navigation-buttons {
+        flex-direction: column-reverse;
+    }
+
     .sbtn {
         width: 100%;
+    }
+}
+
+/* ============================================================
+   RESPONSIVE — MOBILE (≤ 480px)
+============================================================ */
+@media (max-width: 480px) {
+    .book-card {
+        padding: 18px;
+    }
+
+    .form-header h1 {
+        font-size: 19px;
+    }
+
+    .dform-input {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+
+    .input-group label {
+        font-size: 13px;
+    }
+}
+
+/* ============================================================
+   RESPONSIVE — SMALL PHONES (≤ 360px)
+============================================================ */
+@media (max-width: 360px) {
+    .book-card {
+        padding: 16px;
+    }
+
+    .form-header h1 {
+        font-size: 18px;
+    }
+
+    .sbtn {
+        font-size: 14px;
+        padding: 9px 12px;
+    }
+
+    .dform-input {
+        padding: 9px 10px;
+        font-size: 12.5px;
     }
 }

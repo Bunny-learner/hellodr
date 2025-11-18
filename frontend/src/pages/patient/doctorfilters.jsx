@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '../../css/doctorfilters.css';
 
-export default function DoctorFilters({ apply, globalfilters }) {
+export default function DoctorFilters({ apply, globalfilters,close }) {
   const [localFilters, setLocalFilters] = useState({
     languages: globalfilters.languages || [],
     fees: globalfilters.fees || [],
@@ -39,7 +39,12 @@ export default function DoctorFilters({ apply, globalfilters }) {
     setLocalFilters(prev => ({ ...prev, sortBy: e.target.value }));
   };
 
-  const handleApply = () => apply(localFilters);
+  const handleApply = () => {
+  apply(localFilters); 
+  close() 
+
+};
+
 
   const handleReset = () => {
     const reset = {

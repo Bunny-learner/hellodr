@@ -96,6 +96,7 @@ body {
 .booking-main {
   flex: 2; /* Takes 2/3 of the space */
   min-width: 0;
+  width:100%;
 }
 
 .booking-sidebar {
@@ -351,11 +352,7 @@ body {
   margin-top: 2px;
 }
 
-.slot-btn:hover {
-  background: #e7f1ff;
-  border-color: #1a73e8;
-  transform: translateY(-2px);
-}
+
 
 .slot-selected {
   background: #1a73e8;
@@ -374,30 +371,250 @@ body {
   padding: 2rem;
   font-style: italic;
 }
+/* ============================================================= */
+/* ===================  RESPONSIVE BREAKPOINTS ================= */
+/* ============================================================= */
 
-/* --- Responsive --- */
+/* ---------- LARGE TABLETS (≤ 1024px) ---------- */
+@media (max-width: 1024px) {
+  .booking-layout {
+    gap: 1.5rem;
+  }
+
+  .booking-doctor-header {
+    padding: 1.2rem;
+  }
+
+  .doctor-name {
+    font-size: 1.3rem;
+  }
+
+  .slots-grid {
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  }
+}
+
+/* ---------- MEDIUM TABLETS (≤ 900px) ---------- */
+/* This is the key breakpoint where the sidebar stacks under the main content */
 @media (max-width: 900px) {
   .booking-layout {
     flex-direction: column;
   }
+
   .booking-sidebar {
     position: static;
     width: 100%;
     margin-top: 2rem;
   }
+
+  .summary-doctor-info {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .price-display-summary {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 }
 
+/* ---------- TABLETS & LARGE PHONES (≤ 768px) ---------- */
+@media (max-width: 768px) {
+  .booking-page-container {
+    padding: 0 1rem;
+  }
+
+  .booking-doctor-header {
+    flex-direction: row;
+    gap: 1.2rem;
+    padding: 1.2rem;
+  }
+
+  .doctor-avatar {
+    width: 70px;
+    height: 70px;
+  }
+
+  .doctor-name {
+    font-size: 1.25rem;
+  }
+
+  .mode-toggle {
+    width: 100%;
+    padding: 8px;
+  }
+
+  .mode-toggle button {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+
+  .slots-title {
+    font-size: 1.1rem;
+  }
+
+  .slots-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+
+  .slot-btn {
+    padding: 0.55rem 0.5rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* ---------- NORMAL MOBILE (≤ 600px) ---------- */
 @media (max-width: 600px) {
   .booking-doctor-header {
     flex-direction: column;
     text-align: center;
-    gap: 1rem;
+    gap: 0.8rem;
   }
-  .mode-toggle {
-    width: 100%;
-    box-sizing: border-box;
+
+  .doctor-avatar {
+    width: 80px;
+    height: 80px;
   }
+
+  .doctor-name {
+    font-size: 1.3rem;
+  }
+
+  .doctor-sub {
+    font-size: 0.95rem;
+  }
+
+  .summary-doctor-info {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .summary-doctor-avatar {
+    width: 55px;
+    height: 55px;
+  }
+
+  .price-display-summary strong {
+    font-size: 1.35rem;
+  }
+
   .slots-grid {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
+    gap: 0.7rem;
+  }
+
+  .slot-btn {
+    padding: 0.5rem;
+  }
+
+  .slot-btn .slot-info {
+    font-size: 0.75rem;
+  }
+}
+
+/* ---------- SMALL PHONES (≤ 480px) ---------- */
+@media (max-width: 480px) {
+  .booking-page-container {
+    padding: 0 0.7rem;
+  }
+
+  .doctor-name {
+    font-size: 1.2rem;
+  }
+
+  .booking-doctor-header {
+    padding: 1rem;
+  }
+
+  .slot-btn {
+    font-size: 0.8rem;
+    padding: 0.45rem;
+  }
+
+  .slots-grid {
+    grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+  }
+
+  .mode-toggle button {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .summary-details {
+    padding: 1.2rem;
+  }
+
+  .price-display-summary {
+    gap: 0.4rem;
+  }
+}
+
+/* ---------- EXTRA SMALL PHONES (≤ 400px) ---------- */
+@media (max-width: 400px) {
+  .booking-doctor-header {
+    padding: 0.8rem;
+    gap: 0.6rem;
+  }
+
+  .doctor-avatar {
+    width: 70px;
+    height: 70px;
+  }
+
+  .doctor-name {
+    font-size: 1.1rem;
+  }
+
+  .mode-toggle button {
+    font-size: 0.8rem;
+    padding: 0.45rem 0.9rem;
+  }
+
+  .slots-grid {
+    grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+  }
+
+  .slot-btn {
+    padding: 0.4rem;
+    font-size: 0.75rem;
+  }
+
+  .summary-doctor-avatar {
+    width: 50px;
+    height: 50px;
+  }
+
+  .price-display-summary strong {
+    font-size: 1.2rem;
+  }
+}
+
+/* ---------- ULTRA SMALL PHONES (≤ 330px) ---------- */
+@media (max-width: 330px) {
+  .booking-page-container {
+    padding: 0 0.5rem;
+  }
+
+  .doctor-name {
+    font-size: 1rem;
+  }
+
+  .mode-toggle {
+    gap: 0.4rem;
+    padding: 4px;
+  }
+
+  .mode-toggle button {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+  }
+
+  .slots-grid {
+    grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
+  }
+
+  .slot-btn {
+    padding: 0.35rem;
+    font-size: 0.7rem;
   }
 }

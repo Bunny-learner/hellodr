@@ -1,0 +1,388 @@
+/* ======================================= */
+/* ====== Global & Page Setup ====== */
+/* ======================================= */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: #f4f7f6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+.ds-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 4rem 1rem 2rem 1rem; /* Added more top padding */
+  box-sizing: border-box;
+}
+
+/* This is the MUI progress bar */
+.ds-progress {
+  position: fixed !important; 
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 9999;
+}
+
+/* ======================================= */
+/* ====== Back Button ====== */
+/* ======================================= */
+.ds-registration-page {
+  position: relative;
+  width: 100%;
+  max-width: 700px; /* UPDATED: Wider card for doctor form */
+  margin: 0 auto;
+}
+
+.ds-back {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+}
+
+.ds-back svg {
+  width: 32px; 
+  height: 32px;
+  stroke: #044141; 
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.ds-back svg:hover {
+  transform: scale(1.1);
+}
+
+/* ======================================= */
+/* ====== Registration Card ====== */
+/* ======================================= */
+.ds-registration-card {
+  width: 100%;
+  max-width: 700px; /* UPDATED: Wider card */
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+  padding: 2.5rem;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+}
+
+.ds-form-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.ds-form-header .ds-logo-svg {
+  width: 60px; 
+  height: 60px;
+  margin-bottom: 1rem;
+}
+
+.ds-form-header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #222;
+  margin: 0;
+}
+
+/* ======================================= */
+/* ====== Form Body & Inputs ====== */
+/* ======================================= */
+.ds-form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Section Headings (h3) */
+.ds-form-body h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #044141;
+  margin: 1rem 0 0.5rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+/* Grid layout for form sections */
+.ds-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+/* Class to make an item span full width in the grid */
+.ds-full-width {
+  grid-column: 1 / -1;
+}
+
+.ds-input-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* This is the class for the inline SVGs */
+.ds-input-group .ds-size-6 {
+  position: absolute;
+  left: 15px;
+  top: 14px;
+  width: 20px;
+  height: 20px;
+  color: #9a9a9a;
+  stroke: #9a9a9a; 
+  fill: #9a9a9a;   
+}
+
+.ds-form-input {
+  width: 100%;
+  padding: 0.85rem 1rem 0.85rem 3rem; /* Left padding for icon */
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #f9f9f9;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+  -webkit-appearance: none; 
+}
+
+.ds-form-input:focus {
+  outline: none;
+  border-color: #044141;
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(4, 65, 65, 0.1); 
+}
+
+/* Adjust padding for inputs without icons (select, date, password) */
+.ds-input-group input[type="password"],
+.ds-input-group input[type="date"],
+.ds-input-group select,
+.ds-input-group input[type="number"] {
+  padding-left: 1rem;
+}
+
+/* Special case for inputs that DO have an icon */
+.ds-personal-info .ds-input-group input[type="text"],
+.ds-personal-info .ds-input-group input[type="email"],
+.ds-practice-info .ds-input-group input[type="text"] {
+  padding-left: 3rem;
+}
+
+
+.ds-input-group input[type="password"] {
+  padding-right: 3rem; /* Space for toggle icon */
+}
+
+.ds-password-toggle-icon {
+  position: absolute;
+  right: 15px;
+  top: 14px;
+  width: 20px;
+  height: 20px;
+  color: #9a9a9a;
+  cursor: pointer;
+  z-index: 2;
+}
+
+/* ======================================= */
+/* ====== File Upload & Terms ====== */
+/* ======================================= */
+.ds-file-upload {
+  display: flex;
+  flex-direction: column;
+}
+.ds-file-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+.ds-file-input {
+  font-size: 0.9rem;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  padding: 0.5rem;
+  background: #f9f9f9;
+}
+.ds-file-input::file-selector-button {
+  background-color: #044141;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-right: 1rem;
+}
+
+.ds-terms-agreement {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+.ds-terms-agreement input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+.ds-terms-agreement label {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+
+/* ======================================= */
+/* ====== Validation & Errors ====== */
+/* ======================================= */
+.ds-form-input.ds-input-error {
+  border-color: #e53e3e;
+  background-color: #fff5f5;
+}
+
+.ds-form-input.ds-input-error:focus {
+  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+}
+
+.ds-error-message {
+  color: #c53030;
+  font-size: 0.85rem;
+  margin: 5px 0 0 0;
+  padding: 0;
+}
+
+/* ======================================= */
+/* ====== Submit Button & Link ====== */
+/* ======================================= */
+.ds-signup-btn {
+  padding: 1rem;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(to right, #2563eb, #16a34a);
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px rgba(4, 65, 65, 0.2); 
+  margin-top: 1rem; /* Added space */
+}
+
+.ds-signup-btn:hover {
+  background-color: #033030; 
+  box-shadow: 0 6px 20px rgba(4, 65, 65, 0.3); 
+}
+
+.ds-signup-btn:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.ds-login-prompt {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.ds-login-prompt a {
+  color: #044141;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.ds-login-prompt a:hover {
+  text-decoration: underline;
+}
+
+/* This class is for the future doctor login page */
+.ds-forgot {
+  font-size: 0.85rem;
+  color: #044141;
+  text-decoration: none;
+  text-align: right;
+  margin-top: -10px; 
+  margin-bottom: 5px; 
+  transition: text-decoration 0.2s ease;
+}
+
+.ds-forgot:hover {
+  text-decoration: underline;
+}
+
+/* ======================================= */
+/* ====== Toast Styling ====== */
+/* ======================================= */
+.ds-my-toast {
+  background-color: #333;
+  color: #fff;
+  border-radius: 8px;
+}
+
+
+.ds-social-login-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.ds-social-btn {
+  flex: 1; /* Each button takes equal space */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #dcdcdc;
+  background-color: #fff;
+  color: #333;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.ds-social-btn:hover {
+  background-color: #f9f9f9;
+}
+
+.ds-social-btn svg {
+  width: 20px;
+  height: 20px;
+}
+/* ======================================= */
+/* ====== Responsive ====== */
+/* ======================================= */
+@media (max-width: 768px) {
+  .ds-form-grid {
+    grid-template-columns: 1fr; /* Stack columns on mobile */
+  }
+}
+
+@media (max-width: 550px) {
+  .ds-main {
+    padding: 4rem 0.5rem 2rem 0.5rem;
+  }
+  
+  .ds-registration-card {
+    padding: 2rem 1.5rem;
+    border-radius: 10px;
+  }
+
+  .ds-back {
+    top: 5px;
+    left: 5px;
+  }
+
+  .ds-form-header h1 {
+    font-size: 1.5rem;
+  }
+}

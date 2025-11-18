@@ -3,7 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { PatientContext } from "./patientcontext";
 import HeartLoader from "../../components/Loaders/heartloader";
 import Map from "../../components/map";
-import "../../css/viewdoctorprofile.css"; // This will now use the new CSS file below
+import "../../css/viewdoctorprofile.css"; 
+import Logo from "../logo";
 
 // Simple Star Rating component
 const StarRating = ({ rating }) => {
@@ -53,7 +54,7 @@ export default function ViewDoctorProfile() {
   useEffect(() => {
     if (!doctors || !doctorId) return;
 
-    console.log(doctorId)
+    
     const doctor = doctors.find((d) => d._id === doctorId);
     
     if(!doctor)return;
@@ -78,7 +79,7 @@ export default function ViewDoctorProfile() {
   const visibleReviews = showAllReviews ? reviews : reviews.slice(0, 3);
   const toggleShowAllReviews = () => setShowAllReviews(!showAllReviews);
 
-  return (
+  return (<>
     <div className="vdp-page-container">
       <button onClick={() => navigate(-1)} className="vdp-back-button">
         &larr; Back
@@ -219,6 +220,35 @@ export default function ViewDoctorProfile() {
 
         </div>
       </div>
+      
     </div>
+    <footer className="footer">
+        <div className="footer-inner">
+
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <div >
+              <Logo size="40"/>
+              </div>
+              <h3 className="logo-footer">Hello Dr</h3>
+            </div>
+            <p className="footer-text">
+              Connecting patients with healthcare professionals for better outcomes.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="footer-title">Support</h4>
+
+            <ul className="footer-links">
+              <li><button onClick={() => navigate("/help-center")}>Help Center</button></li>
+              <li><button onClick={() => navigate("/privacy-policy")}>Privacy Policy</button></li>
+              <li><button onClick={() => navigate("/coming-soon")}>Terms of Service</button></li>
+              <li><button onClick={() => navigate("/coming-soon")}>Contact Us</button></li>
+            </ul>
+          </div>
+
+        </div>
+      </footer></>
   );
 }

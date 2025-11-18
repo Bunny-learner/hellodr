@@ -1,14 +1,19 @@
-/* --- Date Tabs Container --- */
+/* ============================================================
+   DATE TABS BASE STYLES
+============================================================ */
+
+/* --- Tabs Container --- */
 .date-tabs {
   display: flex;
-  overflow-x: auto; /* Allows horizontal scrolling on mobile */
+  overflow-x: auto;
   white-space: nowrap;
   gap: 12px;
   padding: 10px 5px;
   scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch; /* iOS smooth scroll */
 }
 
-/* --- Scrollbar styling (for webkit browsers) --- */
+/* --- Scrollbar styling --- */
 .date-tabs::-webkit-scrollbar {
   height: 6px;
 }
@@ -20,35 +25,34 @@
   background: transparent;
 }
 
-/* --- Individual Day Tab --- */
+/* --- Single Tab --- */
 .tab {
-  flex: 0 0 auto; /* Prevents shrinking/growing, lets them scroll */
+  flex: 0 0 auto;
   min-width: 110px;
-  padding: 10px 12px;
+  padding: 12px 14px;
   border: 1px solid #ddd;
-  border-radius: 10px;
+  border-radius: 12px;
   background-color: #fff;
   cursor: pointer;
   text-align: center;
-  transition: all 0.25s ease-in-out;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-/* --- Tab Hover Effect --- */
 .tab:hover {
   background-color: #f7f7f7;
   transform: translateY(-2px);
 }
 
-/* --- Selected Tab Style --- */
+/* --- Selected Tab --- */
 .tab.selected {
   background-color: #007bff;
   color: #fff;
   border-color: #007bff;
-  box-shadow: 0 3px 6px rgba(0, 123, 255, 0.3);
+  box-shadow: 0 4px 10px rgba(0, 123, 255, 0.35);
 }
 
-/* --- Text inside the tab (Date) --- */
+/* --- Text Styling --- */
 .tab .day-date {
   display: block;
   font-size: 13px;
@@ -56,12 +60,10 @@
   margin-bottom: 4px;
 }
 
-/* --- Text inside the selected tab (Date) --- */
 .tab.selected .day-date {
-  color: white;
+  color: #fff;
 }
 
-/* --- Text inside the tab (Day Name) --- */
 .tab strong {
   display: block;
   font-size: 15px;
@@ -69,8 +71,90 @@
   margin-bottom: 3px;
 }
 
-/* --- Text inside the tab (Slot Count) --- */
 .tab span:last-child {
   display: block;
   font-size: 12px;
+}
+
+
+/* ============================================================
+   RESPONSIVE BREAKPOINTS
+============================================================ */
+
+/* ---------- Tablets (≤ 768px) ---------- */
+@media (max-width: 768px) {
+  .tab {
+    min-width: 100px;
+    padding: 11px 12px;
+    border-radius: 10px;
+  }
+
+  .tab strong {
+    font-size: 14px;
+  }
+
+  .tab .day-date {
+    font-size: 12px;
+  }
+
+  .tab span:last-child {
+    font-size: 11px;
+  }
+
+  .date-tabs {
+    gap: 10px;
+  }
+}
+
+
+/* ---------- Mobile (≤ 480px) ---------- */
+@media (max-width: 480px) {
+
+  .tab {
+    min-width: 90px;
+    padding: 10px 10px;
+    border-radius: 10px;
+  }
+
+  .tab strong {
+    font-size: 13px;
+  }
+
+  .tab .day-date {
+    font-size: 11px;
+  }
+
+  .tab span:last-child {
+    font-size: 10px;
+  }
+
+  .date-tabs {
+    gap: 8px;
+    padding: 8px 4px;
+  }
+}
+
+
+/* ---------- Small Phones (≤ 360px) ---------- */
+@media (max-width: 360px) {
+  .tab {
+    min-width: 80px;
+    padding: 8px 8px;
+  }
+
+  .tab strong {
+    font-size: 12px;
+  }
+
+  .tab .day-date {
+    font-size: 10px;
+  }
+
+  .tab span:last-child {
+    font-size: 9px;
+  }
+
+  .date-tabs {
+    gap: 6px;
+  }
 }

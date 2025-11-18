@@ -16,6 +16,7 @@ import Notification from './pages/notifications';
 import ChatPage from './pages/chatpage';
 import WaitingRoom from './pages/WaitingRoom'
 import Welcome1 from "./pages/patient/welcome1"
+import RoleSelection from './pages/role-selection';
 
 
 const AppointmentReview =lazy(()=>import('./pages/patient/appointmentreview'))
@@ -37,7 +38,7 @@ function App() {
   return (
     <Suspense fallback={<Bubbles />}>
       <Routes>
-        <Route path="/" element={<Welcome />} />
+        <Route path="/" element={<Welcome1 />} />
         <Route path="/patient/signup" element={<Patientsignup />} />
         <Route path="/patient/login" element={<Patientlogin />} />
         <Route path="/patient/forgot" element={<ForgotPassword />} />
@@ -46,20 +47,17 @@ function App() {
         <Route path="/doctor/login" element={<Doctorlogin />} />
         <Route path="/waiting-room/:roomid" element={<WaitingRoom />}
   />
-
         <Route path="/chat/:roomid" element={<ChatPage />} />
         
 
         
 
-          <Route element={<DoctorLayout />}>
-
+        <Route element={<DoctorLayout />}>
         <Route path="/doctor/home" element={<DoctorHome />} />
         <Route path="/doctor/appointments" element={<DoctorAppointments />} />
         <Route path='/doctor/timeslots' element={<DoctorTimeSlots/>}/>
         <Route path='/doctor/settings' element={<Settings/>}/>
         <Route path="/doctor/notifications" element={<Notification/>}/>
-        
         </Route>
 
         <Route path="/doctor/profile" element={<DoctorProfile />} />
@@ -79,9 +77,7 @@ function App() {
          <Route path="/patient/appointment/review" element={<AppointmentReview/>} />
 
         <Route path="/patient/profile" element={<PatientProfile />} />
-        <Route path="/hello" element={<Welcome1/>}/>
-        
-       
+        <Route path="/role-selection" element={<RoleSelection/>}/>
       </Routes>
     </Suspense>
   );

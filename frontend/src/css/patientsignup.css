@@ -1,0 +1,296 @@
+/* ======================================= */
+/* ====== Global & Page Setup ====== */
+/* ======================================= */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: #f4f7f6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.ps-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  box-sizing: border-box;
+}
+
+/* This is the MUI progress bar */
+.ps-progress {
+  position: fixed !important; /* Makes it stick to the top */
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 9999;
+}
+
+/* ======================================= */
+/* ====== Back Button ====== */
+/* ======================================= */
+/* This positions the back button */
+.ps-registration-page {
+  position: relative;
+  width: 100%;
+  max-width: 500px; /* Aligns with the card width */
+  margin: 0 auto;
+}
+
+.ps-back {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 10;
+}
+
+.ps-back svg {
+  width: 32px; /* Making it a bit larger */
+  height: 32px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.ps-back svg:hover {
+  transform: scale(1.1);
+}
+
+/* ======================================= */
+/* ====== Registration Card ====== */
+/* ======================================= */
+.ps-registration-card {
+  width: 100%;
+  max-width: 500px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+  padding: 2.5rem;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+}
+
+.ps-form-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.ps-form-header .ps-logo-svg {
+  width: 60px; /* Adjusted size */
+  height: 60px;
+  margin-bottom: 1rem;
+}
+
+.ps-form-header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #222;
+  margin: 0;
+}
+
+/* ======================================= */
+/* ====== Social Login ====== */
+/* ======================================= */
+.ps-social-login-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.ps-social-btn {
+  flex: 1; /* Each button takes equal space */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #dcdcdc;
+  background-color: #fff;
+  color: #333;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.ps-social-btn:hover {
+  background-color: #f9f9f9;
+}
+
+.ps-social-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ======================================= */
+/* ====== Form Body & Inputs ====== */
+/* ======================================= */
+.ps-form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.ps-input-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* This is the class for the inline SVGs */
+.ps-input-group .ps-size-6 {
+  position: absolute;
+  left: 15px;
+  top: 14px;
+  width: 20px;
+  height: 20px;
+  color: #9a9a9a;
+  stroke: #9a9a9a; /* For outline icons */
+  fill: #9a9a9a;   /* For fill icons */
+}
+
+.ps-form-input {
+  width: 100%;
+  padding: 0.85rem 1rem 0.85rem 3rem; /* Left padding for icon */
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #f9f9f9;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+  -webkit-appearance: none; /* Fix for iOS zoom */
+}
+
+.ps-form-input:focus {
+  outline: none;
+  border-color: #044141; /* UPDATED: Modern color */
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(4, 65, 65, 0.1); /* UPDATED: Modern color */
+}
+
+/* Adjust padding for inputs without icons */
+.ps-input-group input[type="password"],
+.ps-input-group input[type="date"],
+.ps-input-group select {
+  padding-left: 1rem;
+}
+
+/* Special case for the password input with toggle */
+.ps-input-group input[type="password"] {
+  padding-right: 3rem; /* Space for toggle icon */
+}
+
+.ps-password-toggle-icon {
+  position: absolute;
+  right: 15px;
+  top: 14px;
+  width: 20px;
+  height: 20px;
+  color: #9a9a9a;
+  cursor: pointer;
+  z-index: 2;
+}
+
+/* ======================================= */
+/* ====== Validation & Errors ====== */
+/* ======================================= */
+.ps-form-input.ps-input-error {
+  border-color: #e53e3e;
+  background-color: #fff5f5;
+}
+
+.ps-form-input.ps-input-error:focus {
+  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+}
+
+.ps-error-message {
+  color: #c53030;
+  font-size: 0.85rem;
+  margin: 5px 0 0 0;
+  padding: 0;
+}
+
+/* ======================================= */
+/* ====== Submit Button & Link ====== */
+/* ======================================= */
+.ps-signup-btn {
+  padding: 1rem;
+  border: none;
+  border-radius: 8px;
+background: linear-gradient(to right, #2563eb, #16a34a);
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px rgba(4, 65, 65, 0.2); /* UPDATED: Modern shadow */
+}
+
+.ps-signup-btn:hover {
+  background-color: #033030; /* UPDATED: Darker shade on hover */
+  box-shadow: 0 6px 20px rgba(4, 65, 65, 0.3); /* UPDATED: Modern shadow */
+}
+
+.ps-signup-btn:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.ps-login-prompt {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.ps-login-prompt a {
+  color: #044141; /* UPDATED: Modern color */
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.ps-login-prompt a:hover {
+  text-decoration: underline;
+}
+
+/* ======================================= */
+/* ====== Toast Styling ====== */
+/* ======================================= */
+.ps-my-toast {
+  background-color: #333;
+  color: #fff;
+  border-radius: 8px;
+}
+
+/* ======================================= */
+/* ====== Responsive ====== */
+/* ======================================= */
+@media (max-width: 550px) {
+  .ps-main {
+    padding: 1rem 0.5rem;
+  }
+  
+  .ps-registration-card {
+    padding: 2rem 1.5rem;
+    border-radius: 10px;
+  }
+
+  .ps-back {
+    top: 5px;
+    left: 5px;
+  }
+
+  .ps-form-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .ps-social-login-buttons {
+    flex-direction: column;
+  }
+}

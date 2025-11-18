@@ -68,7 +68,7 @@ export default function Navbar({ src, usertype = "patient" }) {
       <>
         <Link to={`${basePath}/home`} className={activePage === "home" ? "active" : ""}>Home</Link>
        {isAuthenticated&& <Link to={`${basePath}/appointments`} className={activePage === "appointments" ? "active" : ""}>Appointments</Link>}
-        <Link to={`${basePath}/getdoctors`} className={activePage === "finddoctor" ? "active" : ""}>Find a Doctor</Link>
+        <Link to={`${basePath}/getdoctors`} className={activePage === "finddoctor" ? "active" : ""}>Find Doctors</Link>
         {isAuthenticated&&<Link to={`${basePath}/payments`} className={activePage === "Payments" ? "active" : ""}>Payments</Link>}
       </>
     );

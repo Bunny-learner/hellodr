@@ -6,6 +6,8 @@
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
+
+
 .section-header {
   margin-bottom: 1.5rem;
 }
@@ -32,6 +34,10 @@
   width: 100%;
   max-width: 600px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+#filter{
+  cursor: pointer;
 }
 
 .navbar-search .filter {
@@ -92,7 +98,7 @@
 
 /* === PERFECT IMAGE FIX === */
 .doctor-card-image {
-  width: 220px;
+  width: 200px;
   aspect-ratio: 3 / 4;      /* portrait ratio */
   object-fit: cover;        /* image is clean & not stretched */
   border-right: 1px solid #f0f0f0;
@@ -314,4 +320,9 @@
     aspect-ratio: 16 / 9;
     border-bottom: 1px solid #eee;
   }
+}
+
+
+.pagebg{
+  background: linear-gradient(180deg, #f7fbff 0%, #f0f6ff 40%, #ffffff 100%);
 }

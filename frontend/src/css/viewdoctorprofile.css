@@ -13,6 +13,7 @@
 */
 
 .vdp-page-container {
+  background:linear-gradient(180deg, #f7fbff 0%, #f0f6ff 40%, #ffffff 100%);
   max-width: 1200px;
   margin: 2rem auto;
   padding: 0 1.5rem;

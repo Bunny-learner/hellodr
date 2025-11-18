@@ -8,7 +8,7 @@ export default function bubbles() {
             <l-grid
                 size="280"
                 speed="1.5"
-                color="#34c9e3"
+                 color="#2563eb"
             ></l-grid></div>
     )
 }

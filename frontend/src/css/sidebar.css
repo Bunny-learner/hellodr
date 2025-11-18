@@ -1,405 +1,222 @@
-
+/* =========================================================
+   BACKDROP
+========================================================= */
 .sidebar-backdrop {
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-background-color: rgba(0, 0, 0, 0.45);
-opacity: 0;
-visibility: hidden;
-transition: opacity 0.35s ease;
-z-index: 999;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.3s ease;
+  z-index: 900;
 }
 
 .sidebar-backdrop.sidebar-backdrop-show {
-opacity: 1;
-visibility: visible;
+  opacity: 1;
+  visibility: visible;
 }
 
-/* --- Sidebar Panel --- */
+/* =========================================================
+   SIDEBAR PANEL — MEDICAL CLEAN DESIGN
+========================================================= */
 .sidebar-panel {
-position: fixed;
-top: 0;
-right: -360px;
-width: 360px;
-max-width: 90%;
-height: 100%;
-background-color: #ffffff;
-box-shadow: -3px 0 25px rgba(0, 0, 0, 0.2);
-transition: right 0.35s ease;
-z-index: 1000;
-display: flex;
-flex-direction: column;
-font-family: 'Poppins', sans-serif;
-font-size: 14px;
+  position: fixed;
+  top: 0;
+  right: -380px;
+  width: 380px;
+  max-width: 95%;
+  height: 100%;
+  background: #ffffff;
+  border-left: 1px solid #e6ecf5;
+  box-shadow: -6px 0 25px rgba(0, 0, 0, 0.08);
+  transition: right 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Inter', sans-serif;
 }
 
-/* --- Open State --- */
 .sidebar-panel.sidebar-panel-open {
-right: 0;
+  right: 0;
 }
 
-/* --- Header --- */
+/* =========================================================
+   HEADER — BRIGHT + MEDICAL FEEL
+========================================================= */
 .sidebar-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-padding: 1rem;
-border-bottom: 1px solid #eee;
-background-color: #f9f9f9;
+  padding: 1rem 1.2rem;
+  background: #f3f8ff;
+  border-bottom: 1px solid #dce7f7;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.sidebar-title-group {
-display: flex;
-flex-direction: column;
-}
-
-.sidebar-header h2 {
-margin: 0;
-font-size: 1.25rem;
-font-weight: 600;
-color: #333;
+.sidebar-title-group h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #204b9e;
 }
 
 .sidebar-mark-all-btn {
-margin-top: 4px;
-background: transparent;
-border: none;
-color: #4a90e2;
-font-size: 0.85rem;
-cursor: pointer;
-transition: color 0.2s ease;
-}
-
-.sidebar-mark-all-btn:hover {
-color: #357ABD;
+  border: none;
+  background: transparent;
+  color: #2f6df3;
+  font-size: 0.8rem;
+  cursor: pointer;
 }
 
 .sidebar-close-btn {
-background: transparent;
-border: none;
-font-size: 1.25rem;
-cursor: pointer;
-color: #555;
+  border: none;
+  background: #eaf1ff;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: #204b9e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* --- Body --- */
+.sidebar-close-btn:hover {
+  background: #d9e7ff;
+}
+
+/* =========================================================
+   BODY
+========================================================= */
 .sidebar-body {
-flex: 1;
-overflow-y: auto;
-padding: 1rem;
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.2rem;
 }
 
-.sidebar-notification-group {
-margin-bottom: 1.5rem;
-}
-
+/* =========================================================
+   GROUP TITLE
+========================================================= */
 .sidebar-notification-group h3 {
-font-size: 0.95rem;
-font-weight: 600;
-color: #555;
-margin-bottom: 0.5rem;
+  margin: 0.6rem 0 0.4rem;
+  color: #5a6272;
+  font-size: 0.85rem;
 }
 
-/* --- Notification Item --- */
+/* =========================================================
+   NOTIFICATION CARD — MODERN CLEAN STYLE
+========================================================= */
 .sidebar-notification-item {
-display: flex;
-align-items: center;
-padding: 0.65rem 0.5rem;
-border-radius: 10px;
-cursor: pointer;
-transition: background-color 0.2s ease, transform 0.1s ease;
-position: relative;
+  display: flex;
+  padding: 0.8rem;
+  gap: 0.9rem;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid #eef2f7;
+  margin-bottom: 0.75rem;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
 
 .sidebar-notification-item:hover {
-background-color: #f2f2f2;
-transform: translateX(2px);
+  background: #f7faff;
+  border-color: #d9e7ff;
 }
 
 .sidebar-notif-icon-wrapper {
-flex-shrink: 0;
-margin-right: 0.8rem;
-font-size: 1.4rem;
-color: #4a90e2;
-}
-
-.sidebar-notif-content {
-flex: 1;
+  font-size: 1.4rem;
+  color: #2f6df3;
+  padding-top: 3px;
 }
 
 .sidebar-notif-message {
-margin: 0;
-font-size: 0.95rem;
-color: #333;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #2a2e35;
 }
 
 .sidebar-notif-timestamp {
-font-size: 0.8rem;
-color: #888;
+  font-size: 0.78rem;
+  color: #77819a;
+  margin-top: 4px;
 }
 
-/* --- Glowing Blue Dot for Unread --- */
+/* =========================================================
+   UNREAD BLUE DOT
+========================================================= */
 .sidebar-unread-dot {
-width: 10px;
-height: 10px;
-border-radius: 50%;
-position: absolute;
-right: 12px;
-top: 50%;
-transform: translateY(-50%);
-background-color: #4a90e2;
-box-shadow: 0 0 8px #4a90e2, 0 0 12px #4a90e2;
-animation: pulse 1.5s infinite;
+  width: 10px;
+  height: 10px;
+  background: #2f6df3;
+  border-radius: 50%;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
-@keyframes pulse {
-0% {
-transform: translateY(-50%) scale(0.8);
-opacity: 0.8;
-}
-50% {
-transform: translateY(-50%) scale(1.2);
-opacity: 1;
-}
-100% {
-transform: translateY(-50%) scale(0.8);
-opacity: 0.8;
-}
-}
-
-/* --- Empty State --- */
+/* =========================================================
+   EMPTY STATE
+========================================================= */
 .sidebar-empty-state {
-text-align: center;
-margin-top: 3rem;
-color: #555;
+  text-align: center;
+  margin-top: 3rem;
+  color: #7a8295;
 }
 
 .sidebar-empty-icon {
-font-size: 2rem;
-color: #4a90e2;
-margin-bottom: 0.5rem;
+  font-size: 2.3rem;
+  color: #2f6df3;
+  margin-bottom: 0.5rem;
 }
 
-.sidebar-empty-state p {
-margin: 0.25rem 0;
-}
-
-.sidebar-back{
-  padding:1rem;
-  border:0px;
-  border-radius: 12px;
-  width:100px;
-  margin-left: 7px;
-}
-.sidebar-back:hover{
-  background-color: #007bff;
-  color:white;
-}
-.sidebar-empty-state span {
-font-size: 0.85rem;
-color: #888;
-}
-
-/* --- Footer --- */
+/* =========================================================
+   FOOTER
+========================================================= */
 .sidebar-footer {
-padding: 1rem;
-border-top: 1px solid #eee;
-text-align: center;
+  padding: 1rem;
+  border-top: 1px solid #e6ecf5;
+  background: #f9fbff;
 }
 
 .sidebar-view-all-btn {
-display: inline-flex;
-align-items: center;
-justify-content: center;
-gap: 0.3rem;
-background-color: #4a90e2;
-color: #fff;
-border: none;
-border-radius: 6px;
-padding: 0.5rem 1rem;
-font-size: 0.9rem;
-cursor: pointer;
-transition: background-color 0.2s ease;
+  width: 100%;
+  padding: 0.75rem;
+  background: #2f6df3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .sidebar-view-all-btn:hover {
-background-color: #357ABD;
+  background: #265cd7;
 }
 
-/* --- Scrollbar --- */
+/* =========================================================
+   SCROLLBAR
+========================================================= */
 .sidebar-body::-webkit-scrollbar {
-width: 6px;
+  width: 6px;
 }
 
 .sidebar-body::-webkit-scrollbar-thumb {
-background-color: rgba(0,0,0,0.2);
-border-radius: 3px;
+  background: #c3d4f7;
+  border-radius: 6px;
 }
-
 
 /* =========================================================
-   RESPONSIVE SIDEBAR — OPTIMIZED FOR ALL DEVICES
-   ========================================================= */
-
-/* Medium devices (tablets & small laptops) */
-@media (max-width: 900px) {
-  .sidebar-panel {
-    width: 300px;
-    font-size: 13.5px;
-  }
-
-  .sidebar-header h2 {
-    font-size: 1.15rem;
-  }
-
-  .sidebar-close-btn {
-    font-size: 1.15rem;
-  }
-
-  .sidebar-body {
-    padding: 0.9rem;
-  }
-
-  .sidebar-notification-item {
-    padding: 0.55rem 0.45rem;
-  }
-
-  .sidebar-notif-message {
-    font-size: 0.9rem;
-  }
-
-  .sidebar-notif-timestamp {
-    font-size: 0.75rem;
-  }
-
-  .sidebar-notif-icon-wrapper {
-    font-size: 1.3rem;
-  }
-
-  .sidebar-empty-icon {
-    font-size: 1.8rem;
-  }
-}
-
-/* Small Mobile Devices */
+   RESPONSIVE
+========================================================= */
 @media (max-width: 600px) {
   .sidebar-panel {
-    right: -100%;
     width: 100%;
-    max-width: 100%;
-    font-size: 13px;
+    right: -100%;
   }
 
   .sidebar-panel.sidebar-panel-open {
     right: 0;
-  }
-
-  .sidebar-header {
-    padding: 0.9rem 1rem;
-  }
-
-  .sidebar-header h2 {
-    font-size: 1.1rem;
-  }
-
-  .sidebar-mark-all-btn {
-    font-size: 0.8rem;
-  }
-
-  .sidebar-notification-item {
-    padding: 0.55rem 0.4rem;
-  }
-
-  .sidebar-notif-icon-wrapper {
-    font-size: 1.25rem;
-  }
-
-  .sidebar-notif-message {
-    font-size: 0.88rem;
-  }
-
-  .sidebar-notif-timestamp {
-    font-size: 0.75rem;
-  }
-
-  .sidebar-unread-dot {
-    width: 9px;
-    height: 9px;
-    right: 10px;
-  }
-
-  .sidebar-view-all-btn {
-    width: 95%;
-    padding: 0.55rem;
-    font-size: 0.85rem;
-  }
-}
-
-/* Very Small Mobile Devices (360px → older phones) */
-@media (max-width: 400px) {
-  .sidebar-header h2 {
-    font-size: 1rem;
-  }
-
-  .sidebar-mark-all-btn {
-    font-size: 0.75rem;
-  }
-
-  .sidebar-body {
-    padding: 0.75rem;
-  }
-
-  .sidebar-notification-item {
-    padding: 0.5rem 0.35rem;
-  }
-
-  .sidebar-notif-message {
-    font-size: 0.82rem;
-  }
-
-  .sidebar-notif-icon-wrapper {
-    font-size: 1.2rem;
-  }
-
-  .sidebar-notif-timestamp {
-    font-size: 0.7rem;
-  }
-
-  .sidebar-footer {
-    padding: 0.8rem;
-  }
-
-  .sidebar-view-all-btn {
-    font-size: 0.8rem;
-  }
-}
-
-/* Ultra Small Devices (320px → old budget phones) */
-@media (max-width: 330px) {
-  .sidebar-header h2 {
-    font-size: 0.95rem;
-  }
-
-  .sidebar-notification-item {
-    padding: 0.45rem 0.3rem;
-  }
-
-  .sidebar-notif-message {
-    font-size: 0.78rem;
-  }
-
-  .sidebar-notif-icon-wrapper {
-    font-size: 1.1rem;
-  }
-
-  .sidebar-notif-timestamp {
-    font-size: 0.68rem;
-  }
-
-  .sidebar-unread-dot {
-    width: 8px;
-    height: 8px;
   }
 }

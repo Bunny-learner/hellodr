@@ -40,7 +40,7 @@ const app = express()
 // Core Middleware
 app.use(cookieParser())
 app.use(cors({
-  origin: "http://localhost:5173", 
+  origin: ["http://localhost:5173","http://10.125.182.180:5173"] ,
   credentials: true
 }));
 app.use(express.static('public'));
