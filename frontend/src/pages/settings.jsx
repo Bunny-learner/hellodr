@@ -3,13 +3,12 @@ import React, { useEffect, useState } from "react";
 import { FaWhatsapp } from "react-icons/fa";
 import { FiBell, FiMail, FiMessageSquare, FiLoader, FiCheck, FiXCircle } from "react-icons/fi";
 import { useAuth } from "./AuthContext";
-import "../css/settings.css"; // We will use the new CSS
+import "../css/settings.css";
 import toast from "react-hot-toast";
 import Bubbles from "../components/Loaders/bubbles";
 import { useNavigate } from "react-router-dom";
 
-
-const VAPID_PUBLIC_KEY ="BDKWrqxWwM1Jl86sVi_gcE5f0HJ3h9_eX5NDvFaDRye45P-gAgt9avAjwpVMTdw9dHjwufbuc-8vkgiZmtwzUAs";
+const VAPID_PUBLIC_KEY = "BDKWrqxWwM1Jl86sVi_gcE5f0HJ3h9_eX5NDvFaDRye45P-gAgt9avAjwpVMTdw9dHjwufbuc-8vkgiZmtwzUAs";
 
 // Helper function to convert the VAPID key
 function urlB64ToUint8Array(base64String) {
@@ -25,6 +24,7 @@ function urlB64ToUint8Array(base64String) {
 
 export default function Settings() {
   const { user, role, setUser } = useAuth();
+  const navigate = useNavigate();
 
   const defaultPrefs = {
     reminderoffset: null,
@@ -44,10 +44,8 @@ export default function Settings() {
     whatsapp: false,
   });
 
-  
   const [pushPermission, setPushPermission] = useState(Notification.permission);
   const [isSubscribing, setIsSubscribing] = useState(false);
-
   const [loading, setLoading] = useState(false);
 
   const reminderOptions = [
@@ -59,8 +57,6 @@ export default function Settings() {
     { label: "2 hr", value: 2 * 60 * 60 * 1000 },
   ];
 
-
-  const navigate=useNavigate()
   // Load preferences into state
   useEffect(() => {
     if (!user) return;
@@ -71,12 +67,11 @@ export default function Settings() {
       sms: preferences.channels?.includes("sms") ?? false,
       whatsapp: preferences.channels?.includes("whatsapp") ?? false,
     });
-    
+
     // Update push permission status on load
     setPushPermission(Notification.permission);
 
-    const reminder =
-      preferences.reminderoffset ?? preferences.remindertime ?? null;
+    const reminder = preferences.reminderoffset ?? preferences.remindertime ?? null;
 
     if (reminder != null) {
       setSelectedReminder(Number(reminder));
@@ -89,13 +84,13 @@ export default function Settings() {
 
   const isAnyChannelSelected = Object.values(channels).some(Boolean);
 
-  // --- NEW: Subscribe User to Push Notifications ---
+  // Subscribe User to Push Notifications
   const handleSubscribePush = async () => {
     if (VAPID_PUBLIC_KEY === "YOUR_VAPID_PUBLIC_KEY_GOES_HERE") {
       toast.error("VAPID Key is not set in Settings.jsx");
       return;
     }
-    
+
     if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
       toast.error("Push messaging is not supported by this browser.");
       return;
@@ -104,11 +99,11 @@ export default function Settings() {
     setIsSubscribing(true);
     try {
       // 1. Register the service worker
-      const swRegistration = await navigator.serviceWorker.register('/service-worker.js');
-      
+      const swRegistration = await navigator.serviceWorker.register("/service-worker.js");
+
       // 2. Request permission (this shows the browser popup)
       const permission = await Notification.requestPermission();
-      setPushPermission(permission); // Update state with the user's choice
+      setPushPermission(permission);
 
       if (permission !== "granted") {
         toast.error("Notification permission was not granted.");
@@ -126,13 +121,11 @@ export default function Settings() {
         method: "POST",
         body: JSON.stringify({ subscription }),
         headers: { "Content-Type": "application/json" },
-        credentials: "include", 
+        credentials: "include",
       });
 
-     
       setChannels((prev) => ({ ...prev, push: true }));
       toast.success("Push notifications enabled!");
-
     } catch (error) {
       console.error("Failed to subscribe user:", error);
       toast.error("Failed to enable notifications.");
@@ -141,12 +134,10 @@ export default function Settings() {
     }
   };
 
-  
   const handleUnsubscribePush = () => {
     setChannels((prev) => ({ ...prev, push: false }));
     toast.success("Push channel disabled. Don't forget to save.");
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -177,6 +168,11 @@ export default function Settings() {
       const data = await res.json();
       setLoading(false);
 
+      if (res.status === 401) {
+        navigate("/patient/login?alert=Session expired login again");
+        return;
+      }
+
       if (!res.ok) {
         toast.error(data.message || "Error updating preferences");
         return;
@@ -197,20 +193,22 @@ export default function Settings() {
     }
   };
 
-  if (loading)
+  if (loading) {
     return (
-      <div className="settings-container" style={{justifyContent:"center",alignItems:"center"}} >
-        <Bubbles/>
+      <div className="settings-container" style={{ justifyContent: "center", alignItems: "center" }}>
+        <Bubbles />
       </div>
     );
+  }
 
   return (
     <div className="settings-container">
       <div className="backbutton">
-      <button class="back-button" onClick={()=>{navigate(-1)}}>← Back</button>
+        <button className="back-button" onClick={() => navigate(-1)}>
+          ← Back
+        </button>
       </div>
       <form onSubmit={handleSubmit} className="settings-card">
-        
         <h2 className="settings-title">Settings</h2>
 
         {/* Account */}
@@ -232,91 +230,114 @@ export default function Settings() {
           <p className="section-description">
             Choose how you'd like to be notified about appointments and reminders.
           </p>
-          
+
           <div className="channel-list">
-            
-            {/* --- NEW PUSH NOTIFICATION TOGGLE --- */}
+            {/* Push Notification Toggle */}
             <div className="channel-toggle">
               <div className="channel-icon push">
                 <FiBell />
               </div>
               <div className="channel-info">
                 <label>Push Notifications</label>
-                <span>For browser and mobile alerts.</span>
+                <p>For browser and mobile alerts.</p>
               </div>
               <div className="channel-action">
-                {pushPermission === 'granted' ? (
+                {pushPermission === "granted" ? (
                   <label className="toggle-switch">
-                    <input type="checkbox" checked={channels.push} onChange={(e) => {
-                      if (e.target.checked) {
-                        setChannels((p) => ({ ...p, push: true }));
-                      } else {
-                        handleUnsubscribePush();
-                      }
-                    }} />
+                    <input
+                      type="checkbox"
+                      checked={channels.push}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setChannels((p) => ({ ...p, push: true }));
+                        } else {
+                          handleUnsubscribePush();
+                        }
+                      }}
+                    />
                     <span className="slider"></span>
                   </label>
-                ) : pushPermission === 'denied' ? (
-                  <span className="permission-denied"><FiXCircle /> Blocked</span>
+                ) : pushPermission === "denied" ? (
+                  <span className="permission-denied">
+                    <FiXCircle /> Blocked
+                  </span>
                 ) : (
-                  <button 
-                    type="button" 
-                    className="btn-enable" 
+                  <button
+                    type="button"
+                    className="btn-enable"
                     onClick={handleSubscribePush}
                     disabled={isSubscribing}
                   >
-                    {isSubscribing ? <FiLoader /> : "Enable"}
+                    {isSubscribing ? <FiLoader className="spin" /> : "Enable"}
                   </button>
                 )}
               </div>
             </div>
 
-            {/* --- Email Toggle --- */}
+            {/* Email Toggle */}
             <div className="channel-toggle">
               <div className="channel-icon email">
                 <FiMail />
               </div>
               <div className="channel-info">
                 <label htmlFor="email-toggle">Email</label>
-                <span>For receipts and critical alerts.</span>
+                <p>For receipts and critical alerts.</p>
               </div>
               <div className="channel-action">
                 <label className="toggle-switch">
-                  <input id="email-toggle" type="checkbox" name="email" checked={channels.email} onChange={handleChannelChange} />
+                  <input
+                    id="email-toggle"
+                    type="checkbox"
+                    name="email"
+                    checked={channels.email}
+                    onChange={handleChannelChange}
+                  />
                   <span className="slider"></span>
                 </label>
               </div>
             </div>
 
-            {/* --- SMS Toggle --- */}
+            {/* SMS Toggle */}
             <div className="channel-toggle">
               <div className="channel-icon sms">
                 <FiMessageSquare />
               </div>
               <div className="channel-info">
                 <label htmlFor="sms-toggle">SMS</label>
-                <span>For reminders to your phone.</span>
+                <p>For reminders to your phone.</p>
               </div>
               <div className="channel-action">
                 <label className="toggle-switch">
-                  <input id="sms-toggle" type="checkbox" name="sms" checked={channels.sms} onChange={handleChannelChange} />
+                  <input
+                    id="sms-toggle"
+                    type="checkbox"
+                    name="sms"
+                    checked={channels.sms}
+                    onChange={handleChannelChange}
+                  />
                   <span className="slider"></span>
                 </label>
               </div>
             </div>
 
-            {/* --- WhatsApp Toggle --- */}
+            {/* WhatsApp Toggle */}
             <div className="channel-toggle">
               <div className="channel-icon whatsapp">
                 <FaWhatsapp />
               </div>
               <div className="channel-info">
                 <label htmlFor="whatsapp-toggle">WhatsApp</label>
-                <span>For convenience and reminders.</span>
+                <p>For convenience and reminders.</p>
               </div>
               <div className="channel-action">
                 <label className="toggle-switch">
-                  <input id="whatsapp-toggle" type="checkbox" name="whatsapp" checked={channels.whatsapp} onChange={handleChannelChange} />
+                  <input
+                    id="whatsapp-toggle"
+                    type="checkbox"
+                    name="whatsapp"
+                    checked={channels.whatsapp}
+                    onChange={handleChannelChange}
+                  />
                   <span className="slider"></span>
                 </label>
               </div>
@@ -349,7 +370,7 @@ export default function Settings() {
 
         <div className="settings-footer">
           <button type="submit" className="btn-primary" disabled={loading}>
-            {loading ? <FiLoader /> : "Save Changes"}
+            {loading ? <FiLoader className="spin" /> : "Save Changes"}
           </button>
         </div>
       </form>

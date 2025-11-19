@@ -34,7 +34,10 @@ const toDateOnlyKey = (d) => {
   if (!d) return null;
   const dd = new Date(d);
   dd.setHours(0, 0, 0, 0);
-  return dd.toISOString().split("T")[0];
+return dd.getFullYear() + "-" +
+       String(dd.getMonth() + 1).padStart(2, "0") + "-" +
+       String(dd.getDate()).padStart(2, "0");
+
 };
 
 const formatDatePretty = (d) =>

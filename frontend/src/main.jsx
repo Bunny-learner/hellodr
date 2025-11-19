@@ -23,7 +23,7 @@ if ('serviceWorker' in navigator) {
 
 
 createRoot(document.getElementById('root')).render(
-    <BrowserRouter>
+    <BrowserRouter basename="/hello-doctor">
     <AuthProvider>
     <SocketProvider>
     <App />

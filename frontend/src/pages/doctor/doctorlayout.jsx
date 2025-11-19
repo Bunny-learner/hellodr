@@ -6,6 +6,7 @@ import Bubbles from "../../components/Loaders/bubbles";
 import { DoctorContext } from "./doctorcontext"
 import "../../css/doctorhome.css"
 import { useSocket } from "../../pages/SocketContext.jsx";
+import Footer from "../Footer.jsx"
 
 export default function PatientLayout() {
   const {socket, socketId} = useSocket();
@@ -46,12 +47,13 @@ export default function PatientLayout() {
   return (
     <DoctorContext.Provider value={{ profile, doctors }}>
       <main className="main-content">
-        <Toaster position="top-left" toastOptions={{ className: "my-toast" }} />
+        <Toaster position="top-center" toastOptions={{ className: "my-toast" }} />
         <header className="main-header">
           <NavBar src={profile?.profilePic} usertype="doctor" />
         </header>
         <Outlet />
       </main>
+      <Footer/>
     </DoctorContext.Provider>
   );
 }

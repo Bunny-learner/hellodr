@@ -6,6 +6,7 @@ import Bubbles from "../../components/Loaders/bubbles";
 import { PatientContext } from "./patientcontext"
 import "../../css/patienthome.css"
 import { useSocket } from "../../pages/SocketContext.jsx";
+import Footer from "../Footer.jsx";
 
 
 
@@ -86,6 +87,7 @@ export default function PatientLayout() {
         </header>
         <Outlet />
       </main>
+      <Footer/>
     </PatientContext.Provider>
   );
 }

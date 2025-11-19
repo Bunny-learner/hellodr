@@ -1,11 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { LinearProgress } from '@mui/material';
-import icon from "../../assets/icon.png";
 import {
     FaCamera, FaUser, FaPhoneAlt, FaArrowLeft, FaCalendarAlt, FaMapMarkerAlt,
     FaRegBookmark, FaChevronDown, FaEnvelope, FaStethoscope, FaAward, FaDollarSign,
-    FaLanguage, FaStar, FaInfoCircle, FaPlus
+    FaLanguage, FaStar, FaInfoCircle, FaPlus, FaEdit
 } from 'react-icons/fa';
 import toast, { Toaster } from 'react-hot-toast';
 import { IoMdSettings, IoMdHelpCircleOutline } from 'react-icons/io';
@@ -34,30 +33,41 @@ export default function DoctorProfile() {
                     setProfile(response.profile);
                     setUrl(response.profile.profilePic || null);
                     setLanguageInput(response.profile.languages?.join(', ') || "");
+                } else if (res.status === 401) {
+                    navigate('/doctor/login?alert=Session expired, please login again');
                 }
             } catch (err) {
                 console.log(err);
+                toast.error('Failed to load profile');
             }
         }
         fetchProfile();
-    }, []);
+    }, [navigate]);
 
     const handleButtonClick = () => fileInputRef.current.click();
 
     const saveFileToDb = async (fileUrl) => {
         if (fileUrl) {
             try {
-                await fetch('http://localhost:8000/doctor/uploadimg', {
+                const res = await fetch('http://localhost:8000/doctor/uploadimg', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
                     body: JSON.stringify({ url: fileUrl })
                 });
+                
+                if (res.status === 401) {
+                    navigate('/doctor/login?alert=Session expired, please login again');
+                    return;
+                }
+                
                 toast.success('Profile image updated successfully');
                 setLoading(false);
                 setUrl(fileUrl);
             } catch (err) {
                 console.log(err);
+                toast.error('Failed to update profile image');
+                setLoading(false);
             }
         }
     };
@@ -69,23 +79,38 @@ export default function DoctorProfile() {
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include'
             });
-            if (res.status === 200)
+            if (res.status === 200) {
                 navigate('/doctor/login?alert=Logged Out Successfully');
-            else
+            } else {
                 toast.error("Please try logging out again");
+            }
         } catch (err) {
             console.log(err);
+            toast.error("Error logging out");
         }
     };
 
     const fileUpload = async (event) => {
         const file = event.target.files[0];
-        setLoading(true);
+        
         if (!file) {
             toast.error("Please select a file");
-            setLoading(false);
             return;
         }
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            toast.error("Please select an image file");
+            return;
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error("File size must be less than 5MB");
+            return;
+        }
+
+        setLoading(true);
 
         const formData = new FormData();
         formData.append('file', file);
@@ -123,7 +148,10 @@ export default function DoctorProfile() {
         const { name, value } = e.target;
         if (name === 'languages') {
             setLanguageInput(value);
-            setProfile(prev => ({ ...prev, languages: value.split(',').map(l => l.trim()).filter(l => l) }));
+            setProfile(prev => ({ 
+                ...prev, 
+                languages: value.split(',').map(l => l.trim()).filter(l => l) 
+            }));
         } else {
             setProfile(prev => ({ ...prev, [name]: value }));
         }
@@ -131,12 +159,16 @@ export default function DoctorProfile() {
 
     // ---- Past Treatments ----
     const addTreatment = () => {
-        if (!newTreatment.trim()) return;
+        if (!newTreatment.trim()) {
+            toast.error("Please enter a treatment");
+            return;
+        }
         setProfile(prev => ({
             ...prev,
             pasttreatments: [...(prev.pasttreatments || []), newTreatment.trim()]
         }));
         setNewTreatment("");
+        toast.success("Treatment added");
     };
 
     const removeTreatment = (index) => {
@@ -144,6 +176,7 @@ export default function DoctorProfile() {
             ...prev,
             pasttreatments: prev.pasttreatments.filter((_, i) => i !== index)
         }));
+        toast.success("Treatment removed");
     };
 
     const handleTreatmentKeyPress = (e) => {
@@ -154,6 +187,20 @@ export default function DoctorProfile() {
     };
 
     const saveProfile = async () => {
+        // Validation
+        if (!profile.name?.trim()) {
+            toast.error("Name is required");
+            return;
+        }
+        if (!profile.phone?.trim()) {
+            toast.error("Phone number is required");
+            return;
+        }
+        if (!profile.speciality?.trim()) {
+            toast.error("Speciality is required");
+            return;
+        }
+
         const updatedProfile = {
             ...profile,
             languages: languageInput.split(',').map(l => l.trim()).filter(l => l)
@@ -161,6 +208,7 @@ export default function DoctorProfile() {
         setProfile(updatedProfile);
 
         try {
+            setLoading(true);
             const res = await fetch('http://localhost:8000/doctor/updateprofile', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
@@ -168,6 +216,13 @@ export default function DoctorProfile() {
                 body: JSON.stringify(updatedProfile)
             });
             const data = await res.json();
+            setLoading(false);
+
+            if (res.status === 401) {
+                navigate('/doctor/login?alert=Session expired, please login again');
+                return;
+            }
+
             if (res.status === 200) {
                 toast.success('Profile updated successfully');
                 setEditMode(false);
@@ -177,16 +232,31 @@ export default function DoctorProfile() {
         } catch (err) {
             console.log(err);
             toast.error('Error updating profile');
+            setLoading(false);
         }
     };
 
-    if (!profile) return <Bubbles />;
+    const cancelEdit = () => {
+        // Reload profile data
+        setEditMode(false);
+        window.location.reload();
+    };
+
+    if (!profile) {
+        return (
+            <div className="main">
+                <div className="profile-main-container" style={{ justifyContent: 'center', alignItems: 'center' }}>
+                    <Bubbles />
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="main">
             {loading && <LinearProgress color="primary" className="progress" />}
             <div className="profile-main-container">
-                <Toaster position="top-left" toastOptions={{ className: "my-toast" }} />
+                <Toaster position="top-right" toastOptions={{ className: "my-toast", duration: 3000 }} />
 
                 {/* Sidebar */}
                 <div className="profile-sidebar">
@@ -201,12 +271,18 @@ export default function DoctorProfile() {
                             accept="image/*"
                             onChange={fileUpload}
                         />
-                        <button className="profile-camera-btn" onClick={handleButtonClick}>
+                        <button 
+                            className="profile-camera-btn" 
+                            onClick={handleButtonClick}
+                            title="Change profile picture"
+                        >
                             <FaCamera />
                         </button>
                     </div>
 
-                    <h1 className="profile-sidebar-title montserrat-regular">Hello Dr. {profile.name}</h1>
+                    <h1 className="profile-sidebar-title montserrat-regular">
+                        Hello Dr. {profile.name}
+                    </h1>
                     <p className="profile-sidebar-desc">
                         Update your profile to connect with <strong>patients</strong> with a better impression
                     </p>
@@ -234,30 +310,28 @@ export default function DoctorProfile() {
 
                 {/* Main Content */}
                 <div className="profile-main-content">
+                    <div className="profile-logo">
+                        <svg width="55" height="55" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g clipPath="url(#clip0_495_3740)">
+                                <path d="M64.9511 16.4914H53.5086V5.04886C53.5086 2.26596 51.2426 0 48.4597 0H21.5364C18.7535 0 16.4875 2.26596 16.4875 5.04886V16.4914H5.04886C2.26596 16.4914 0 18.7535 0 21.5403V48.4636C0 51.2465 2.26596 53.5125 5.04886 53.5125H16.4914V64.955C16.4914 67.7379 18.7535 70.0039 21.5403 70.0039H48.4636C51.2465 70.0039 53.5125 67.7379 53.5125 64.955V53.5125H64.955C67.7379 53.5125 70.0039 51.2465 70.0039 48.4636V21.5403C70 18.7535 67.734 16.4914 64.9511 16.4914ZM64.613 48.1255H53.5086V27.2576H48.1255V64.613H21.8745V53.5086H42.7385V48.1255H5.38312V21.8745H16.4875V42.7385H21.8706V5.38312H48.1177V16.4875H27.2615V21.8706H64.6169V48.1255H64.613Z" fill="url(#paint0_linear_495_3740)"/>
+                            </g>
+                            <defs>
+                                <linearGradient id="paint0_linear_495_3740" x1="-1.69238e-07" y1="3.58994" x2="76.3966" y2="18.4545" gradientUnits="userSpaceOnUse">
+                                    <stop stopColor="#0EBE7E"/>
+                                    <stop offset="1" stopColor="#07D9AD"/>
+                                </linearGradient>
+                                <clipPath id="clip0_495_3740">
+                                    <rect width="70" height="70" fill="white"/>
+                                </clipPath>
+                            </defs>
+                        </svg>
+                        HELLO <span className="profile-logo-blue">Dr.</span>
+                    </div>
 
-                     <div className="profile-logo">
-                                            <svg width="55" height="55" viewBox="0 0 70 70" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_495_3740)">
-<path d="M64.9511 16.4914H53.5086V5.04886C53.5086 2.26596 51.2426 0 48.4597 0H21.5364C18.7535 0 16.4875 2.26596 16.4875 5.04886V16.4914H5.04886C2.26596 16.4914 0 18.7535 0 21.5403V48.4636C0 51.2465 2.26596 53.5125 5.04886 53.5125H16.4914V64.955C16.4914 67.7379 18.7535 70.0039 21.5403 70.0039H48.4636C51.2465 70.0039 53.5125 67.7379 53.5125 64.955V53.5125H64.955C67.7379 53.5125 70.0039 51.2465 70.0039 48.4636V21.5403C70 18.7535 67.734 16.4914 64.9511 16.4914ZM64.613 48.1255H53.5086V27.2576H48.1255V64.613H21.8745V53.5086H42.7385V48.1255H5.38312V21.8745H16.4875V42.7385H21.8706V5.38312H48.1177V16.4875H27.2615V21.8706H64.6169V48.1255H64.613Z" fill="url(#paint0_linear_495_3740)"/>
-</g>
-<defs>
-<linearGradient id="paint0_linear_495_3740" x1="-1.69238e-07" y1="3.58994" x2="76.3966" y2="18.4545" gradientUnits="userSpaceOnUse">
-<stop stop-color="#0EBE7E"/>
-<stop offset="1" stop-color="#07D9AD"/>
-</linearGradient>
-<clipPath id="clip0_495_3740">
-<rect width="70" height="70" fill="white"/>
-</clipPath>
-</defs>
-</svg>
-
-                                            HELLO <span className="profile-logo-blue">Dr.</span>
-                                        </div>
                     <form onSubmit={(e) => e.preventDefault()} className="profile-form">
-
                         {/* Personal Info */}
                         <section className="profile-form-section">
-                            <h2>Personal information</h2>
+                            <h2>Personal Information</h2>
                             <div className="profile-form-grid">
                                 <div className="profile-input-group">
                                     <FaUser className="profile-input-icon" />
@@ -265,7 +339,7 @@ export default function DoctorProfile() {
                                         type="text"
                                         placeholder="Name"
                                         name="name"
-                                        value={profile.name}
+                                        value={profile.name || ""}
                                         onChange={handleInputChange}
                                         readOnly={!editMode}
                                     />
@@ -277,8 +351,9 @@ export default function DoctorProfile() {
                                         type="email"
                                         placeholder="Email"
                                         name="email"
-                                        value={profile.email}
+                                        value={profile.email || ""}
                                         readOnly
+                                        title="Email cannot be changed"
                                     />
                                 </div>
 
@@ -324,7 +399,7 @@ export default function DoctorProfile() {
                                         onChange={handleInputChange}
                                         disabled={!editMode}
                                     >
-                                        <option value="">Gender</option>
+                                        <option value="">Select Gender</option>
                                         <option value="Male">Male</option>
                                         <option value="Female">Female</option>
                                         <option value="Other">Other</option>
@@ -359,6 +434,7 @@ export default function DoctorProfile() {
                                         value={profile.experience || ""}
                                         onChange={handleInputChange}
                                         readOnly={!editMode}
+                                        min="0"
                                     />
                                 </div>
 
@@ -371,6 +447,7 @@ export default function DoctorProfile() {
                                         value={profile.fee || ""}
                                         onChange={handleInputChange}
                                         readOnly={!editMode}
+                                        min="0"
                                     />
                                 </div>
 
@@ -394,6 +471,7 @@ export default function DoctorProfile() {
                                         name="rating"
                                         value={profile.rating ? `${profile.rating.toFixed(1)} / 5.0` : "Not Rated"}
                                         readOnly
+                                        title="Rating is based on patient reviews"
                                     />
                                 </div>
                             </div>
@@ -414,6 +492,7 @@ export default function DoctorProfile() {
                                                 <span
                                                     className="remove-allergy"
                                                     onClick={() => removeTreatment(index)}
+                                                    title="Remove treatment"
                                                 >
                                                     ×
                                                 </span>
@@ -459,24 +538,34 @@ export default function DoctorProfile() {
                         </section>
 
                         {/* Buttons */}
-                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-                            {!editMode && (
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '24px' }}>
+                            {!editMode ? (
                                 <button
                                     type="button"
                                     className="profile-save-btn"
                                     onClick={() => setEditMode(true)}
                                 >
-                                    Edit
+                                    <FaEdit /> Edit Profile
                                 </button>
-                            )}
-                            {editMode && (
-                                <button
-                                    type="button"
-                                    className="profile-save-btn"
-                                    onClick={saveProfile}
-                                >
-                                    Save <FaRegBookmark />
-                                </button>
+                            ) : (
+                                <>
+                                    <button
+                                        type="button"
+                                        className="profile-save-btn"
+                                        onClick={cancelEdit}
+                                        style={{ background: '#6b7280' }}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="profile-save-btn"
+                                        onClick={saveProfile}
+                                        disabled={loading}
+                                    >
+                                        <FaRegBookmark /> Save Changes
+                                    </button>
+                                </>
                             )}
                         </div>
                     </form>

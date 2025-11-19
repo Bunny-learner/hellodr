@@ -3,7 +3,11 @@ import { useNavigate, useParams, Link } from "react-router-dom";
 import { PatientContext } from "./patientcontext";
 import HeartLoader from "../../components/Loaders/heartloader";
 import "../../css/slotbooking.css";
-import DayTabs from "../../components/Swiper/swiper";
+import MorningIcon from "../../assets/morning.svg"
+import AfternoonIcon from "../../assets/afternoon.svg"
+import EveningIcon from "../../assets/night.svg"
+
+import DayTabs from "../../assets/swiper";
 
 const formatDate = (date) => {
   if (!date) return "";
@@ -231,6 +235,14 @@ export default function SlotBooking() {
   };
 
 
+  const periodIcons = {
+  Morning: MorningIcon,
+  Afternoon: AfternoonIcon,
+  Evening: EveningIcon,
+};
+
+
+
   return (
     <div className="booking-page-container">
       <button onClick={() => navigate(-1)} className="back-button">
@@ -311,6 +323,10 @@ export default function SlotBooking() {
                   );
                 }
 
+
+
+
+
                 return ["Morning", "Afternoon", "Evening"]
                   .map((period) => {
                     const visibleSlots =
@@ -330,7 +346,11 @@ export default function SlotBooking() {
 
                     return (
                       <div key={period} className="time-period">
-                        <h4 className="time-title">{period}</h4>
+                         <div className="period-header">
+        <img src={periodIcons[period]} className="period-icon" alt={period} />
+        <span className="time-title">{period}</span>
+      </div>
+                        
                         <div className="slots-grid">
                           {visibleSlots.map((slot) => (
                             <button

@@ -100,7 +100,7 @@ export default function Navbar({ src, usertype = "patient" }) {
 </defs>
 </svg>
 
-            <span>Hello Dr.</span>
+              <span>Hello<strong className="company">Dr</strong></span>
           </Link>
         
 

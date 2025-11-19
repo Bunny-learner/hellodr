@@ -34,7 +34,10 @@ export async function startProcessor(job) {
     }
 
     const currentStatus = (appt.status || "").toLowerCase();
+    console.log(`[startProcessor] ✅ Promoting appointment → next_up`);
 
+    appt.status = "next_up";
+    await appt.save();
   
     if (currentStatus === "in_progress") {
       console.log(
@@ -83,90 +86,92 @@ export async function startProcessor(job) {
     const patientChannel = `user:${patientId}`;
 
     
-    //sending dealy notification
-    if (activeAppointment) {
-      console.log(
-        `[startProcessor] ⏳ Doctor busy with other appointment (${activeAppointment._id}) → Delay notice for ${appointmentId}`
-      );
-
-
-      const doctorPayload = {
-      type: "delay",
-      data: {
-        doctorid: doctorId,
-        patientid: patientId,
-        message:
-            "Next patient is waiting ,please close this consultation as soon as possible",
-        appointmentid: appointmentId,
-        isappointment: true,
-        from: "system",
-        to: "doctor"
-      },
-    };
-
-
-      const patientPayload = {
-        type: "delay",
-        data: {
-          message:
-            "The doctor is busy with another patient. Please wait, you will be notified soon.",
-          doctorid: doctorId,
-          patientid: patientId,
-          appointmentid: appointmentId,
-          isappointment: true,
-          from: "system",
-          to: "patient",
-        },
-      };
-
-      await redisPub.publish(patientChannel, JSON.stringify(patientPayload));
-      await redisPub.publish(doctorChannel, JSON.stringify(doctorPayload));
-      console.log(`[startProcessor] ✅ Delay notice sent`);
-      return;
-    }
-
     /* ------------------------------------------------------------------
-     * (6B) CASE — Queue cold → Promote to NEXT_UP
-     * ------------------------------------------------------------------ */
-    console.log(`[startProcessor] ✅ Promoting appointment → next_up`);
+ * 5) Check if doctor is ACTUALLY BUSY
+ * ------------------------------------------------------------------ */
 
-    appt.status = "next_up";
-    await appt.save();
+// (A) REAL-TIME CHECK — Doctor is inside room
+if (roomState?.doctor === true) {
+  console.log(`[startProcessor] ⏳ Doctor is inside room → send delay`);
 
   const doctorPayload = {
-  type: "appointment:StatusChanged",
-  data: {
-    doctorid: doctorId,
-    patientid: patientId,
-    status: "next_up",
-    message: "Your next appointment has been scheduled. Please connect with the patient at the allotted time to begin the consultation.",
-    appointmentid: appointmentId,
-    isappointment: true,
-    from: "system",
-    to: "doctor"
-  },
-};
+    type: "delay",
+    data: {
+      doctorid: doctorId,
+      patientid: patientId,
+      message: "Next patient is waiting, please end current consultation soon.",
+      appointmentid: appointmentId,
+      isappointment: true,
+      from: "system",
+      to: "doctor",
+    },
+  };
 
+  const patientPayload = {
+    type: "delay",
+    data: {
+      message:
+        "The doctor is busy with another patient. Please wait, you will be notified soon.",
+      doctorid: doctorId,
+      patientid: patientId,
+      appointmentid: appointmentId,
+      isappointment: true,
+      from: "system",
+      to: "patient",
+    },
+  };
 
- 
-    const patientPayload = {
-      type: "start",
-      data: {
-        message:
-          "You are next in line. The doctor will connect with you shortly.",
-        doctorid: doctorId,
-        patientid: patientId,
-        appointmentid: appointmentId,
-        isappointment: true,
-        from: "system",
-        to: "patient",
-      },
-    };
+  await redisPub.publish(patientChannel, JSON.stringify(patientPayload));
+  await redisPub.publish(doctorChannel, JSON.stringify(doctorPayload));
+  return;
+}
 
-    await redisPub.publish(doctorChannel, JSON.stringify(doctorPayload));
-    await redisPub.publish(patientChannel, JSON.stringify(patientPayload));
+// (B) DB CHECK — Is ANY OTHER appointment in_progress?
+const busyAppt = await Appointment.findOne({
+  _id: { $ne: appointmentId },
+  doctor: doctorId,
+  status: "in_progress",
+  date: { $gte: startDay, $lt: nextDay },
+});
 
-    console.log(`[startProcessor] ✅ NEXT_UP broadcast complete\n`);
+if (busyAppt) {
+  console.log(
+    `[startProcessor] ⏳ Doctor is busy with active appointment (${busyAppt._id}) → Delay`
+  );
+
+  const doctorPayload = {
+    type: "delay",
+    data: {
+      doctorid: doctorId,
+      patientid: patientId,
+      message:
+        "Next patient is waiting, please close the ongoing consultation soon.",
+      appointmentid: appointmentId,
+      isappointment: true,
+      from: "system",
+      to: "doctor",
+    },
+  };
+
+  const patientPayload = {
+    type: "delay",
+    data: {
+      message:
+        "The doctor is busy with another appointment. Please wait for your turn.",
+      doctorid: doctorId,
+      patientid: patientId,
+      appointmentid: appointmentId,
+      isappointment: true,
+      from: "system",
+      to: "patient",
+    },
+  };
+
+  await redisPub.publish(patientChannel, JSON.stringify(patientPayload));
+  await redisPub.publish(doctorChannel, JSON.stringify(doctorPayload));
+  return;
+}
+
   } catch (err) {
     console.error(`[startProcessor] ❌ ERROR:`, err);
   }

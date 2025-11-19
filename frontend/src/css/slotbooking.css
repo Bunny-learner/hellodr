@@ -319,9 +319,8 @@ body {
 .time-title {
   font-weight: 600;
   font-size: 1.1rem;
-  color: #1a73e8;
+  color: #00008b;
   margin-top: 0;
-  margin-bottom: 1rem;
 }
 
 .slots-grid {
@@ -352,6 +351,17 @@ body {
   margin-top: 2px;
 }
 
+.period-header {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* space between icon and text */
+  margin-bottom: 8px;
+}
+
+.period-icon {
+  width: 20px;
+  height: 20px;
+}
 
 
 .slot-selected {

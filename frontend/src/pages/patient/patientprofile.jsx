@@ -210,14 +210,19 @@ const PatientProfile = () => {
                             </linearGradient>
                         </defs>
                     </svg>
-                    <span>Health<strong>Care</strong></span>
+                    <span>Hello<strong>Dr</strong></span>
                 </div>
             </div>
 
             <div className="profile-container">
                 {/* Sidebar */}
+
+                {/* OVERLAY (click to close) */}
+{sidebarOpen && (
+    <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />
+)}
                 <aside className={`profile-sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}>
-                    <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)}></div>
+                  
                     <div className="sidebar-content">
                         <button className="sidebar-close" onClick={() => setSidebarOpen(false)}>
                             <FaTimes />

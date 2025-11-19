@@ -7,9 +7,10 @@
 
 /* CSS Variables */
 :root {
-  --primary-color: #0EBE7E;
-  --primary-dark: #0ba068;
-  --primary-light: #07D9AD;
+ --primary-color: #2979FF;      /* Vivid Blue */
+--primary-dark: #1C54B2;
+--primary-light: #82B1FF;
+
   --secondary-color: #2563eb;
   --secondary-dark: #1d4ed8;
   --accent-color: #8b5cf6;

@@ -47,6 +47,7 @@ const Welcome1 = () => {
   ];
 
   return (
+    <>
     <div className="welcome-container">
 
       {/* ================= HEADER ================= */}
@@ -62,14 +63,14 @@ const Welcome1 = () => {
           <div className="flex gap-3">
             <button
               className="header-btn header-btn-outline"
-              onClick={() => navigate("/auth")}
+              onClick={() => navigate("/patient/login")}
             >
               Sign In
             </button>
 
             <button
               className="header-btn header-btn-primary"
-              onClick={() => navigate("/auth")}
+              onClick={() => navigate("/patient/signup")}
             >
               Get Started
             </button>
@@ -108,7 +109,7 @@ const Welcome1 = () => {
 
               <button
                 className="hero-btn-outline"
-                onClick={() => navigate("/role-selection")}
+                onClick={() => navigate("/doctor/signup")}
               >
                 Join as Doctor
               </button>
@@ -196,7 +197,10 @@ const Welcome1 = () => {
         </div>
       </section>
 
-      {/* ================= FOOTER ================= */}
+      
+    </div>
+
+    {/* ================= FOOTER ================= */}
       <footer className="footer">
         <div className="footer-inner">
 
@@ -225,8 +229,7 @@ const Welcome1 = () => {
 
         </div>
       </footer>
-
-    </div>
+</>
   );
 };
 

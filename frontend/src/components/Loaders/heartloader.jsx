@@ -10,7 +10,7 @@ export default function HeartLoader() {
   size="270"
   stroke="12"
   speed="3"
-  color="#349ce3" 
+  color="#007bff" 
 /></div>
   )
 }

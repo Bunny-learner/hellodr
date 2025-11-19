@@ -46,12 +46,20 @@ export default function registerRedisListener(redisSub, userConnections, io) {
         await notif.save();
       }
 
-      let targetUserId =
-        data.to === "doctor"
-          ? data.doctorid
-          : data.patientid;
+     let targetUserId =
+  data.to === "doctor"
+    ? data.doctorid
+    : data.patientid;
 
-      const targetSocketId = userConnections.get(targetUserId?.toString());
+
+targetUserId = targetUserId?.toString();
+const targetSocket = userConnections.get(targetUserId);
+
+if (!targetSocket) {
+  console.log("⚠️ Target user not connected:", targetUserId);
+  return;
+}
+const targetSocketId = targetSocket.id;
 
       if (type === "cancelled") {
         const appointment = data.appointment;
@@ -67,14 +75,13 @@ export default function registerRedisListener(redisSub, userConnections, io) {
           "Appointment Cancelled",
           msg
         );
+        return;
       }
       
-      // Log the object you're actually using
-      console.log("Processing data object:::", data); 
+      
+      
       
       if (targetSocketId) {
-        console.log("📨 Delivering socket to", targetUserId);
-
         if (data.to === "patient") {
           io.to(targetSocketId).emit("patientnotification", data);
         } else {

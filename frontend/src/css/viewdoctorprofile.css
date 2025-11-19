@@ -14,7 +14,6 @@
 
 .vdp-page-container {
   background:linear-gradient(180deg, #f7fbff 0%, #f0f6ff 40%, #ffffff 100%);
-  max-width: 1200px;
   margin: 2rem auto;
   padding: 0 1.5rem;
 }
@@ -41,6 +40,7 @@
 .vdp-main {
   flex: 2; /* Takes 2/3 of the space */
   min-width: 0;
+  width: 100%;
 }
 
 .vdp-sidebar {
@@ -276,6 +276,14 @@
 
 @media (max-width: 600px) {
   .vdp-intro-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width:410px){
+
+  .vdp-info-list li{
     flex-direction: column;
     align-items: flex-start;
   }

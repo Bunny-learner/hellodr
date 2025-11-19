@@ -15,13 +15,18 @@ FaArrowRight
 
 // --- Helper: Get Icon ---
 const getIcon = (type) => {
-switch (type) {
-case 'appointment': return <FaCalendarCheck className="sidebar-notif-icon-wrapper" />;
-case 'chat': return <FaCommentDots className="sidebar-notif-icon-wrapper" />;
-case 'system': return <FaCog className="sidebar-notif-icon-wrapper" />;
-default: return <FaBell className="sidebar-notif-icon-wrapper" />;
-}
+  switch (type) {
+    case "doctor":
+      return <FaCalendarCheck className="sidebar-notif-icon doctor-icon" />;
+    case "system":
+      return <FaCog className="sidebar-notif-icon system-icon" />;
+    case "patient":
+      return <FaCommentDots className="sidebar-notif-icon patient-icon" />;
+    default:
+      return <FaBell className="sidebar-notif-icon default-icon" />;
+  }
 };
+
 
 // --- Helper: Time Ago ---
 const timeAgo = (isoString) => {
@@ -35,22 +40,40 @@ return "Just now";
 };
 
 // --- Notification Item ---
-const NotificationItem = ({ notification, onClick }) => (
+const NotificationItem = ({ notification, onClick }) => {
 
-  <div  
-    className={`sidebar-notification-item ${notification.read ? '' : 'sidebar-unread'}`}  
-    onClick={() => onClick(notification)}  
-    role="button"  
-    tabIndex={0}  
-  >  
-    {getIcon(notification.type)}  
-    <div className="sidebar-notif-content">  
-      <p className="sidebar-notif-message">{notification.message}</p>  
-      <span className="sidebar-notif-timestamp">{timeAgo(notification.timestamp)}</span>  
-    </div>  
-    {!notification.read && <div className="sidebar-unread-dot"></div>}  
-  </div>  
-);  
+  const typeClass =
+    notification.type === "system"
+      ? "sidebar-notif-system"
+      : notification.type === "doctor"
+      ? "sidebar-notif-doctor"
+      : notification.type === "patient"
+      ? "sidebar-notif-patient"
+      : "sidebar-notif-default";
+
+  return (
+    <div
+      className={`sidebar-notification-item 
+                  ${typeClass} 
+                  ${notification.read ? "" : "sidebar-unread"}`}
+      onClick={() => onClick(notification)}
+      role="button"
+      tabIndex={0}
+    >
+      {getIcon(notification.type)}
+
+      <div className="sidebar-notif-content">
+        <p className="sidebar-notif-message">{notification.message}</p>
+        <span className="sidebar-notif-timestamp">
+          {timeAgo(notification.timestamp)}
+        </span>
+      </div>
+
+      {!notification.read && <div className="sidebar-unread-dot"></div>}
+    </div>
+  );
+};
+
 
 // --- Main Sidebar ---
 export default function Sidebar({ isOpen, onClose, notifications = mockNotifications, basePath = '' }) {

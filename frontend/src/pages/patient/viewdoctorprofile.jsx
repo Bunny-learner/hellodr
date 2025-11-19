@@ -232,33 +232,6 @@ export default function ViewDoctorProfile() {
       </div>
       
     </div>
-    <footer className="footer">
-        <div className="footer-inner">
-
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div >
-              <Logo size="40"/>
-              </div>
-              <h3 className="logo-footer">Hello Dr</h3>
-            </div>
-            <p className="footer-text">
-              Connecting patients with healthcare professionals for better outcomes.
-            </p>
-          </div>
-
-          <div>
-            <h4 className="footer-title">Support</h4>
-
-            <ul className="footer-links">
-              <li><button onClick={() => navigate("/help-center")}>Help Center</button></li>
-              <li><button onClick={() => navigate("/privacy-policy")}>Privacy Policy</button></li>
-              <li><button onClick={() => navigate("/coming-soon")}>Terms of Service</button></li>
-              <li><button onClick={() => navigate("/coming-soon")}>Contact Us</button></li>
-            </ul>
-          </div>
-
-        </div>
-      </footer></>
+   </>
   );
 }

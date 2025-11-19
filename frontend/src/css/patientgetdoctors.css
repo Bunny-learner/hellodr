@@ -321,6 +321,10 @@
     flex-direction: column;
   }
 
+   .navbar-search input,.location-btn{
+    font-size: 0.75rem;
+  }
+  
   .doctor-card-image {
     width: 100%;
     aspect-ratio: 16 / 9;   /* mobile wide image */
@@ -357,9 +361,16 @@
     gap: 0.25rem;
   }
 
+
+  
   .pagination-btn {
     padding: 0.4rem 0.6rem;
     font-size: 0.8rem;
+  }
+
+  .location-btn{
+    padding:6px;
+    font-size: 0.65rem;
   }
 
   .doctor-card-action {
@@ -389,3 +400,23 @@
 }
 
 
+
+@media (max-width:330px){
+  
+ .location-btn{
+    font-size: 0.5rem;
+    gap:3px;
+    padding:5px;
+  }
+
+  .navbar-search input{
+    font-size: 0.6rem;
+  }
+  #filter{
+    width: 18px;
+  }
+  .pin{
+    width: 13px;
+  }
+  
+}

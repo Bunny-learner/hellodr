@@ -416,67 +416,6 @@
 }
 
 /* ============================================================
- FOOTER (REDESIGNED)
-============================================================ */
-.footer {
-  background: #111827;
-  color: white;
-  padding: 40px 20px;
-}
-
-.footer-inner {
-  max-width: 1200px;
-  margin: auto;
-  display: flex; /* CHANGED: Switched to flexbox */
-  justify-content: space-between; /* CHANGED: Clean alignment */
-  align-items: flex-start; /* CHANGED: Top-align columns */
-  flex-wrap: wrap; /* CHANGED: Allow wrapping on mobile */
-  gap: 40px;
-}
-
-.logo-footer {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #ffffff; /* CHANGED: Bright white */
-}
-
-.footer-text {
-  color: #9ca3af;
-  max-width: 300px;
-}
-
-.footer-title {
-  font-size: 1.1rem; /* CHANGED: Slightly larger */
-  font-weight: 600;
-  color: #ffffff; /* CHANGED: Bright white */
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 1.5rem; /* CHANGED: More space */
-}
-.footer-links {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.footer-links li {
-  margin-bottom: 0.75rem; /* CHANGED: More space between links */
-}
-
-.footer-links button {
-  background: none;
-  color: #9ca3af; /* CHANGED: Standard link color */
-  border: none;
-  cursor: pointer;
-  padding: 0; /* CHANGED: Cleaner look */
-  font-size: 1rem;
-  transition: color 0.2s ease; /* CHANGED: Added hover effect */
-}
-
-.footer-links button:hover {
-  color: #ffffff; /* CHANGED: White on hover */
-}
-/* ============================================================
  RESPONSIVE FIXES (FULLY UPDATED & OPTIMIZED)
 ============================================================ */
 

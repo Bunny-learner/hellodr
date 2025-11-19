@@ -18,7 +18,11 @@ export async function sendPushNotification(subscription, payload) {
     throw new Error("Invalid push subscription object.");
   }
 
+
+  console.log("subscription",subscription,"and payload\n")
   try {
+    console.log(payload)
+    console.log("sending push to subscription")
     await webpush.sendNotification(subscription, payload);
 
   } catch (err) {

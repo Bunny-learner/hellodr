@@ -116,6 +116,7 @@
   margin-bottom: 0.75rem;
   cursor: pointer;
   transition: 0.2s ease;
+  position: relative;
 }
 
 .sidebar-notification-item:hover {
@@ -123,9 +124,8 @@
   border-color: #d9e7ff;
 }
 
-.sidebar-notif-icon-wrapper {
+.sidebar-notif-icon {
   font-size: 1.4rem;
-  color: #2f6df3;
   padding-top: 3px;
 }
 
@@ -219,4 +219,48 @@
   .sidebar-panel.sidebar-panel-open {
     right: 0;
   }
+}
+
+/* =========================================================
+   CUSTOM TYPES — SYSTEM / DOCTOR / PATIENT
+========================================================= */
+
+/* SYSTEM */
+.sidebar-notif-system {
+  border-left: 4px solid #2563eb !important;
+  background: #eef4ff !important;
+}
+
+.system-icon {
+  color: #2563eb !important;
+}
+
+/* DOCTOR */
+.sidebar-notif-doctor {
+  border-left: 4px solid #10b981 !important;
+  background: #e9fff6 !important;
+}
+
+.doctor-icon {
+  color: #059669 !important;
+}
+
+/* PATIENT */
+.sidebar-notif-patient {
+  border-left: 4px solid #8b5cf6 !important;
+  background: #f5efff !important;
+}
+
+.patient-icon {
+  color: #7c3aed !important;
+}
+
+/* DEFAULT (chat, general) */
+.sidebar-notif-default {
+  border-left: 4px solid #94a3b8 !important;
+  background: #f7f9fb !important;
+}
+
+.default-icon {
+  color: #6b7280 !important;
 }

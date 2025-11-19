@@ -1,6 +1,6 @@
 import { timeoutQueue } from "../queues/timeout.queue.js";
 
-const TIMEOUT_GRACE_PERIOD_MS = 1 * 60 * 1000;
+const TIMEOUT_GRACE_PERIOD_MS = 10* 60 * 1000;
 
 export async function scheduleTimeoutJobs(appointment) {
   try {

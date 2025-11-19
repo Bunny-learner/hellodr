@@ -12,10 +12,10 @@ import { Patient } from "../models/patient.js"
 import doctorSocketHandler from "../sockets/doctor.sockets.js";
 import { scheduleJobsForAppointment } from "../scheduling/schedule_appointment.js"
 import { scheduleRemindersForAppointment } from "../scheduling/schedule_reminder.js";
-import { scheduleTimeoutJobs} from "../scheduling/schedule_timeout.js";
+import { scheduleTimeoutJobs } from "../scheduling/schedule_timeout.js";
 import { removeAppointmentJobs } from "../scheduling/remove_job.js";
-
-
+import { userConnections } from "../sockets/index.js";
+import { Notification } from "../models/notification.js";
 /**
  
  * @param {string} dateString - The date string in "DD-MM-YYYY" format.
@@ -156,18 +156,33 @@ const book_appointment = asynchandler(async (req, res) => {
 
 
   let indiaTime = await itime(appointment)
-  redisPub.publish(`user:${appointment.doctor}`, JSON.stringify({
-    type: "booking",
-    data: {
-      message: `Patient ${appointment.name} (${gender}, ${age} years old) has booked an ${mode.toLowerCase()} appointment on ${indiaTime}.`,
-      doctorid: appointment.doctor,
-      patientid: appointment.patient,
-      appointmentid: appointment.id,
-      isappointment: true,
-      from: "patient",
-      to: "doctor"
-    }
-  }));
+
+  let notif = new Notification({
+
+    message: `Patient ${appointment.name} (${gender}, ${age} years old) has booked an ${mode.toLowerCase()} appointment on ${indiaTime}.`,
+    doctorid: appointment.doctor,
+    patientid: appointment.patient,
+    appointmentid: appointment.id,
+    isappointment: true,
+    from: "patient",
+    to: "doctor"
+  })
+  await notif.save()
+
+  //sending live notification to doctor
+  let did = appointment.doctor.toString()
+  const doctorsocket = userConnections.get(did);
+
+  if (doctorsocket) {
+    doctorsocket.emit("doctornotification", { msg: "got notified" });
+  } else {
+    console.log("⚠️ Doctor not online, cannot send socket event");
+  }
+
+
+
+
+  console.log("booking done")
   res.status(201).json({
     sucess: true,
     appointment: populatedAppointment,
@@ -178,7 +193,7 @@ const book_appointment = asynchandler(async (req, res) => {
 
 const get_all_appointments = asynchandler(async (req, res) => {
   const userID = req.user.id;
-  const userType = req.userType;     
+  const userType = req.userType;
   let { status, date } = req.query;
 
   const query = { [userType]: userID };
@@ -191,15 +206,15 @@ const get_all_appointments = asynchandler(async (req, res) => {
 
     if (status === "livequeue") {
       // LIVE QUEUE = accepted + next_up + in_progress
-      query["status"] = { 
-        $in: ["accepted", "next_up", "in_progress"] 
+      query["status"] = {
+        $in: ["accepted", "next_up", "in_progress"]
       };
-    } 
-    
+    }
+
     else if (status === "rejected") {
       query["status"] = { $in: ["rejected", "cancelled"] };
-    } 
-    
+    }
+
     else {
       query["status"] = status;
     }
@@ -245,7 +260,7 @@ const update_appointment_status = asynchandler(async (req, res) => {
     .populate("TimeSlot")
     .populate("patient");
 
-    console.log("appointment fetched sucessfully->",status)
+
 
   if (!appointment) {
     res.status(404);
@@ -254,24 +269,39 @@ const update_appointment_status = asynchandler(async (req, res) => {
 
   appointment.status = status;
   await appointment.save();
-  console.log("saved")
+
 
   let indiaTime = await itime(appointment)
 
 
 
-  redisPub.publish(`user:${appointment.patient}`, JSON.stringify({
-    type: "status",
-    data: {
-      message: `Your doctor appointment status is ${status} for the slot  ${appointment.TimeSlot.StartTime}-${appointment.TimeSlot.EndTime} booked on ${indiaTime} `,
-      doctorid: appointment.doctor,
-      patientid: appointment.patient,
-      appointmentid: appointment.id,
-      isappointment: true,
-      from: "doctor",
-      to: "patient"
-    }
-  }));
+
+
+  let notif = new Notification({
+    message: `Your doctor appointment status is ${status} for the slot  ${appointment.TimeSlot.StartTime}-${appointment.TimeSlot.EndTime} booked on ${indiaTime} `,
+    doctorid: appointment.doctor,
+    patientid: appointment.patient,
+    appointmentid: appointment.id,
+    isappointment: true,
+    from: "doctor",
+    to: "patient"
+  })
+  await notif.save();
+
+  //sending live  notification to patient about the status of appointment
+  
+  const patientId =
+    appointment.patient?._id?.toString() ??
+    appointment.patient.toString();
+  const patientsocket = userConnections.get(patientId);
+
+  if (patientsocket) {
+    patientsocket.emit("patientnotification", { msg: "got notified" });
+  } else {
+    console.log("⚠️ Patient offline, cannot send notification");
+  }
+
+
 
   //Accepted
   if (status.toLowerCase() === "accepted") {
@@ -285,7 +315,7 @@ const update_appointment_status = asynchandler(async (req, res) => {
   //Cancelled
   else if (status.toLowerCase() === "cancelled") {
     try {
-     
+
       const slot = await TimeSlot.findById(appointment.TimeSlot._id);
 
       if (slot) {
@@ -301,7 +331,7 @@ const update_appointment_status = asynchandler(async (req, res) => {
 
         await removeAppointmentJobs(appointmentID)
 
-        
+
         const patient = appointment.patient;
         const mode = appointment.mode;
         const age = appointment.age;   // you stored age above
@@ -323,7 +353,7 @@ const update_appointment_status = asynchandler(async (req, res) => {
             },
           })
         );
-         console.log(
+        console.log(
           `Slot ${slot._id} updated: booked=${slot.booked}, status=${slot.status}`
         );
 
@@ -343,32 +373,120 @@ const update_appointment_status = asynchandler(async (req, res) => {
 
     if (transaction && transaction.stripePaymentIntentId) {
       try {
-        let stripeResult="";
+        let stripeResult = "";
 
         if (info === "proceed") {
           stripeResult = await stripe.paymentIntents.capture(transaction.stripePaymentIntentId);
           transaction.paymentStatus = "paid";
           await transaction.save();
           console.log("Stripe processed:", stripeResult);
+
+
+          //sending notification to the patient to add review
+          const tempo = await Doctor.findById(appointment.doctor)
+          const notif = new Notification({
+            patientid: appointment.patient,
+            doctorid: appointment.doctor,
+            appointmentid: appointment.id,
+            from: "doctor",
+            to: "patient",
+            message: `Please leave a review ${tempo.name} for your reviews are helpful in improving your experience.`,
+            isappointment: true
+          })
+
+          await notif.save()
+
+
+
+          //sending live notification
+          const pid =
+            appointment?.patient?._id?.toString() ??
+            appointment.patient.toString();
+
+          const patientsocket = userConnections.get(pid);
+
+          if (patientsocket) {
+            patientsocket.emit("patientnotification", { msg: "got notified" });
+          } else {
+            console.log("⚠️ Patient not connected");
+          }
+
+
+          //decrease the bookings by 1 for that appointment
           
+          const slot = appointment.TimeSlot;
+
+          if (!slot || !slot._id) {
+            console.log("⚠️ Timeslot missing in appointment");
+          } else {
+            
+            const ts = await TimeSlot.findById(slot._id);
+
+            if (ts) {
+              ts.booked = Math.max(0, ts.booked - 1); 
+
+              if (ts.booked < ts.limit) {
+                ts.status = "available";
+              }
+
+              await ts.save();
+              console.log(`✔️ Updated timeslot: booked=${ts.booked}, status=${ts.status}`);
+            } else {
+              console.log(`❌ Timeslot not found for ID: ${slot._id}`);
+            }
+          }
+
+
+
+          //promoting the other cards to next_up
+
+
+          const current = await Appointment.find({ "status": "next_up" })
+          if (current.length == 0) {
+            res.status(201).json({
+              message: "Appointment status updated successfully",
+              appointment,
+            });
+          }
+
+          else {
+            const upcoming = await Appointment.findOne({
+              status: 'accepted',
+              doctor: userID
+            }).sort({ time: 1 });
+
+            if (upcoming) {
+              upcoming.status = 'next_up';
+              await upcoming.save();
+            }
+
+          }
+
+
         } else if (info === "cancel") {
           stripeResult = await stripe.paymentIntents.cancel(transaction.stripePaymentIntentId);
           transaction.paymentStatus = "failed";
           await transaction.save();
           console.log("Stripe processed:", stripeResult);
-          
+
         }
         else
           console.log("stripe processing is being skipped ")
-        
 
 
-        
+
+
       } catch (err) {
         console.error("Stripe processing error:", err);
       }
+
+
+
     }
   }
+
+
+
 
   res.status(201).json({
     message: "Appointment status updated successfully",
@@ -503,8 +621,8 @@ const authorize = asynchandler(async (req, res) => {
 
 
 
-const update_inprogress=asynchandler(async(req,res)=>{
-const { appointmentID, status } = req.body;
+const update_inprogress = asynchandler(async (req, res) => {
+  const { appointmentID, status } = req.body;
 
   if (!status) {
     res.status(400);
@@ -523,11 +641,11 @@ const { appointmentID, status } = req.body;
 
   appointment.status = status;
   await appointment.save();
- 
-  res.status(200).json({
-  success:true
-  });
-  
 
-}) 
-export { book_appointment,update_inprogress, authorize, gettransactions, getsession, get_all_appointments, update_appointment_status, get_appiontment }
+  res.status(200).json({
+    success: true
+  });
+
+
+})
+export { book_appointment, update_inprogress, authorize, gettransactions, getsession, get_all_appointments, update_appointment_status, get_appiontment }

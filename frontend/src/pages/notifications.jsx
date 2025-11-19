@@ -24,6 +24,8 @@ const Notifications = () => {
         const data=await res.json()
         if(res.status==200)
               setNotifList(data.notifications);
+        else if(res.status==401)
+          navigate("/patient/login?alert=Session expired login again")
         else
           console.log(`response status is ${res.status}`)
       })

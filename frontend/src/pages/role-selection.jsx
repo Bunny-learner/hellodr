@@ -73,7 +73,7 @@ const RoleSelection = () => {
       {/* Login Link */}
       <div className="signin-box">
         <p>Already have an account?</p>
-        <button className="link-btn" onClick={() => navigate("/login")}>
+        <button className="link-btn" onClick={() => navigate("/patient/login")}>
           Sign in here
         </button>
       </div>

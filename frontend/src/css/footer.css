@@ -1,0 +1,62 @@
+/* ============================================================
+  FOOTER (REDESIGNED BLUE-THEME)
+============================================================ */
+.footer {
+  background: #0F172A; /* CHANGED: Blue-ish dark color */
+  color: #F1F5F9;     /* Soft white, not harsh */
+  padding: 40px 20px;
+}
+
+.footer-inner {
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+.logo-footer {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #FFFFFF; /* brighter white */
+}
+
+.footer-text {
+  color: #94A3B8; /* Slate blue-gray text */
+  max-width: 300px;
+}
+
+.footer-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1.5rem;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: 0.75rem;
+}
+
+.footer-links button {
+  background: none;
+  color: #CBD5E1; /* Soft blue-gray */
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: 1rem;
+  transition: color 0.2s ease;
+}
+
+.footer-links button:hover {
+  color: #FFFFFF; /* White hover */
+}
