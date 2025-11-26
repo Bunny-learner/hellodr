@@ -97,8 +97,24 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-#filter{
+.filtery{
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background: linear-gradient(to right, #2563eb, #16a34a);
+  border-radius: 50%;
+  padding:10px;
   cursor: pointer;
+  transition: 0.25s ease;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+  z-index: 5000;
+  
+}
+
+
+.filtery:hover {
+  transform: scale(1.12);
+
 }
 
 .navbar-search .filter {
@@ -404,7 +420,7 @@
 @media (max-width:330px){
   
  .location-btn{
-    font-size: 0.5rem;
+    font-size: 0.6rem;
     gap:3px;
     padding:5px;
   }
@@ -412,11 +428,28 @@
   .navbar-search input{
     font-size: 0.6rem;
   }
-  #filter{
-    width: 18px;
+  .filtery{
+    padding:5px;
   }
   .pin{
     width: 13px;
   }
   
+}
+.filter-panel {
+  position: fixed;
+  bottom: -100%;
+  left: 0;
+  width: 100%;
+  height: 70%;
+  background: #fff;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -5px 20px rgba(0,0,0,0.15);
+  transition: bottom 0.35s ease-out;
+  z-index: 3000;
+  overflow-y: auto;
+}
+
+.filter-panel.open {
+  bottom: 0;
 }
