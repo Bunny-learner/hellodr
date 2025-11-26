@@ -72,7 +72,7 @@ const Welcome1 = () => {
               className="header-btn header-btn-primary"
               onClick={() => navigate("/patient/signup")}
             >
-              Get Started
+              Get Started 
             </button>
           </div>
         </div>
@@ -120,7 +120,7 @@ const Welcome1 = () => {
           <div className="hero-image-container">
             <div className="hero-image-box">
               <img
-                src="/wel.jpg"
+                src="https://res.cloudinary.com/decmqqc9n/image/upload/v1763620425/home_v1siak.jpg"
                 alt="doctor"
                 className="hero-image"
               />
@@ -207,7 +207,7 @@ const Welcome1 = () => {
           <div>
             <div className="flex items-center gap-3 mb-4">
               <div >
-              <Logo size="40"/>
+              <Logo className="logo-icon" size="40"/>
               </div>
               <h3 className="logo-footer">Hello Dr</h3>
             </div>

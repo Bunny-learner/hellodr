@@ -9,7 +9,7 @@ import {Review} from "../models/review.js"
 import bcrypt from "bcrypt"
 dotenv.config({ quiet: true })
 import { generate } from "./generate_tokens.js"
-
+const API = process.env.WEB_URL;
 
 // const getCookieOptions = (maxAge) => ({
 //     httpOnly: true,
@@ -44,13 +44,13 @@ const pat_signup = asynchandler(async (req, res) => {
         console.log(accesstoken, refreshtoken)
         // res.cookie("refreshtoken", refreshtoken, getCookieOptions(15 * 24 * 60 * 60 * 1000));
         // res.cookie("accesstoken", accesstoken, getCookieOptions(60 * 60 * 1000));
-        res.cookie("refreshtoken", refreshtoken, {
+        res.cookie("_host_REPAIR", refreshtoken, {
                 httpOnly: true,
                 secure: IS_PRODUCTION,
                 maxAge: 15 * 24 * 60 * 60 * 1000,
                 sameSite: IS_PRODUCTION ? "None" : "Lax"
             })
-            .cookie("accesstoken", accesstoken, {
+            .cookie("_host_AUTH", accesstoken, {
                 httpOnly: true,
                 secure: IS_PRODUCTION,
                 maxAge: 60 * 60 * 1000,
@@ -86,13 +86,13 @@ const pat_login = asynchandler(async (req, res) => {
         console.log("User exists redirecting him to Home page")
         const { accesstoken, refreshtoken } = await generate(user._id, "patient")
         res.status(202)
-            .cookie("refreshtoken", refreshtoken, {
+            .cookie("_host_REPAIR", refreshtoken, {
                 httpOnly: true,
                 secure: IS_PRODUCTION,
                 maxAge: 15 * 24 * 60 * 60 * 1000,
                 sameSite: IS_PRODUCTION ? "None" : "Lax"
             })
-            .cookie("accesstoken", accesstoken, {
+            .cookie("_host_AUTH", accesstoken, {
                 httpOnly: true,
                 secure: IS_PRODUCTION,
                 maxAge: 60 * 60 * 1000,
@@ -149,7 +149,7 @@ const sendingcode = async (user, res) => {
             </p>
 
             <!-- Reset Button -->
-            <a href="http://localhost:5173/patient/reset" 
+            <a href="${API}/patient/reset" 
                style="display: inline-block; margin-top: 20px; padding: 12px 25px; background-color: #007c7c; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
                Reset Password
             </a>
@@ -242,22 +242,22 @@ const pat_back = asynchandler(async (req, res) => {
             })
             // console.log("New User has been added to the patients list")
             const { accesstoken, refreshtoken } = await generate(newuser._id, "patient")
-           res.cookie("refreshtoken", refreshtoken, {
+           res.cookie("_host_REPAIR", refreshtoken, {
                 httpOnly: true,
                 secure: IS_PRODUCTION,
                 maxAge: 15 * 24 * 60 * 60 * 1000,
                 sameSite: IS_PRODUCTION ? "None" : "Lax"
             })
-            .cookie("accesstoken", accesstoken, {
+            .cookie("_host_AUTH", accesstoken, {
                 httpOnly: true,
                 secure: IS_PRODUCTION,
                 maxAge: 60 * 60 * 1000,
                 sameSite: IS_PRODUCTION ? "None" : "Lax"
             })
-            res.status(202).redirect("http://localhost:5173/patient/home?alert=Signup was Successful")
+            res.status(202).redirect(`${API}/patient/home?alert=Signup was Successful`)
 
         }
-        else res.redirect("http://localhost:5173/patient/signup?alert= This Mail is already registered please login" );
+        else res.redirect(`${API}/patient/signup?alert= This Mail is already registered please login` );
     }
     else {
 
@@ -267,19 +267,19 @@ const pat_back = asynchandler(async (req, res) => {
 
         const { accesstoken, refreshtoken } = await generate(user._id, "patient")
           res.status(202)
-            .cookie("refreshtoken", refreshtoken, {
+            .cookie("_host_REPAIR", refreshtoken, {
                 httpOnly: true,
                 secure: IS_PRODUCTION,
                 maxAge: 15 * 24 * 60 * 60 * 1000,
                 sameSite: IS_PRODUCTION ? "None" : "Lax"
             })
-            .cookie("accesstoken", accesstoken, {
+            .cookie("_host_AUTH", accesstoken, {
                 httpOnly: true,
                 secure: IS_PRODUCTION,
                 maxAge: 60 * 60 * 1000,
                 sameSite: IS_PRODUCTION ? "None" : "Lax"
             })
-        res.redirect("http://localhost:5173/patient/home?alert=Login was Successful");
+        res.redirect(`${API}/patient/home?alert=Login was Successful`);
     }
 
 
@@ -455,8 +455,8 @@ const logout = asynchandler(async (req, res) => {
         secure: true
     }
     return res.status(200)
-        .clearCookie("accesstoken", options)
-        .clearCookie("refreshtoken", options)
+        .clearCookie("_host_AUTH", options)
+        .clearCookie("_host_REPAIR", options)
         .json({ "message": "success" })
 
 })
@@ -564,12 +564,11 @@ const filterdoctors = asynchandler(async (req, res) => {
 
     console.log("📍 Location Data:", locationData);
 
-    if(locationData ==={}){
-
-    const alldoctors=await Doctor.find()
+  if (Object.keys(locationData).length === 0) {
+    const alldoctors = await Doctor.find();
     return res.status(200).json({ alldoctors });
+}
 
-    }
 
 
     
@@ -665,9 +664,85 @@ const getreviews = asynchandler(async (req, res) => {
 
 
 
+const like_dislike=asynchandler(async(req,res)=>{
+  try {
+    const { doctorId, isLiked } = req.body;
+    const patientId = req.user.id; // Assuming user is logged in
+
+    if (!doctorId) {
+      return res.status(400).json({ message: "doctorId is required" });
+    }
+
+    const patient = await Patient.findById(patientId);
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
+    }
+
+    if (isLiked) {
+      // ❤️ ADD doctor to fav_doctors (avoid duplicates)
+      if (!patient.fav_doctors.includes(doctorId)) {
+        patient.fav_doctors.push(doctorId);
+      }
+    } else {
+      // 🤍 REMOVE doctor from fav_doctors
+      patient.fav_doctors = patient.fav_doctors.filter(
+        (id) => id.toString() !== doctorId
+      );
+    }
+
+    await patient.save();
+
+    return res.json({
+      success: true,
+      message: isLiked
+        ? "Doctor added to favorites"
+        : "Doctor removed from favorites",
+      fav_doctors: patient.fav_doctors,
+    });
+
+  } catch (error) {
+    console.error("Fav toggle error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 
-export { profile, logout,addreview,getreviews, allslots,filterdoctors, uploadimg, updateprofile, getdoctors, pat_signup, cloudcred, pat_back, face_back, pat_login, pat_send, pat_verify, pat_reset }
+
+
+const viewfav = asynchandler(async (req, res) => {
+  const patientId = req.user.id; // auth middleware required
+
+  // 1) Fetch the patient
+  const patient = await Patient.findById(patientId);
+
+  if (!patient) {
+    return res.status(404).json({
+      success: false,
+      message: "Patient not found"
+    });
+  }
+
+  // patient.likes or patient.favorites — whatever you use
+  const favDoctorIds = patient.fav_doctors || patient.likes || [];
+
+  if (favDoctorIds.length === 0) {
+    return res.status(200).json({
+      success: true,
+      doctors: []
+    });
+  }
+
+  
+  const doctors = await Doctor.find({ _id: { $in: favDoctorIds } })
+    .select("name hospital speciality experience rating profilePic");
+
+  return res.status(200).json({
+    success: true,
+    doctors
+  });
+});
+
+export { profile, viewfav,like_dislike,logout,addreview,getreviews, allslots,filterdoctors, uploadimg, updateprofile, getdoctors, pat_signup, cloudcred, pat_back, face_back, pat_login, pat_send, pat_verify, pat_reset }
 
 
 

@@ -13,7 +13,9 @@ import {
   FiCalendar,
   FiX,
   FiFile,
-  FiLoader
+  FiLoader,
+  FiMenu,
+  FiArrowLeft
 } from "react-icons/fi";
 import toast from "react-hot-toast";
 import "../css/chatpage.css";
@@ -21,6 +23,7 @@ import Message from "../components/Loaders/message.jsx";
 import { useSocket } from "./SocketContext.jsx";
 import { useAuth } from "./AuthContext.jsx";
 import Circle1 from "../components/Loaders/circle1.jsx"
+const API = import.meta.env.VITE_API_URL;
 
 const formatChatTimestamp = (dateString) => {
   const date = new Date(dateString);
@@ -37,12 +40,13 @@ const CLOUDINARY_UPLOAD_PRESET = "hellodr";
 export default function ChatPage() {
   const { socket, isConnected } = useSocket();
   const params = new URLSearchParams(window.location.search);
-  const role = params.get("user"); // "patient" or "doctor"
+  const role = params.get("user");
   const consultationId = params.get("consultationId");
   const { roomid } = useParams();
-  const { userID: currentUserID } = useAuth();   // <-- FIXED
+  const { userID: currentUserID } = useAuth();
   const navigate = useNavigate();
-  
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   /* ========= PATIENT DETAILS ========= */
   const [patientInfo] = useState(() => {
@@ -70,7 +74,7 @@ export default function ChatPage() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [filesToUpload, setFilesToUpload] = useState([]);
-  const [generating,setGenerating]=useState(false);
+  const [generating, setGenerating] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const messagesEndRef = useRef(null);
 
@@ -147,7 +151,6 @@ export default function ChatPage() {
     return `${mm}:${ss}`;
   };
 
-
   useEffect(() => {
     if (!socket || !isConnected || !roomid || !role) return;
 
@@ -157,16 +160,15 @@ export default function ChatPage() {
     if (!localStorage.getItem(key)) startTimerFresh();
 
     const handleReceiveMessage = (payload) => {
-if (payload.isSystem) {
-    const msgData = payload.msg || payload;
-    setMessages(prev => [...prev, msgData]);
-    return;
-  }
-    if(payload.senderRole==role)return;
-  const data = payload.msg ? payload.msg : payload; 
-  setMessages((p) => [...p, data]);
-};
-
+      if (payload.isSystem) {
+        const msgData = payload.msg || payload;
+        setMessages(prev => [...prev, msgData]);
+        return;
+      }
+      if (payload.senderRole == role) return;
+      const data = payload.msg ? payload.msg : payload;
+      setMessages((p) => [...p, data]);
+    };
 
     const handleTyping = () => {
       setIsOtherTyping(true);
@@ -201,7 +203,6 @@ if (payload.isSystem) {
     };
   }, [socket, isConnected, roomid, role, navigate]);
 
-  /* Remove file preview */
   const handleRemoveFile = (previewKey) => {
     setFilesToUpload((prev) => {
       const f = prev.find((x) => x.previewKey === previewKey);
@@ -210,10 +211,9 @@ if (payload.isSystem) {
     });
   };
 
-  /* End consultation */
   const handleEndConsultation = async () => {
     try {
-      await fetch(`http://localhost:8000/appointment/changestatus?info=proceed`, {
+      await fetch(`${API}/appointment/changestatus?info=proceed`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -238,7 +238,6 @@ if (payload.isSystem) {
     }
   };
 
-  /* SEND MESSAGE */
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!newMessage.trim() && filesToUpload.length === 0) return;
@@ -272,7 +271,7 @@ if (payload.isSystem) {
       const uploaded = await Promise.all(filesToUpload.map(uploadFile));
       const newMsg = {
         id: `msg_${Date.now()}`,
-        senderId: currentUserID,        // <-- FIXED
+        senderId: currentUserID,
         text: newMessage,
         timestamp: new Date().toISOString(),
         files: uploaded,
@@ -280,7 +279,7 @@ if (payload.isSystem) {
 
       socket.emit(
         role === "patient" ? "msg_frompat" : "msg_fromdoc",
-        { msg: newMsg, roomid }         // <-- FIXED
+        { msg: newMsg, roomid }
       );
 
       setMessages((p) => [...p, newMsg]);
@@ -327,7 +326,7 @@ if (payload.isSystem) {
 
   const generateAndSendPDF = async (e) => {
     setGenerating(true)
-    e.target.disabled=true;
+    e.target.disabled = true;
     try {
       const payload = {
         prescriptionData: prescription,
@@ -342,7 +341,7 @@ if (payload.isSystem) {
       }
 
       const res = await fetch(
-        `http://localhost:8000/doctor/generate-prescription`,
+        `${API}/doctor/generate-prescription`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -353,11 +352,13 @@ if (payload.isSystem) {
 
       if (!res.ok) throw new Error("Backend failed");
       setGenerating(false)
-      e.target.disabled=false;
+      e.target.disabled = false;
       toast.success("Prescription sent!");
       setPrescriptionOpen(false);
     } catch (err) {
-      toast.error(`Failed: ${err.message}`, { id: toastId });
+      toast.error(`Failed: ${err.message}`);
+      setGenerating(false);
+      e.target.disabled = false;
     }
   };
 
@@ -367,42 +368,50 @@ if (payload.isSystem) {
       <div className="chat-conversation-area">
         {/* HEADER */}
         <div className="chat-header">
-          <div className="patient-info">
-            <div className="info-text">
-              <span className="patient-name">
-                Consultation with {patientInfo.name}
-              </span>
-              <span className="patient-status">
-                <span
-                  className={`status-dot ${otherPresent ? "online" : "offline"}`}
-                />
-                {otherPresent ? "Active Now" : "Disconnected"}
-              </span>
+          <div className="chat-header-left">
+            <button className="back-button mobile-only" onClick={() => navigate(-1)}>
+              <FiArrowLeft size={20} />
+            </button>
+            <div className="patient-info">
+              <div className="info-text">
+                <span className="patient-name">
+                  {patientInfo.name}
+                </span>
+                <span className="patient-status">
+                  <span
+                    className={`status-dot ${otherPresent ? "online" : "offline"}`}
+                  />
+                  {otherPresent ? "Active Now" : "Disconnected"}
+                </span>
+              </div>
             </div>
           </div>
 
           <div className="chat-actions">
             <div className="timer-badge">
               <strong>{formatTimer(timerSeconds)}</strong>
-              <div style={{ fontSize: "0.7rem", opacity: 0.7 }}>
-                Consultation
-              </div>
+              <div className="timer-label">Time</div>
             </div>
 
-            <button className="action-btn">
+            <button className="action-btn desktop-only">
               <FiPhone /> Call
             </button>
-            <button className="action-btn btn-video">
+            <button className="action-btn btn-video desktop-only">
               <FiVideo /> Video
             </button>
 
             {role === "doctor" && (
-              <button className="action-btn btn-end" onClick={handleEndConsultation}>
-                End
-              </button>
+              <>
+                <button className="action-btn btn-end desktop-only" onClick={handleEndConsultation}>
+                  End
+                </button>
+                <button className="action-btn-icon mobile-only sidebar-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
+                  <FiMenu />
+                </button>
+              </>
             )}
 
-            <button className="action-btn-icon">
+            <button className="action-btn-icon desktop-only">
               <FiMoreVertical />
             </button>
           </div>
@@ -444,10 +453,29 @@ if (payload.isSystem) {
 
       {/* RIGHT SIDEBAR */}
       {role === "doctor" && (
-        <PatientInfoSidebar
-          patient={patientInfo}
-          onWritePrescription={() => setPrescriptionOpen(true)}
-        />
+        <>
+          <div
+            className={`sidebar-overlay ${sidebarOpen ? 'active' : ''}`}
+            onClick={() => setSidebarOpen(false)}
+          />
+          <div className={`patient-info-sidebar ${sidebarOpen ? 'open' : ''}`}>
+            <button className="close-sidebar mobile-only" onClick={() => setSidebarOpen(false)}>
+              <FiX size={24} />
+            </button>
+            <PatientInfoSidebar
+              patient={patientInfo}
+              onWritePrescription={() => {
+                setPrescriptionOpen(true);
+                setSidebarOpen(false);
+              }}
+
+              onEndConsultation={() => {
+                setSidebarOpen(false);
+                handleEndConsultation();
+              }}
+            />
+          </div>
+        </>
       )}
 
       {/* PRESCRIPTION OVERLAY */}
@@ -529,7 +557,7 @@ if (payload.isSystem) {
 
               <div style={{ display: "flex", gap: 8 }}>
                 <button className="generate-btn" onClick={generateAndSendPDF}>
-                  {!generating?<>Generate & Send PDF</>:<Circle1/>}
+                  {!generating ? <>Generate & Send PDF</> : <Circle1 />}
                 </button>
                 <button className="action-btn" onClick={() => setPrescriptionOpen(false)}>
                   Cancel
@@ -634,7 +662,8 @@ const ChatInputArea = ({
       />
 
       <button className="send-button" type="submit" disabled={isUploading}>
-        {isUploading ? <FiLoader /> : <FiSend />} {isUploading ? "Sending" : "Send"}
+        {isUploading ? <FiLoader /> : <FiSend />}
+        <span className="send-text">{isUploading ? "Sending" : "Send"}</span>
       </button>
     </form>
   );
@@ -674,8 +703,8 @@ const FilePreviewArea = ({ files, onRemove }) => (
 );
 
 /* RIGHT SIDEBAR */
-const PatientInfoSidebar = ({ patient, onWritePrescription }) => (
-  <div className="patient-info-sidebar">
+const PatientInfoSidebar = ({ patient, onWritePrescription, onEndConsultation }) => (
+  <>
     <div className="patient-profile-header">
       <div className="patient-avatar-large">
         {patient.avatarUrl ? <img src={patient.avatarUrl} alt="avatar" /> : <FiUser size={40} />}
@@ -718,6 +747,9 @@ const PatientInfoSidebar = ({ patient, onWritePrescription }) => (
       <button className="tool-btn">
         <FiCalendar /> Book Follow-up
       </button>
+      <button className="tool-btn end-btn-mobile" onClick={onEndConsultation}>
+        <FiX /> End Consultation
+      </button>
     </div>
-  </div>
+  </>
 );

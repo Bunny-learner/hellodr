@@ -40,7 +40,7 @@ const app = express()
 // Core Middleware
 app.use(cookieParser())
 app.use(cors({
-  origin: ["http://localhost:5173","http://10.125.182.180:5173"] ,
+  origin: ["https://ema.iitdh.ac.in"] ,
   credentials: true
 }));
 app.use(express.static('public'));
@@ -89,7 +89,7 @@ const server = createServer(app)
 
  const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: "https://ema.iitdh.ac.in",
     methods: ["GET", "POST"],
     credentials: true,
   }

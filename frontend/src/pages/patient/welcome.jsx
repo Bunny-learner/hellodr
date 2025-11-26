@@ -40,7 +40,7 @@ const navigate=useNavigate();
           <img  src={image} alt="" />
         </div>
         <div className="w-text">
-     <h1>Healthcare Made Simple</h1>
+     <h1>Health Made Simple</h1>
 <p>
   Connect with doctors, manage appointments, and store your consultation receipts 
   securely — making your healthcare journey smooth and stress-free.

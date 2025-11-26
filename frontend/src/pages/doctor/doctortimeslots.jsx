@@ -18,7 +18,7 @@ import { FaRupeeSign } from "react-icons/fa";
 import "../../css/doctortimeslots.css";
 import CustomCalendar from '../../components/Calendar/customcalendar';
 import HeartLoader from '../../components/Loaders/heartloader';
-
+const API = import.meta.env.VITE_API_URL;
 
 const DAYS_OF_WEEK = [
     'Sunday',
@@ -59,7 +59,7 @@ export default function DoctorTimeSlots() {
     const fetchTimeSlots = async () => {
         setIsLoading(true);
         try {
-            const res = await fetch("http://localhost:8000/doctor/gettimeslots", { credentials: "include" });
+            const res = await fetch(`${API}/doctor/gettimeslots`, { credentials: "include" });
             const result = await res.json();
             setAllTimeSlots(result.data || []);
         } catch {
@@ -103,7 +103,7 @@ export default function DoctorTimeSlots() {
                 if (!formData.StartTime || !formData.EndTime || !formData.fee || !formData.limit)
                     return toast.error("Fill all offline fields.");
 
-                await fetch("http://localhost:8000/doctor/addtimeslot", {
+                await fetch(`${API}/doctor/addtimeslot`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     credentials: "include",
@@ -129,7 +129,7 @@ export default function DoctorTimeSlots() {
                     const end = new Date(current);
                     end.setMinutes(current.getMinutes() + duration);
 
-                    await fetch("http://localhost:8000/doctor/addtimeslot", {
+                    await fetch(`${API}/doctor/addtimeslot`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         credentials: "include",
@@ -156,7 +156,7 @@ export default function DoctorTimeSlots() {
     };
 
     const updateSlot = async (payload) => {
-        await fetch("http://localhost:8000/doctor/changestatus", {
+        await fetch(`${API}/doctor/changestatus`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             credentials: "include",

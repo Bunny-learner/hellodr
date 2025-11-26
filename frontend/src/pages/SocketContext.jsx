@@ -4,6 +4,7 @@ import { io } from "socket.io-client";
 import { useAuth } from "./AuthContext.jsx";
 
 const SocketContext = createContext();
+const SOCKET = import.meta.env.VITE_SOCKET_URL;
 
 export const useSocket = () => useContext(SocketContext);
 
@@ -28,10 +29,14 @@ export const SocketProvider = ({ children }) => {
 
       console.log(`Creating new socket connection for role: ${role}, id: ${userID} ...`);
 
-      const newSocket = io("http://localhost:8000", {
-        withCredentials: true,
-        query: { role, id: userID },
-      });
+      
+
+const newSocket = io(SOCKET, {
+  path: "/hello-doctor/socket.io/",
+  withCredentials: true,
+  query: { role, id: userID },
+});
+
 
       socketRef.current = newSocket;
       setSocket(newSocket);

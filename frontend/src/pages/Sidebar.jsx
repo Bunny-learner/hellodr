@@ -11,7 +11,7 @@ FaTimes,
 FaArrowRight
 } from 'react-icons/fa';
 
-
+const API = import.meta.env.VITE_API_URL;
 
 // --- Helper: Get Icon ---
 const getIcon = (type) => {
@@ -92,7 +92,7 @@ onClose();
 const handleMarkAllAsRead = async () => {
 try {
   console.log("markallread")
-const response = await fetch('http://localhost:8000/markallread', { method: 'POST', credentials: 'include'});
+const response = await fetch(`${API}/markallread`, { method: 'POST', credentials: 'include'});
 if (response.ok) {
 onClose();
 } else {

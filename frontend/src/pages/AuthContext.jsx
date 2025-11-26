@@ -7,12 +7,13 @@ export const AuthProvider = ({ children }) => {
   const [userID, setUserID] = useState(null);
   const [user, setUser] = useState(null);
   const [role, setRole] = useState(null);
-  const [loading, setLoading] = useState(true);   
+  const [loading, setLoading] = useState(true); 
+  const API = import.meta.env.VITE_API_URL;  
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const res = await fetch("http://localhost:8000/verify/auth", {
+        const res = await fetch(`${API}/verify/auth`, {
           method: "GET",
           credentials: "include",
         });

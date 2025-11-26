@@ -53,6 +53,10 @@ const AppointmentSchema = new mongoose.Schema({
         type:Boolean,
         default :false
     },
+    token_number: {
+        type: Number,
+        default:null
+    },
     TimeSlot: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'TimeSlot',

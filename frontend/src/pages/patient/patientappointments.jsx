@@ -10,6 +10,7 @@ import {
     FiAlertCircle, FiXCircle, FiList
 } from 'react-icons/fi';
 import { PatientContext } from './patientcontext';
+const API = import.meta.env.VITE_API_URL;
 
 const getTodayString = () => {
     const today = new Date();
@@ -28,6 +29,8 @@ const formatTime = (timeString) => {
     const standardHours = h % 12 || 12;
     return `${standardHours}:${minutes} ${ampm}`;
 };
+
+
 
 const TodayOnlineCard = ({ app, onJoin, isJoinable }) => (
     <div className="pa-card today-card today-online">
@@ -71,7 +74,10 @@ const TodayOfflineCard = ({ app }) => (
             <div className="pa-card-detail"><FiMapPin /><span>{app.doctor.address || "Clinic Address Not Provided"}</span></div>
         </div>
         <div className="pa-card-footer">
-            <button className="pa-btn pa-btn-secondary">Get Directions</button>
+            <button className="pa-btn pa-btn-secondary" onClick={() =>
+    navigate(`/patient/${doctor._id}`, {
+      state: { scrollTo: "location-section" }
+    })}>Get Directions</button>
         </div>
     </div>
 );
@@ -146,7 +152,7 @@ export default function PatientAppointments() {
         const fetchAppointments = async () => {
             try {
                 setLoading(true);
-                const res = await fetch("http://localhost:8000/patient/appointments", {
+                const res = await fetch(`${API}/patient/appointments`, {
                     method: "GET",
                     credentials: 'include',
                 });
@@ -232,7 +238,7 @@ export default function PatientAppointments() {
         }
 
         try {
-            const res = await fetch("http://localhost:8000/patient/addreview", {
+            const res = await fetch(`${API}/patient/addreview`, {
                 method: "POST",
                 credentials: "include",
                 headers: { "Content-Type": "application/json" },
@@ -277,7 +283,7 @@ export default function PatientAppointments() {
         socket.emit("join_room", {
             roomid: fullDoctorProfile.roomid
         })
-        await fetch("http://localhost:8000/appointment/in_progress",{
+        await fetch(`${API}/appointment/in_progress`,{
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

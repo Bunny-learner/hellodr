@@ -875,6 +875,162 @@ body {
   }
 }
 
+
+
+/* ============================================================
+   MOBILE HAMBURGER MENU - ADD TO YOUR EXISTING CSS
+============================================================ */
+
+/* Hamburger Button - Hidden on Desktop */
+.mobile-hamburger-btn {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1001;
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border: none;
+  border-radius: 12px;
+  width: 50px;
+  height: 50px;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+  transition: all 0.3s ease;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-hamburger-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+}
+
+.mobile-hamburger-btn:active {
+  transform: scale(0.95);
+}
+
+/* Mobile Sidebar Overlay */
+.mobile-sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============================================================
+   MOBILE RESPONSIVE - SHOW HAMBURGER ON MOBILE
+============================================================ */
+
+/* Tablets and Below (≤ 1024px) */
+@media (max-width: 1024px) {
+  .mobile-hamburger-btn {
+    display: flex;
+  }
+
+  .mobile-sidebar-overlay {
+    display: block;
+  }
+
+  .profile-sidebar {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    height: 100vh;
+    width: 280px;
+    z-index: 999;
+    overflow-y: auto;
+    transition: left 0.3s ease;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .profile-sidebar.sidebar-open {
+    left: 0;
+  }
+
+  .profile-main-container {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-main-content {
+    padding-top: 4rem; /* Space for hamburger button */
+  }
+}
+
+/* Mobile (≤ 768px) */
+@media (max-width: 768px) {
+  .mobile-hamburger-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 1.375rem;
+    top: 0.875rem;
+    left: 0.875rem;
+  }
+
+  .profile-sidebar {
+    width: 260px;
+  }
+}
+
+/* Small Mobile (≤ 480px) */
+@media (max-width: 480px) {
+  .mobile-hamburger-btn {
+    width: 45px;
+    height: 45px;
+    font-size: 1.25rem;
+    top: 0.75rem;
+    left: 0.75rem;
+  }
+
+  .profile-sidebar {
+    width: 85%;
+    max-width: 280px;
+  }
+
+  .profile-main-content {
+    padding-top: 3.5rem;
+  }
+}
+
+/* Prevent body scroll when sidebar is open on mobile */
+body.sidebar-open-mobile {
+  overflow: hidden;
+}
+
+/* Add smooth scrolling to sidebar on mobile */
+.profile-sidebar {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure sidebar content is accessible when open */
+.profile-sidebar.sidebar-open {
+  overflow-y: auto;
+}
+
+/* Close button animation */
+.mobile-hamburger-btn svg {
+  transition: transform 0.3s ease;
+}
+
+.mobile-hamburger-btn:hover svg {
+  transform: rotate(90deg);
+}
+
 /* Extra Small Devices (≤360px) */
 @media (max-width: 360px) {
   .profile-logo {

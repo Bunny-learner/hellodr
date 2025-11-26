@@ -24,6 +24,9 @@ export default function PatientGetDoctors() {
   (JSON.parse(localStorage.getItem("ul") || "{}").city) || ""
 );
 
+const API = import.meta.env.VITE_API_URL;
+
+
   const [filters, setFilters] = useState({
     languages: [],
     fees: [],
@@ -35,9 +38,11 @@ export default function PatientGetDoctors() {
   const [loading, setLoading] = useState(false);
   const [showfilter, setshowfilter] = useState(false);
   const [text, setText] = useState("");
+  const [locationSearch, setLocationSearch] = useState("");
   const [showresults, setshowresults] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
+  const [suggestions,setSuggestions]=useState([])
 
   const toggleFilter = () => setshowfilter((prev) => !prev);
 
@@ -70,6 +75,37 @@ export default function PatientGetDoctors() {
   }
 
   useEffect(() => {
+  const delayDebounce = setTimeout(() => {
+    if (locationSearch.length < 2) {
+      setSuggestions([]);
+      return;
+    }
+
+    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${locationSearch}&addressdetails=1&limit=10&countrycodes=in`)
+      .then(res => res.json())
+      .then(data => {
+        const names = data.map(item => ({
+          display: item.display_name,
+          city: item.address.city ||
+                item.address.town ||
+                item.address.village ||
+                item.address.hamlet ||
+                item.address.suburb ||
+                item.address.state_district ||
+                item.address.state ||
+                item.address.county,
+          lat: item.lat,
+          lon: item.lon
+        }));
+        setSuggestions(names);
+      });
+  }, 350); // debounce
+
+  return () => clearTimeout(delayDebounce);
+}, [locationSearch]);
+
+
+  useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
     const specialityParam = searchParams.get('speciality');
 
@@ -88,7 +124,7 @@ export default function PatientGetDoctors() {
         setLoading(true);
         const locationData = JSON.parse(localStorage.getItem("ul") || "{}");
 
-        const res = await fetch("http://localhost:8000/patient/filterdoctors", {
+        const res = await fetch(`${API}/patient/filterdoctors`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -134,7 +170,7 @@ export default function PatientGetDoctors() {
 
       const locationData = JSON.parse(localStorage.getItem("ul") || "{}");
 
-      const res = await fetch("http://localhost:8000/patient/filterdoctors", {
+      const res = await fetch(`${API}/patient/filterdoctors`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -250,43 +286,83 @@ export default function PatientGetDoctors() {
   const hasLocation = currentLocation && currentLocation.trim() !== "";
 
   return (
-    <>
-      <section className="content-section">
-        <div className="navbar-center">
-          <div className="navbar-search">
-            <div className="location-btn-wrapper">
-              <button
-                className="location-btn"
-                onClick={() => setShowLocationMenu((prev) => !prev)}
-              >
-                <FiMapPin size={20} className='pin' /><b>{currentLocation || "Select Location"}</b>
-              </button>
+    <>{showLocationMenu && (
+  <div className="location-overlay" onClick={() => setShowLocationMenu(false)}>
+    <div className="location-panel" onClick={(e) => e.stopPropagation()}>
+      
+      <h3>Select Location</h3>
 
-              {showLocationMenu && (
-                <div className="location-menu">
-                  <button onClick={handleUseMyLocation}> <FiNavigation />Use My Location</button>
-                  <button onClick={() => handleSelectCity("Bangalore")}>Bangalore</button>
-                  <button onClick={() => handleSelectCity("Hyderabad")}>Hyderabad</button>
-                  <button onClick={() => handleSelectCity("Chennai")}>Chennai</button>
-                  <button onClick={() => handleSelectCity("Mumbai")}>Mumbai</button>
-                </div>
-              )}
-            </div>
+      {/* Search location input */}
+      <div className="location-search-box">
+        <FiSearch size={18} />
+        <input
+          type="text"
+          placeholder="Search city..."
+          value={locationSearch || ""}
+          onChange={(e) => setLocationSearch(e.target.value)}
+        />
+      </div>
 
-            <svg xmlns="http://www.w3.org/2000/svg" id='filter' width="30" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke={showfilter ? "#f44336" : "#349ce3"}
-              onClick={toggleFilter} className="size-6">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75" />
-            </svg>
+      <button className="use-my-location" onClick={handleUseMyLocation}>
+        <FiNavigation /> Use My Location
+      </button>   
+    {suggestions.length > 0&&locationSearch!=""? (
+  <div className="suggestions-list">
+    {suggestions.map((s, index) => (
+      <div
+  key={index}
+  className="suggestion-item"
+  onClick={() => {
+    handleSelectCity(s.city);
+    setShowLocationMenu(false);
+    setLocationSearch("");
+    setSuggestions([]);
+  }}
+>
+  <div className="suggestion-main">{s.city}</div>
+  <div className="suggestion-sub">{s.display}</div>
+</div>
 
-            <input
-              type="text"
-              value={text}
-              onChange={searching}
-              placeholder="Search doctors, specialties..."
-            />
-            <FiSearch className="search-icon" />
+    ))}
+  </div>
+):(<> <h4>Popular Cities</h4>
+      <div className="city-list">
+        {["Bangalore", "Hyderabad", "Chennai", "Mumbai", "Pune", "Delhi", "Kolkata"].map((city) => (
+          <div
+            key={city}
+            className="city-item"
+            onClick={() => handleSelectCity(city)}
+          >
+            {city}
           </div>
-        </div>
+        ))}
+      </div></>)}
+
+
+    </div>
+  </div>
+)}
+
+
+      <section className="content-section">
+        
+      <div className="search-container">
+  <div className="location-row" onClick={() => setShowLocationMenu(true)}>
+    <FiMapPin size={20} />
+    <span>{currentLocation || "Select Location"}</span>
+  </div>
+
+  <div className="search-bar">
+    <FiSearch className="icon" />
+    <input
+      type="text"
+      value={text}
+      onChange={searching}
+      placeholder="Search doctors, specialties..."
+    />
+  </div>
+</div>
+
       </section>
 
     
@@ -345,10 +421,24 @@ export default function PatientGetDoctors() {
               </section>
             </>
           ) : (
-            <DoctorFilters apply={applyfilters} globalfilters={filters} close={() => setshowfilter(false)} />
+            <div className={`filter-panel ${showfilter ? "open" : ""}`}>
+  <DoctorFilters apply={applyfilters} globalfilters={filters} close={() => setshowfilter(false)} />
+</div>
+
           )}
         </>
       )}
+
+<div id="filter" onClick={toggleFilter}>
+<svg xmlns="http://www.w3.org/2000/svg"  
+  className={showfilter ? "active" : ""}   width="30"
+  height="30"   viewBox="0 0 24 24" stroke-width="1.5" stroke="white" fill="none" >
+  <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z" />
+</svg>
+
+</div>
+
+    
     </>
   )
 }

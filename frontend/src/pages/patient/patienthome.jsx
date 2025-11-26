@@ -2,9 +2,9 @@ import React, { useState, useContext, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FiChevronRight, FiChevronLeft } from "react-icons/fi";
 import { PatientContext } from "./patientcontext";
-import PopularDoctorCard from "./PopularDoctorCard";
-import FeaturedDoctorCard from "./FeaturedDoctorCard";
-import CategoryCard from "./CategoryCard";
+import PopularDoctorCard from "./populardoctorcard";
+import FeaturedDoctorCard from "./featureddoctorcard";
+import CategoryCard from "./categorycard";
 import "../../css/patienthome.css";
 import Logo from "../logo";
 
@@ -103,16 +103,16 @@ export default function PatientHome() {
             <p className="ph-sub">
               Book video or in-person consults, view profiles and choose top-rated specialists effortlessly.
             </p>
-              <div className="ph-quick-links">
+            <div className="ph-quick-links">
               <Link to="/patient/getdoctors?video=true" className="ph-chip">Video Consult</Link>
               <Link to="/patient/getdoctors?experience=10" className="ph-chip">Top Experienced</Link>
               <Link to="/patient/getdoctors?insurance=true" className="ph-chip">Accepts Insurance</Link>
               <Link to="/patient/getdoctors" className="ph-chip">Doctors Near By</Link>
             </div>
-           
+
           </div>
 
-        
+
 
           <div className="ph-hero-right" aria-hidden>
             <div className="ph-gradient-card">
@@ -139,14 +139,15 @@ export default function PatientHome() {
         </div>
 
         <div className="ph-categories-row">
-          <CategoryCard title="Dentist" image="/dentist.jpg" />
-          <CategoryCard title="Lungs" image="/lungs.jpg" />
-          <CategoryCard title="Eye" image="/eye.jpg" />
-          <CategoryCard title="Orthopedic" image="/orthopedic.jpg" />
-          <CategoryCard title="Neurology" image="/neruo.jpg" />
-          <CategoryCard title="Cardiology" image="/cardio.jpg" />
-          <CategoryCard title="General" image="/general.jpg" />
-          <CategoryCard title="Genetics" image="/genetics.jpg" />
+          <CategoryCard title="Dentist" image={`${import.meta.env.BASE_URL}dentist.jpg`} />
+          <CategoryCard title="Opthamology" image={`${import.meta.env.BASE_URL}eye.jpg`} />
+          <CategoryCard title="Orthopedic" image={`${import.meta.env.BASE_URL}orthopedic.jpg`} />
+          <CategoryCard title="Neurology" image={`${import.meta.env.BASE_URL}neruo.jpg`} />
+          <CategoryCard title="Cardiology" image={`${import.meta.env.BASE_URL}cardio.jpg`} />
+          <CategoryCard title="General" image={`${import.meta.env.BASE_URL}general.jpg`} />
+          <CategoryCard title="Genetics" image={`${import.meta.env.BASE_URL}genetics.jpg`} />
+          <CategoryCard title="Pediatrics" image={`${import.meta.env.BASE_URL}pedia.jpg`} />
+
         </div>
       </section>
 
@@ -182,7 +183,7 @@ export default function PatientHome() {
       {/* TESTIMONIALS */}
       <section className="ph-section testimonial-section">
         <div className="ph-section-header">
-          <h1>What Patients Say About Us</h1>
+          <h2>What Users Say About Us</h2>
         </div>
 
         <div className="testimonial-container">
@@ -237,7 +238,7 @@ export default function PatientHome() {
         </div>
       </section>
 
-     
+
     </div>
   );
 }

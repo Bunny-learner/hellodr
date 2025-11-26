@@ -6,6 +6,7 @@ import { useAuth } from "../AuthContext";
 import toast, { Toaster } from "react-hot-toast";
 import Swal from "sweetalert2";
 import "../../css/finalappointment.css";
+const API = import.meta.env.VITE_API_URL;
 
 const renderStars = (rating = 0) => (
   <div className="doctor-rating">
@@ -56,7 +57,7 @@ export default function AppointmentReview() {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:8000/appointment/book", {
+      const res = await fetch(`${API}/appointment/book`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -67,7 +68,7 @@ export default function AppointmentReview() {
       console.log(response.appointment)
 
       if (res.status === 201) {
-        const sessionRes = await fetch("http://localhost:8000/appointment/getsession", {
+        const sessionRes = await fetch(`${API}/appointment/getsession`, {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },

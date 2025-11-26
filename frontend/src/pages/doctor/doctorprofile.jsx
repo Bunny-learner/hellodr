@@ -4,12 +4,13 @@ import { LinearProgress } from '@mui/material';
 import {
     FaCamera, FaUser, FaPhoneAlt, FaArrowLeft, FaCalendarAlt, FaMapMarkerAlt,
     FaRegBookmark, FaChevronDown, FaEnvelope, FaStethoscope, FaAward, FaDollarSign,
-    FaLanguage, FaStar, FaInfoCircle, FaPlus, FaEdit
+    FaLanguage, FaStar, FaInfoCircle, FaPlus, FaEdit, FaBars, FaTimes
 } from 'react-icons/fa';
 import toast, { Toaster } from 'react-hot-toast';
 import { IoMdSettings, IoMdHelpCircleOutline } from 'react-icons/io';
 import "../../css/doctorprofile.css";
 import Bubbles from '../../components/Loaders/bubbles';
+const API = import.meta.env.VITE_API_URL;
 
 export default function DoctorProfile() {
     const [profile, setProfile] = useState(null);
@@ -18,13 +19,14 @@ export default function DoctorProfile() {
     const [url, setUrl] = useState(null);
     const [loading, setLoading] = useState(false);
     const [editMode, setEditMode] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(false); // Mobile sidebar state
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
 
     useEffect(() => {
         async function fetchProfile() {
             try {
-                const res = await fetch("http://localhost:8000/doctor/profile", {
+                const res = await fetch(`${API}/doctor/profile`, {
                     method: 'GET',
                     credentials: 'include'
                 });
@@ -49,7 +51,7 @@ export default function DoctorProfile() {
     const saveFileToDb = async (fileUrl) => {
         if (fileUrl) {
             try {
-                const res = await fetch('http://localhost:8000/doctor/uploadimg', {
+                const res = await fetch(`${API}/doctor/uploadimg`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
@@ -74,7 +76,7 @@ export default function DoctorProfile() {
 
     const logout = async () => {
         try {
-            const res = await fetch("http://localhost:8000/doctor/logout", {
+            const res = await fetch(`${API}/doctor/logout`, {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include'
@@ -98,13 +100,11 @@ export default function DoctorProfile() {
             return;
         }
 
-        // Validate file type
         if (!file.type.startsWith('image/')) {
             toast.error("Please select an image file");
             return;
         }
 
-        // Validate file size (max 5MB)
         if (file.size > 5 * 1024 * 1024) {
             toast.error("File size must be less than 5MB");
             return;
@@ -118,7 +118,7 @@ export default function DoctorProfile() {
         formData.append('quality', '100');
 
         try {
-            const cloudRes = await fetch('http://localhost:8000/patient/cloudcred', {
+            const cloudRes = await fetch(`${API}/patient/cloudcred`, {
                 method: 'GET',
                 credentials: 'include'
             });
@@ -157,7 +157,6 @@ export default function DoctorProfile() {
         }
     };
 
-    // ---- Past Treatments ----
     const addTreatment = () => {
         if (!newTreatment.trim()) {
             toast.error("Please enter a treatment");
@@ -187,19 +186,21 @@ export default function DoctorProfile() {
     };
 
     const saveProfile = async () => {
-        // Validation
-        if (!profile.name?.trim()) {
-            toast.error("Name is required");
-            return;
-        }
-        if (!profile.phone?.trim()) {
-            toast.error("Phone number is required");
-            return;
-        }
-        if (!profile.speciality?.trim()) {
-            toast.error("Speciality is required");
-            return;
-        }
+        if (!String(profile.name || "").trim()) {
+    toast.error("Name is required");
+    return;
+}
+
+if (!String(profile.phone || "").trim()) {
+    toast.error("Phone number is required");
+    return;
+}
+
+if (!String(profile.speciality || "").trim()) {
+    toast.error("Speciality is required");
+    return;
+}
+
 
         const updatedProfile = {
             ...profile,
@@ -209,7 +210,7 @@ export default function DoctorProfile() {
 
         try {
             setLoading(true);
-            const res = await fetch('http://localhost:8000/doctor/updateprofile', {
+            const res = await fetch(`${API}/doctor/updateprofile`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -237,10 +238,12 @@ export default function DoctorProfile() {
     };
 
     const cancelEdit = () => {
-        // Reload profile data
         setEditMode(false);
         window.location.reload();
     };
+
+    // Close sidebar when clicking outside on mobile
+    const closeSidebar = () => setSidebarOpen(false);
 
     if (!profile) {
         return (
@@ -255,11 +258,29 @@ export default function DoctorProfile() {
     return (
         <div className="main">
             {loading && <LinearProgress color="primary" className="progress" />}
+            
+            {/* Mobile Hamburger Button */}
+            <button 
+                className="mobile-hamburger-btn" 
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                aria-label="Toggle menu"
+            >
+                {sidebarOpen ? <FaTimes /> : <FaBars />}
+            </button>
+
+            {/* Mobile Overlay */}
+            {sidebarOpen && (
+                <div 
+                    className="mobile-sidebar-overlay" 
+                    onClick={closeSidebar}
+                />
+            )}
+
             <div className="profile-main-container">
                 <Toaster position="top-right" toastOptions={{ className: "my-toast", duration: 3000 }} />
 
                 {/* Sidebar */}
-                <div className="profile-sidebar">
+                <div className={`profile-sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}>
                     <div className="profile-pic-wrapper">
                         <div className="profile-avatar">
                             {!url ? <FaUser /> : <img src={url} alt="Profile" />}
@@ -288,14 +309,14 @@ export default function DoctorProfile() {
                     </p>
 
                     <nav className="profile-sidebar-nav">
-                        <Link to="/doctor/home" className="sidebar-home-link">
+                        <Link to="/doctor/home" className="sidebar-home-link" onClick={closeSidebar}>
                             <FaArrowLeft /> <span>Back to Home</span>
                         </Link>
-                        <Link to="/doctor/settings">
+                        <Link to="/doctor/settings" onClick={closeSidebar}>
                             <IoMdSettings />
                             <span>Settings</span>
                         </Link>
-                        <Link to="/doctor/help">
+                        <Link to="/doctor/help" onClick={closeSidebar}>
                             <IoMdHelpCircleOutline />
                             <span>Help center</span>
                         </Link>

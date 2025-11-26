@@ -22,7 +22,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { IoMdSettings, IoMdHelpCircleOutline } from 'react-icons/io';
 import "../../css/patientprofile.css";
 import Bubbles from "../../components/Loaders/bubbles";
-
+const API = import.meta.env.VITE_API_URL;
 const PatientProfile = () => {
     const [profile, setProfile] = useState(null);
     const [url, setUrl] = useState(null);
@@ -36,7 +36,7 @@ const PatientProfile = () => {
     useEffect(() => {
         async function fetchProfile() {
             try {
-                const res = await fetch("http://localhost:8000/patient/profile", {
+                const res = await fetch(`${API}/patient/profile`, {
                     method: 'GET',
                     credentials: 'include'
                 });
@@ -61,7 +61,7 @@ const PatientProfile = () => {
     const saveFileToDb = async (fileUrl) => {
         if (fileUrl) {
             try {
-                await fetch('http://localhost:8000/patient/uploadimg', {
+                await fetch(`${API}/patient/uploadimg`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
@@ -77,7 +77,7 @@ const PatientProfile = () => {
     };
 
     const logout = async () => {
-        await fetch("http://localhost:8000/patient/logout", {
+        await fetch(`${API}/patient/logout`, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include'
@@ -104,7 +104,7 @@ const PatientProfile = () => {
         formData.append('quality', '100');
 
         try {
-            const cloudRes = await fetch('http://localhost:8000/patient/cloudcred', {
+            const cloudRes = await fetch(`${API}/patient/cloudcred`, {
                 method: 'GET',
                 credentials: 'include'
             });
@@ -155,7 +155,7 @@ const PatientProfile = () => {
 
     const saveProfile = async () => {
         try {
-            const res = await fetch('http://localhost:8000/patient/updateprofile', {
+            const res = await fetch(`${API}/patient/updateprofile`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',

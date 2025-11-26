@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { useSocket } from "./SocketContext.jsx";
 import "../css/waitingroom.css";
 import SoftAnimatedBackground from "../components/Loaders/softbackground.jsx";
-
+const API = import.meta.env.VITE_API_URL;
 const WAIT_SECONDS = 60; 
 
 export default function WaitingRoom() {
@@ -91,7 +91,7 @@ export default function WaitingRoom() {
   const handleSkip = async () => {
     try {
       const res = await fetch(
-        `http://localhost:8000/appointment/changestatus?info=skip`,
+        `${API}/appointment/changestatus?info=skip`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

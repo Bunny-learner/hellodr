@@ -3,19 +3,7 @@ import { redisPub } from "../db/redisconnect.js";
 import { roomPresence } from "../sockets/index.js";
 import {Doctor} from  "../models/doctor.js"
 
-/**
- * startProcessor
- * Triggered by scheduled job when appointment start-time arrives
- *
- * ─ Logic ─
- * 1) If appointment not found → skip
- * 2) If status === "in_progress" (already started) → skip
- * 3) If doctor is already in the room (real-time check) → skip
- * 4) If status !== "accepted" (e.g., cancelled, completed) → skip
- * 5) Check if queue already active (DIFFERENT appointment in_progress)
- * → YES → send DELAY notice to patient
- * → NO  → promote this appointment → next_up
- */
+
 
 export async function startProcessor(job) {
   try {

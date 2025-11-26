@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Appointment Accepted</title>
+</head>
+
+<body style="font-family: Arial, sans-serif; background-color: #f7f9fc; padding: 20px;">
+
+  <div style="
+        max-width: 600px;
+        margin: auto;
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      ">
+      
+    <h2 style="color: #2b6cb0; text-align: center; margin-bottom: 10px;">
+      Appointment Confirmed
+    </h2>
+
+    <p style="font-size: 16px; color: #333;">
+      Dear <strong>{{patientName}}</strong>,
+    </p>
+
+    <p style="font-size: 15px; color: #444;">
+      Your appointment has been <strong style="color: green;">accepted</strong> by the doctor.
+    </p>
+
+    <div style="
+          background: #edf7ff;
+          padding: 15px;
+          margin: 20px 0;
+          border-left: 4px solid #3182ce;
+          border-radius: 5px;
+        ">
+      <p style="font-size: 18px; margin: 0;">
+        <strong>Your Token Number:</strong>
+        <span style="font-size: 24px; color: #2b6cb0; font-weight: bold;">
+          {{tokenNumber}}
+        </span>
+      </p>
+    </div>
+
+    <h3 style="color: #2d3748; margin-bottom: 8px;">Appointment Details</h3>
+
+    <table style="width: 100%; border-collapse: collapse;">
+      <tr>
+        <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;"><strong>Doctor</strong></td>
+        <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">{{doctorName}}</td>
+      </tr>
+
+      <tr>
+        <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;"><strong>Patient</strong></td>
+        <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">{{patientName}}</td>
+      </tr>
+
+      <tr>
+        <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;"><strong>Time Slot</strong></td>
+        <td style="padding: 8px; border-bottom: 1px solid #e2e8f0;">
+          {{startTime}} – {{endTime}}
+        </td>
+      </tr>
+
+      <tr>
+        <td style="padding: 8px;"><strong>Date</strong></td>
+        <td style="padding: 8px;">{{appointmentDate}}</td>
+      </tr>
+    </table>
+
+    <p style="margin-top: 20px; font-size: 15px; color: #555;">
+      Please arrive on time and follow queue instructions displayed at the clinic.
+    </p>
+
+    <p style="margin-top: 25px; font-size: 14px; color: #888;">
+      Regards,<br />
+      <strong>Your Clinic</strong>
+    </p>
+
+  </div>
+</body>
+</html>

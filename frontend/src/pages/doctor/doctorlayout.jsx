@@ -7,6 +7,7 @@ import { DoctorContext } from "./doctorcontext"
 import "../../css/doctorhome.css"
 import { useSocket } from "../../pages/SocketContext.jsx";
 import Footer from "../Footer.jsx"
+const API = import.meta.env.VITE_API_URL;
 
 export default function PatientLayout() {
   const {socket, socketId} = useSocket();
@@ -22,7 +23,7 @@ export default function PatientLayout() {
 
     async function fetchProfile() {
       try {
-        const res = await fetch("http://localhost:8000/doctor/profile", {
+        const res = await fetch(`${API}/doctor/profile`, {
           method: "GET",
           credentials: "include",
         });

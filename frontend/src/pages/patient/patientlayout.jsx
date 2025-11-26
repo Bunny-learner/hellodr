@@ -16,6 +16,7 @@ export default function PatientLayout() {
   const [loading, setLoading] = useState(true);
   const [doctors, setDoctors] = useState([]);
   const navigate=useNavigate()
+  const API = import.meta.env.VITE_API_URL;
 
 
 
@@ -34,7 +35,7 @@ export default function PatientLayout() {
   useEffect(() => {
     async function fetchDoctors() {
       try {
-        const res = await fetch("http://localhost:8000/patient/getdoctors", {
+        const res = await fetch(`${API}/patient/getdoctors`, {
           method: "GET",
           credentials: "include",
         });
@@ -56,7 +57,7 @@ export default function PatientLayout() {
 
     async function fetchProfile() {
       try {
-        const res = await fetch("http://localhost:8000/patient/profile", {
+        const res = await fetch(`${API}/patient/profile`, {
           method: "GET",
           credentials: "include",
         });

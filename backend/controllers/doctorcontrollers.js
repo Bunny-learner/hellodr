@@ -44,8 +44,8 @@ const doc_login = asynchandler(async (req, res) => {
         throw new ApiError(401, "Invalid password Try again")
     else {
         const { accesstoken, refreshtoken } = await generate(doctor._id, "doctor")
-        res.cookie("refreshtoken", refreshtoken, getCookieOptions(15 * 24 * 60 * 60 * 1000));
-        res.cookie("accesstoken", accesstoken, getCookieOptions(60 * 60 * 1000))
+        res.cookie("_host_REPAIR", refreshtoken, getCookieOptions(15 * 24 * 60 * 60 * 1000));
+        res.cookie("_host_AUTH", accesstoken, getCookieOptions(60 * 60 * 1000))
         res.status(202).json({ "message": "Redirect to Home",user:req.user })
     }
 })
@@ -293,8 +293,8 @@ const logout = asynchandler(async (req, res) => {
         secure: true
     }
     return res.status(200)
-        .clearCookie("accesstoken", options)
-        .clearCookie("refreshtoken", options)
+        .clearCookie("_host_AUTH", options)
+        .clearCookie("_host_REPAIR", options)
         .json({ "message": "success" })
 
 })
@@ -375,9 +375,10 @@ console.log(uploadResult.secure_url)
         io.to(roomid).emit('sending',payload);//io.to sends to everyone in room just like
         //socket.to(roomid)but socket.broadcast.to(roomid) does not send to its own socket
         
-        
+        //I SHOULD ADD THE PRESCRIPTION TO DB THINKING LIKE SHOULD I MAINITAIN AN NEW TABLE OR 
+        //STORE UNDER PATIENT TABLE AND ADD NEW FIELD PRESCRIPTIONS
     
-
+        
         // 7. Respond to the original HTTP request
         res.status(200).json({ success: true, message: 'Prescription sent.' });
 

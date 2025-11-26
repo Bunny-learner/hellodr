@@ -1,0 +1,230 @@
+/* ======================================= */
+/* ====== Global & Page Setup ====== */
+/* ======================================= */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background-color: #f4f7f6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  box-sizing: border-box;
+}
+
+/* Material UI Progress Bar Override */
+.progress {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 9999;
+}
+
+/* ======================================= */
+/* ====== Card Container ====== */
+/* ======================================= */
+.forgot-page {
+  position: relative;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.forgot-card {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+  padding: 2.5rem;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+  text-align: center;
+}
+
+/* ======================================= */
+/* ====== Header Section ====== */
+/* ======================================= */
+.form-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.logo-svg {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 1rem;
+}
+
+.form-header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #222;
+  margin: 0;
+}
+
+/* ======================================= */
+/* ====== Form & Inputs ====== */
+/* ======================================= */
+.form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.input-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  text-align: left; /* Aligns error messages to left */
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  /* Extra padding on right for the eye icon so text doesn't overlap */
+  padding-right: 3rem; 
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #f9f9f9;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #044141;
+  background-color: #fff;
+  box-shadow: 0 0 0 3px rgba(4, 65, 65, 0.1);
+}
+
+/* ======================================= */
+/* ====== Password Toggle Icon ====== */
+/* ======================================= */
+.password-toggle-icon {
+  position: absolute;
+  right: 15px;
+  top: 15px; /* Adjust based on input height */
+  cursor: pointer;
+  color: #9a9a9a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  transition: color 0.2s ease;
+}
+
+.password-toggle-icon:hover {
+  color: #044141;
+}
+
+.password-toggle-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ======================================= */
+/* ====== Validation & Errors ====== */
+/* ======================================= */
+.form-input.input-error {
+  border-color: #e53e3e;
+  background-color: #fff5f5;
+}
+
+.form-input.input-error:focus {
+  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
+}
+
+.error-message {
+  color: #c53030;
+  font-size: 0.85rem;
+  margin: 5px 0 0 0;
+}
+
+/* ======================================= */
+/* ====== Submit Button ====== */
+/* ======================================= */
+.signup-btn {
+  padding: 1rem;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(to right, #2563eb, #16a34a);
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px rgba(4, 65, 65, 0.2);
+  margin-top: 0.5rem;
+}
+
+.signup-btn:hover {
+  opacity: 0.95;
+  box-shadow: 0 6px 20px rgba(4, 65, 65, 0.3);
+}
+
+.signup-btn:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ======================================= */
+/* ====== Footer Links ====== */
+/* ======================================= */
+.login-prompt {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.login-prompt a {
+  color: #044141;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-prompt a:hover {
+  text-decoration: underline;
+}
+
+/* ======================================= */
+/* ====== Toast Customization ====== */
+/* ======================================= */
+.my-toast {
+  background-color: #333 !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+  font-size: 0.9rem;
+}
+
+/* ======================================= */
+/* ====== Responsive ====== */
+/* ======================================= */
+@media (max-width: 550px) {
+  .main {
+    padding: 1rem 0.5rem;
+  }
+  
+  .forgot-card {
+    padding: 2rem 1.5rem;
+    border-radius: 10px;
+  }
+
+  .form-header h1 {
+    font-size: 1.5rem;
+  }
+}

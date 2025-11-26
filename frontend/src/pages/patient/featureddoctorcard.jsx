@@ -39,7 +39,7 @@ export default function FeaturedDoctorCard({
       </div>
 
       <div className="card-action">
-        <Link to={`/patient/appointment/${_id}`} className="btn btn-primary">Book</Link>
+        <Link to={`/patient/appointment/${_id}`} className="btn button-primary">Book</Link>
       </div>
     </article>
   );

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Bubbles from "../../components/Loaders/bubbles";
 import "../../css/payments.css";
-
+const API = import.meta.env.VITE_API_URL;
 export default function Payments() {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -11,7 +11,7 @@ export default function Payments() {
   const fetchTransactions = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:8000/appointment/transactions", {
+      const res = await fetch(`${API}/appointment/transactions`, {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to load transactions");

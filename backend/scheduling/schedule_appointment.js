@@ -25,7 +25,7 @@ export async function scheduleJobsForAppointment(appointment) {
     }
 
     const safeId = String(appointment._id).replace(/:/g, "_");
-    console.log("safeId:", safeId);
+    
     
     await startQueue.add(
       "start",
@@ -41,7 +41,7 @@ export async function scheduleJobsForAppointment(appointment) {
       }
     );
 
-    console.log(`✅ Start job scheduled in ${(startDelayMs / 60000).toFixed(1)} min`);
+    console.log(`Start job scheduled in ${(startDelayMs / 60000).toFixed(1)} min`);
 
 
   } catch (err) {

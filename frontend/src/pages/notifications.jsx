@@ -9,6 +9,7 @@ import {
 } from "react-icons/fa";
 import Round from "../components/Loaders/round";
 import "../css/notifications.css"; 
+const API = import.meta.env.VITE_API_URL;
 
 const Notifications = () => {
   const [notifList, setNotifList] = useState([]);
@@ -16,7 +17,7 @@ const Notifications = () => {
 
   const fetchNotifications = async () => {
     try {
-   await fetch("http://localhost:8000/getallnotify", {
+   await fetch(`${API}/getallnotify`, {
                   method: "GET",
                   credentials: "include",
                 })
@@ -85,7 +86,7 @@ const Notifications = () => {
         )
       );
       // CHANGED: Use `_id`
-      await fetch(`http://localhost:8000/markread/${notification._id}`,{
+      await fetch(`${API}/markread/${notification._id}`,{
         method:"GET",
         credentials:"include"
       });
@@ -105,7 +106,7 @@ const Notifications = () => {
     try {
 
       setNotifList(notifList.map((n) => ({ ...n, isread: true })));
-      await fetch("http://localhost:8000/markallread",{
+      await fetch(`${API}/markallread`,{
   method:"POST",
   credentials: "include"
       });
@@ -121,7 +122,7 @@ const Notifications = () => {
     try {
     
       setNotifList(notifList.filter((n) => n._id !== notificationId));
-      await fetch(`http://localhost:8000/deletenotify/${notificationId}`,{
+      await fetch(`${API}/deletenotify/${notificationId}`,{
         method:"DELETE",
         credentials:"include"
 

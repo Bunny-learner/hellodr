@@ -22,9 +22,7 @@
     --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-
-
-
+/* --- System Messages --- */
 .message-wrapper.system .message-bubble {
     background: #e6e6e6;
     color: #333;
@@ -36,12 +34,12 @@
     justify-content: center;
 }
 
-
-
-video{
+/* --- Video Constraints --- */
+video {
     max-height: 300px;
     max-width: 300px;
 }
+
 body {
     font-family: var(--font-family);
     background-color: var(--background-color);
@@ -83,6 +81,7 @@ body {
     background-color: var(--sidebar-bg);
     display: flex;
     flex-direction: column;
+    transition: transform 0.3s ease;
 }
 
 /* --- Chat Header --- */
@@ -94,6 +93,12 @@ body {
     border-bottom: 1px solid var(--border-color);
     background: var(--background-color);
     flex-shrink: 0;
+}
+
+.chat-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .chat-header .patient-info {
@@ -115,7 +120,7 @@ body {
 
 .chat-header .patient-status {
     font-size: 0.85rem;
-    color: #28a745; /* Green for active */
+    color: #28a745;
     display: flex;
     align-items: center;
     gap: 4px;
@@ -126,6 +131,10 @@ body {
     height: 8px;
     background-color: #28a745;
     border-radius: 50%;
+}
+
+.chat-header .status-dot.offline {
+    background-color: #dc3545;
 }
 
 .chat-header .chat-actions {
@@ -258,28 +267,27 @@ body {
     box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
 }
 
-/* --- 🎨 NEW FILE PREVIEW STYLES 🎨 --- */
+/* --- File Preview Styles --- */
 .file-preview-area {
     padding: 8px 16px;
     background-color: var(--sidebar-bg);
     border-top: 1px solid var(--border-color);
-    overflow: hidden; /* Hide scrollbar on the container */
+    overflow: hidden;
 }
 
 .file-preview-list {
     display: flex;
     flex-direction: row;
     gap: 12px;
-    overflow-x: auto; /* Allow horizontal scrolling */
-    padding: 4px 0; /* Add padding for scrollbar */
+    overflow-x: auto;
+    padding: 4px 0;
     
-    /* Hide scrollbar */
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 
 .file-preview-list::-webkit-scrollbar {
-    display: none; /* Chrome, Safari, and Opera */
+    display: none;
 }
 
 .file-preview-item {
@@ -288,7 +296,7 @@ body {
     height: 72px;
     border-radius: var(--border-radius-md);
     overflow: hidden;
-    flex-shrink: 0; /* Prevent items from shrinking */
+    flex-shrink: 0;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     background-color: var(--border-color);
 }
@@ -334,35 +342,24 @@ body {
     color: var(--text-secondary);
 }
 
-
 /* --- File Rendering in Chat --- */
 .chat-files-container {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    margin-bottom: 8px; /* Add space if there is text below */
+    margin-bottom: 8px;
 }
 
 .chat-image {
-  max-width: 220px;        /* Keeps image within message bubble width */
-  max-height: 220px;       /* Avoids large images breaking layout */
-  border-radius: 12px;     /* Smooth rounded corners */
-  object-fit: cover;       /* Ensures image keeps aspect ratio nicely */
-  margin-top: 6px;
-  margin-bottom: 6px;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  display: block;
-}
-
-
-
-/* Optional: make images responsive inside messages */
-@media (max-width: 600px) {
-  .chat-image {
-    max-width: 150px;
-    max-height: 150px;
-  }
+    max-width: 220px;
+    max-height: 220px;
+    border-radius: 12px;
+    object-fit: cover;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: block;
 }
 
 .chat-video {
@@ -382,6 +379,7 @@ body {
     text-decoration: none;
     font-weight: 500;
 }
+
 .message-wrapper.sent .chat-file-link {
     background-color: rgba(255, 255, 255, 0.15);
     color: var(--text-light);
@@ -390,10 +388,10 @@ body {
 .chat-file-link:hover {
     background-color: rgba(0, 0, 0, 0.1);
 }
+
 .message-wrapper.sent .chat-file-link:hover {
     background-color: rgba(255, 255, 255, 0.25);
 }
-
 
 /* --- Patient Info Sidebar Styles --- */
 .patient-profile-header {
@@ -478,26 +476,19 @@ body {
 }
 
 .info-value.allergy {
-    color: #dc3545; /* Red for allergies */
+    color: #dc3545;
     font-weight: 600;
-}
-
-.tool-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
 }
 
 .tool-btn {
     width: 100%;
     justify-content: flex-start;
+    margin-bottom: 8px;
 }
-
-
 
 /* === END CONSULTATION BUTTON === */
 .action-btn.btn-end {
-    background-color: #dc3545;      /* Red tone */
+    background-color: #dc3545;
     border-color: #dc3545;
     color: var(--text-light);
     font-weight: 600;
@@ -518,140 +509,486 @@ body {
     transform: scale(0.98);
     box-shadow: none;
 }
-/* ===== Prescription overlay & timer badge styles (append to chatpage.css) ===== */
 
+/* ===== Timer badge styles ===== */
 .timer-badge {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 6px 10px;
-  border-radius: 8px;
-  background: linear-gradient(180deg, rgba(0,123,255,0.08), rgba(0,123,255,0.03));
-  border: 1px solid rgba(0,123,255,0.08);
-  margin-right: 8px;
-  min-width: 78px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 8px;
+    background: linear-gradient(180deg, rgba(0,123,255,0.08), rgba(0,123,255,0.03));
+    border: 1px solid rgba(0,123,255,0.08);
+    margin-right: 8px;
+    min-width: 78px;
 }
 
+.timer-label {
+    font-size: 0.7rem;
+    opacity: 0.7;
+}
+
+/* ===== Prescription overlay styles ===== */
 .prescription-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(16, 24, 40, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1200;
-  padding: 20px;
+    position: fixed;
+    inset: 0;
+    background: rgba(16, 24, 40, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1200;
+    padding: 20px;
 }
 
 .prescription-card {
-  width: 820px;
-  max-width: calc(100% - 40px);
-  background: var(--background-color);
-  border-radius: 12px;
-  box-shadow: var(--box-shadow);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--border-color);
+    width: 820px;
+    max-width: calc(100% - 40px);
+    background: var(--background-color);
+    border-radius: 12px;
+    box-shadow: var(--box-shadow);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border-color);
 }
 
 .prescription-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .prescription-header h3 {
-  margin: 0;
-  font-size: 1.1rem;
-  color: var(--text-primary);
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--text-primary);
 }
 
 .prescription-body {
-  padding: 18px 20px;
-  max-height: 70vh;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+    padding: 18px 20px;
+    max-height: 70vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .prescription-body label {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  margin-bottom: 6px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
 }
 
 .prescription-body input,
 .prescription-body textarea {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  font-size: 0.95rem;
-  resize: vertical;
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    resize: vertical;
 }
 
 .prescription-body textarea {
-  min-height: 80px;
+    min-height: 80px;
 }
 
 .med-section {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .add-med-btn {
-  background: transparent;
-  border: 1px dashed rgba(0,0,0,0.08);
-  padding: 6px 10px;
-  border-radius: 8px;
-  cursor: pointer;
+    background: transparent;
+    border: 1px dashed rgba(0,0,0,0.08);
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
 }
 
 .med-row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
+    display: flex;
+    gap: 8px;
+    align-items: center;
 }
 
 .med-row input {
-  flex: 1;
-  min-width: 0;
+    flex: 1;
+    min-width: 0;
 }
 
 .remove-med-btn {
-  background: rgba(220,53,69,0.08);
-  border: 1px solid rgba(220,53,69,0.12);
-  color: #b02a37;
-  padding: 6px;
-  border-radius: 8px;
-  cursor: pointer;
+    background: rgba(220,53,69,0.08);
+    border: 1px solid rgba(220,53,69,0.12);
+    color: #b02a37;
+    padding: 6px;
+    border-radius: 8px;
+    cursor: pointer;
 }
 
 .generate-btn {
-  background: var(--primary-color);
-  color: var(--text-light);
-  border: none;
-  padding: 10px 14px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
+    background: var(--primary-color);
+    color: var(--text-light);
+    border: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    flex: 1;
 }
 
 .close-btn {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 6px;
-  color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    color: var(--text-secondary);
 }
 
-@media (max-width: 900px) {
-  .prescription-card { width: 95%; }
-  .med-row { flex-direction: column; align-items: stretch; }
-  .med-row input { width: 100%; }
+/* Hide elements by default */
+.mobile-only {
+    display: none;
+}
+
+.desktop-only {
+    display: inline-flex;
+}
+
+/* Sidebar overlay */
+.sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 998;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-overlay {
+    pointer-events: none;
+}
+
+.sidebar-overlay.active {
+    pointer-events: auto;
+}
+
+
+.sidebar-overlay.active {
+    opacity: 1;
+}
+
+.close-sidebar {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 1000;
+    background: var(--background-color);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* ============================================
+   RESPONSIVE STYLES - TABLET & MOBILE
+   ============================================ */
+
+@media (max-width: 1024px) {
+    .patient-info-sidebar {
+        width: 280px;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Show/hide elements */
+    .mobile-only {
+        display: inline-flex;
+    }
+    
+    .desktop-only {
+        display: none;
+    }
+    
+    /* Sidebar becomes a slide-out panel */
+    .sidebar-overlay {
+        display: block;
+    }
+    
+    .patient-info-sidebar {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 85%;
+        max-width: 320px;
+        height: 100vh;
+        z-index: 999;
+        transform: translateX(100%);
+        box-shadow: -4px 0 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .patient-info-sidebar.open {
+        transform: translateX(0);
+    }
+    
+    /* Header adjustments */
+    .chat-header {
+        padding: 10px 12px;
+    }
+    
+    .chat-header .patient-name {
+        font-size: 1rem;
+    }
+    
+    .chat-header .patient-status {
+        font-size: 0.8rem;
+    }
+    
+    .timer-badge {
+        min-width: 60px;
+        padding: 4px 8px;
+        margin-right: 4px;
+    }
+    
+    .timer-badge strong {
+        font-size: 0.9rem;
+    }
+    
+    .timer-label {
+        font-size: 0.65rem;
+    }
+    
+    /* Messages area */
+    .chat-messages-area {
+        padding: 12px;
+        gap: 8px;
+    }
+    
+    .message-wrapper {
+        max-width: 85%;
+    }
+    
+    .message-bubble {
+        padding: 8px 12px;
+    }
+    
+    .message-text {
+        font-size: 0.9rem;
+    }
+    
+    /* Input area */
+    .chat-input-area {
+        padding: 10px 12px;
+        gap: 8px;
+    }
+    
+    .message-input {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+    
+    .send-button {
+        padding: 8px 12px;
+    }
+    
+    .send-text {
+        display: none;
+    }
+    
+    /* File preview */
+    .file-preview-item {
+        width: 60px;
+        height: 60px;
+    }
+    
+    /* Chat images */
+    .chat-image {
+        max-width: 180px;
+        max-height: 180px;
+    }
+    
+    video {
+        max-width: 100%;
+        max-height: 250px;
+    }
+    
+    /* Prescription modal */
+    .prescription-card {
+        width: 95%;
+        max-width: none;
+    }
+    
+    .prescription-body {
+        max-height: 65vh;
+    }
+    
+    .med-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .med-row input {
+        width: 100%;
+    }
+    
+    .generate-btn {
+        padding: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Further mobile optimizations */
+    .chat-header {
+        padding: 8px 10px;
+    }
+    
+    .chat-header .patient-name {
+        font-size: 0.95rem;
+    }
+    
+    .chat-header .patient-status {
+        font-size: 0.75rem;
+    }
+    
+    .chat-header .chat-actions {
+        gap: 6px;
+    }
+    
+    .timer-badge {
+        min-width: 50px;
+        padding: 3px 6px;
+    }
+    
+    .timer-badge strong {
+        font-size: 0.85rem;
+    }
+    
+    .action-btn-icon {
+        padding: 6px;
+    }
+    
+    /* Messages */
+    .chat-messages-area {
+        padding: 10px;
+    }
+    
+    .message-wrapper {
+        max-width: 90%;
+    }
+    
+    .message-bubble {
+        padding: 7px 10px;
+    }
+    
+    .message-text {
+        font-size: 0.85rem;
+    }
+    
+    .message-timestamp {
+        font-size: 0.7rem;
+    }
+    
+    /* Input */
+    .chat-input-area {
+        padding: 8px 10px;
+        gap: 6px;
+    }
+    
+    .message-input {
+        font-size: 0.85rem;
+        padding: 7px 10px;
+    }
+    
+    .send-button {
+        padding: 7px 10px;
+    }
+    
+    /* File preview */
+    .file-preview-area {
+        padding: 6px 10px;
+    }
+    
+    .file-preview-item {
+        width: 50px;
+        height: 50px;
+    }
+    
+    /* Chat media */
+    .chat-image {
+        max-width: 150px;
+        max-height: 150px;
+    }
+    
+    video {
+        max-height: 200px;
+    }
+    
+    /* Sidebar */
+    .patient-info-sidebar {
+        width: 90%;
+    }
+    
+    .patient-avatar-large {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .patient-profile-header h3 {
+        font-size: 1.1rem;
+    }
+    
+    .patient-details-body {
+        padding: 15px;
+    }
+    
+    /* Prescription */
+    .prescription-overlay {
+        padding: 10px;
+    }
+    
+    .prescription-card {
+        width: 100%;
+        max-height: 90vh;
+    }
+    
+    .prescription-header {
+        padding: 12px 15px;
+    }
+    
+    .prescription-header h3 {
+        font-size: 1rem;
+    }
+    
+    .prescription-body {
+        padding: 12px 15px;
+        max-height: calc(90vh - 60px);
+    }
+    
+    .prescription-body input,
+    .prescription-body textarea {
+        font-size: 0.9rem;
+        padding: 8px 10px;
+    }
+}
+
+/* Landscape phone optimization */
+@media (max-width: 768px) and (orientation: landscape) {
+    .chat-messages-area {
+        padding: 8px;
+    }
+    
+    .prescription-body {
+        max-height: 50vh;
+    }
 }

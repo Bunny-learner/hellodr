@@ -34,11 +34,11 @@ export async function sendEmail(toEmail, subject, body, meta = {}) {
       html,
     });
 
-    console.log("📧 Email sent:", info.messageId);
+    console.log(" Email sent:", info.messageId);
 
     return { ok: true, meta: info };
   } catch (err) {
-    console.error("❌ sendEmail error:", err);
+    console.error(" sendEmail error:", err);
     return { ok: false, meta: err };
   }
 }

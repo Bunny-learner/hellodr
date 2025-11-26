@@ -7,6 +7,7 @@ import { Doctor } from "../models/doctor.js"
 import { TimeSlot } from "../models/timeslot.js"
 import { Transaction } from "../models/transactions.js"
 import mongoose from "mongoose"
+import { loadTemplate } from "../utils/emailTemplate.js";
 import { redisPub } from '../db/redisconnect.js';
 import { Patient } from "../models/patient.js"
 import doctorSocketHandler from "../sockets/doctor.sockets.js";
@@ -16,6 +17,9 @@ import { scheduleTimeoutJobs } from "../scheduling/schedule_timeout.js";
 import { removeAppointmentJobs } from "../scheduling/remove_job.js";
 import { userConnections } from "../sockets/index.js";
 import { Notification } from "../models/notification.js";
+import { sendEmail } from "../utils/sendEmail.js";
+
+const API = process.env.WEB_URL;
 /**
  
  * @param {string} dateString - The date string in "DD-MM-YYYY" format.
@@ -140,7 +144,25 @@ const book_appointment = asynchandler(async (req, res) => {
   });
 
 
+  if (mode.toLowerCase() === "offline") {
+
+    const lastToken = await Appointment.findOne({
+      doctor: doctorId,
+      date: appointmentDate,
+      mode: "offline",
+      token_number: { $ne: null }
+    })
+      .sort({ token_number: -1 })
+      .select("token_number");
+
+    appointment.token_number = lastToken ? lastToken.token_number + 1 : 1;
+  }
+
+
+
   await appointment.save();
+
+
   timeslot.booked += 1;
 
 
@@ -198,9 +220,6 @@ const get_all_appointments = asynchandler(async (req, res) => {
 
   const query = { [userType]: userID };
 
-  // ---------------------------
-  // 🔥 STATUS FILTER HANDLING
-  // ---------------------------
   if (status && status.toLowerCase() !== "all") {
     status = status.toLowerCase();
 
@@ -219,10 +238,7 @@ const get_all_appointments = asynchandler(async (req, res) => {
       query["status"] = status;
     }
   }
-
-  // ---------------------------
-  // 🔥 DATE FILTER HANDLING
-  // ---------------------------
+  //date filter handling
   if (date) {
     const d = new Date(date);
     d.setHours(0, 0, 0, 0);
@@ -258,7 +274,8 @@ const update_appointment_status = asynchandler(async (req, res) => {
   // Good: You are populating the TimeSlot here.
   const appointment = await Appointment.findById(appointmentID)
     .populate("TimeSlot")
-    .populate("patient");
+    .populate("patient")
+    .populate("doctor");
 
 
 
@@ -289,7 +306,7 @@ const update_appointment_status = asynchandler(async (req, res) => {
   await notif.save();
 
   //sending live  notification to patient about the status of appointment
-  
+
   const patientId =
     appointment.patient?._id?.toString() ??
     appointment.patient.toString();
@@ -309,6 +326,20 @@ const update_appointment_status = asynchandler(async (req, res) => {
     await scheduleJobsForAppointment(appointment)
     await scheduleRemindersForAppointment(appointment)
     await scheduleTimeoutJobs(appointment)
+
+    if (appointment.mode === "offline" && appointment.token_number) {
+
+    const body = loadTemplate("token_accepted.html", {
+  patientName: appointment.patient.name,
+  tokenNumber: appointment.token_number,
+  doctorName: appointment.doctor.name,
+  startTime: appointment.TimeSlot.StartTime,
+  endTime: appointment.TimeSlot.EndTime,
+  appointmentDate: indiaTime
+});
+
+    sendEmail(appointment.patient.email, "Appointment Accepted", body);
+  }
 
   }
 
@@ -413,17 +444,17 @@ const update_appointment_status = asynchandler(async (req, res) => {
 
 
           //decrease the bookings by 1 for that appointment
-          
+
           const slot = appointment.TimeSlot;
 
           if (!slot || !slot._id) {
             console.log("⚠️ Timeslot missing in appointment");
           } else {
-            
+
             const ts = await TimeSlot.findById(slot._id);
 
             if (ts) {
-              ts.booked = Math.max(0, ts.booked - 1); 
+              ts.booked = Math.max(0, ts.booked - 1);
 
               if (ts.booked < ts.limit) {
                 ts.status = "available";
@@ -554,8 +585,8 @@ const getsession = asynchandler(async (req, res) => {
       ],
       mode: "payment",
       customer_email: customerEmail,
-      success_url: `http://localhost:5173/patient/payments?alert=Payment is Successful`,
-      cancel_url: `http://localhost:5173/patient/failure`,
+      success_url: `${API}/patient/payments?alert=Payment is Successful`,
+      cancel_url: `${API}/patient/failure`,
     });
 
     let transaction = await Transaction.findOne({

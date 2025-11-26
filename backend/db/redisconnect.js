@@ -1,9 +1,8 @@
 import { Redis } from 'ioredis';
+import dotenv from "dotenv"
+dotenv.config({ quiet: true })
 
-const redisConfig = {
-  host: 'localhost',
-  port: 6380
-};
+const redisConfig =process.env.REDIS_URL
 
 // This is for BullMQ
 const redisConnection = new Redis({ ...redisConfig, maxRetriesPerRequest: null });

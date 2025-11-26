@@ -14,12 +14,12 @@ export default async function patientSocket(io, socket, id, userConnections) {
       // ✔ Only store socket.id in DB
       pat.socketid = socket.id;
       await pat.save();
-      console.log(`✅ Saved socketId for patient: ${id}`);
+      console.log(` Saved socketId for patient: ${id}`);
     } else {
-      console.log("❌ Patient not found in DB");
+      console.log(" Patient not found in DB");
     }
   } catch (err) {
-    console.log("❌ Failed to store patient socket ID", err);
+    console.log("Failed to store patient socket ID", err);
   }
 
   socket.on("msg_frompat", ({ msg, roomid, patientId }) => {

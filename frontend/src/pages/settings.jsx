@@ -8,7 +8,9 @@ import toast from "react-hot-toast";
 import Bubbles from "../components/Loaders/bubbles";
 import { useNavigate } from "react-router-dom";
 
-const VAPID_PUBLIC_KEY = "BDKWrqxWwM1Jl86sVi_gcE5f0HJ3h9_eX5NDvFaDRye45P-gAgt9avAjwpVMTdw9dHjwufbuc-8vkgiZmtwzUAs";
+
+const VITE_VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || null;
+const API = import.meta.env.VITE_API_URL;
 
 // Helper function to convert the VAPID key
 function urlB64ToUint8Array(base64String) {
@@ -86,7 +88,7 @@ export default function Settings() {
 
   // Subscribe User to Push Notifications
   const handleSubscribePush = async () => {
-    if (VAPID_PUBLIC_KEY === "YOUR_VAPID_PUBLIC_KEY_GOES_HERE") {
+    if (!VITE_VAPID_PUBLIC_KEY ) {
       toast.error("VAPID Key is not set in Settings.jsx");
       return;
     }
@@ -99,7 +101,7 @@ export default function Settings() {
     setIsSubscribing(true);
     try {
       // 1. Register the service worker
-      const swRegistration = await navigator.serviceWorker.register("/service-worker.js");
+      const swRegistration = await navigator.serviceWorker.register("/hello-doctor/service-worker.js");
 
       // 2. Request permission (this shows the browser popup)
       const permission = await Notification.requestPermission();
@@ -113,11 +115,11 @@ export default function Settings() {
 
       const subscription = await swRegistration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlB64ToUint8Array(VAPID_PUBLIC_KEY),
+        applicationServerKey: urlB64ToUint8Array(VITE_VAPID_PUBLIC_KEY),
       });
 
       // 4. Send the subscription to your backend
-      await fetch("http://localhost:8000/settings/subscribe", {
+      await fetch(`${API}/settings/subscribe`, {
         method: "POST",
         body: JSON.stringify({ subscription }),
         headers: { "Content-Type": "application/json" },
@@ -158,7 +160,7 @@ export default function Settings() {
 
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:8000/settings/setpref", {
+      const res = await fetch(`${API}/settings/setpref`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

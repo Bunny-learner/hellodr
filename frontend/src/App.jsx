@@ -17,7 +17,7 @@ import ChatPage from './pages/chatpage';
 import WaitingRoom from './pages/WaitingRoom'
 import Welcome1 from "./pages/patient/welcome1"
 import RoleSelection from './pages/role-selection';
-
+import Home from "./pages/patient/home.jsx"
 
 const AppointmentReview =lazy(()=>import('./pages/patient/appointmentreview'))
 const AboutDoctor = lazy(() => import('./pages/patient/viewdoctorprofile'));
@@ -33,7 +33,7 @@ const DoctorAppointments = lazy(() => import('./pages/doctor/doctorappointments'
 const SlotBooking = lazy(() => import('./pages/patient/slotbooking'));
 const PatientProfile = lazy(() => import('./pages/patient/patientprofile'));
 const Settings = lazy(() => import('./pages/settings'));
-
+const FavouriteDoctors=lazy(()=>import("./pages/patient/favourite_doctors"))
 function App() {
   return (
     <Suspense fallback={<Bubbles />}>
@@ -71,6 +71,7 @@ function App() {
           <Route path="/patient/:id" element={<AboutDoctor />} />
           <Route path='/patient/settings' element={<Settings/>}/>
           <Route path="/patient/notifications" element={<Notification/>}/>
+          <Route path="/patient/favourites" element={<FavouriteDoctors/>}/>
         </Route>
 
          <Route path="/patient/appointment/form" element={<BookingForm/>} />
@@ -78,6 +79,7 @@ function App() {
 
         <Route path="/patient/profile" element={<PatientProfile />} />
         <Route path="/role-selection" element={<RoleSelection/>}/>
+        <Route path="/home" element={<Home/>}/>
       </Routes>
     </Suspense>
   );

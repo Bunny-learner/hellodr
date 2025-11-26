@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useForm } from "react-hook-form";
-import "../../css/patientsignup.css";
+import "../../css/forgotpass.css"
 import Timer from './timer';
 import toast, { Toaster } from 'react-hot-toast';
 import { LinearProgress, Button } from '@mui/material';
 import { Link, useNavigate } from "react-router-dom";
+const API = import.meta.env.VITE_API_URL;
 
 export default function ForgotPassword() {
   const { register, handleSubmit, formState: { errors } } = useForm();
@@ -31,7 +32,7 @@ export default function ForgotPassword() {
 
   const reset = async () => {
     //resending new verification code
-    await fetch("http://localhost:8000/patient/resendcode", {
+    await fetch(`${API}/patient/resendcode`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -58,7 +59,7 @@ export default function ForgotPassword() {
     else if (endpoint === 'verifycode') bodyData = { email: data.email, code: data.code };
 
 
-    await fetch(`http://localhost:8000/patient/${endpoint}`, {
+    await fetch(`${API}/patient/${endpoint}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -84,6 +85,7 @@ export default function ForgotPassword() {
         }
         else if (res.status === 201 && msg.message == "verified") {
           toast.success("Successfully verified, please reset your password")
+          localStorage.setItem("allowReset", "true");
           navigate('/patient/reset')
         }
         else

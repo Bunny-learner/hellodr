@@ -8,7 +8,7 @@ import AfternoonIcon from "../../assets/afternoon.svg"
 import EveningIcon from "../../assets/night.svg"
 
 import DayTabs from "../../assets/swiper";
-
+const API = import.meta.env.VITE_API_URL;
 const formatDate = (date) => {
   if (!date) return "";
   return date.toLocaleDateString("en-IN", {
@@ -69,7 +69,7 @@ export default function SlotBooking() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`http://localhost:8000/patient/allslots`, {
+        const res = await fetch(`${API}/patient/allslots`, {
           headers: { "Content-Type": "application/json", doctorid: doctorId },
           credentials: "include",
         });

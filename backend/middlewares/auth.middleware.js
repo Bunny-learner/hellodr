@@ -9,7 +9,7 @@ export const verifyJWT = (userType) => {
     try {
       // Get token from cookies
       console.log("Inside the verifyJWT<----->")
-      const token = req.cookies?.accesstoken;
+      const token = req.cookies["_host_AUTH"];
       console.log(token,"accesstoken from cookies");
 
       if (!token) {

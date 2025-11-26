@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { useForm } from "react-hook-form";
-import "../../css/patientsignup.css";
+import "../../css/resetpass.css";
 import { LinearProgress, Button } from '@mui/material';
 import toast, { Toaster } from 'react-hot-toast';
 import { Link,useNavigate } from "react-router-dom";
-
+const API = import.meta.env.VITE_API_URL;
 export default function ResetPass() {
   const { register, handleSubmit, formState: { errors }, watch } = useForm();
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -13,6 +13,14 @@ export default function ResetPass() {
     setPasswordVisible(!passwordVisible);
   };
 
+
+  useEffect(() => {
+  const allowed = localStorage.getItem("allowReset");
+  if (!allowed) navigate("/patient/forgot");
+}, []);
+
+
+
   const navigate=useNavigate()
   const onSubmit = async(data) => {
   const ele=document.querySelector('.form-body')
@@ -20,7 +28,7 @@ export default function ResetPass() {
     btn.disabled=true;
     btn.backgroundColor="darkgreen"
     setLoading(true)
-    await fetch("http://localhost:8000/patient/reset",{
+    await fetch(`${API}/patient/reset`,{
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
