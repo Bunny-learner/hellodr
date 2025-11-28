@@ -45,6 +45,7 @@ export default async function doctorSocket(io, socket, id, userConnections) {
     if (appt) {
       appt.patientjoinenabled = true;
       await appt.save();
+      console.log("now patient is enabled to join the room ")
     }
 
     // Get patient's socket object

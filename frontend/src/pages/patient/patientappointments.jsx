@@ -59,7 +59,7 @@ const TodayOnlineCard = ({ app, onJoin, isJoinable }) => (
     </div>
 );
 
-const TodayOfflineCard = ({ app }) => (
+const TodayOfflineCard = ({ app,navigate }) => (
     <div className="pa-card today-card today-offline">
         <div className="pa-card-header">
             <img src={app.doctor.profilePic || "/default-doctor.png"} alt={app.doctor.name} className="pa-doctor-image" />
@@ -75,7 +75,7 @@ const TodayOfflineCard = ({ app }) => (
         </div>
         <div className="pa-card-footer">
             <button className="pa-btn pa-btn-secondary" onClick={() =>
-    navigate(`/patient/${doctor._id}`, {
+    navigate(`/patient/${app.doctor._id}`, {
       state: { scrollTo: "location-section" }
     })}>Get Directions</button>
         </div>
@@ -202,7 +202,7 @@ export default function PatientAppointments() {
         const handleEnableJoin = (data) => {
             console.log("Socket event 'enable_join_button' received:", data);
             if (data && data.appt_id) {
-                toast.success("Doctor is ready, please join!");
+                toast.success("Doctor is waiting , please join the room!");
                 
                 setJoinableAppointments(prevSet => {
                     const newSet = new Set(prevSet);
@@ -326,17 +326,13 @@ export default function PatientAppointments() {
                                 key={app._id}
                                 app={app}
                                 onJoin={handleJoinCall}
-                                // --- 💡 LOGIC FIX ---
-                                // Your original logic was (A && B) || C, which could be true if C
-                                // was true, even if A was false.
-                                // This is (A && (B || C)), which is the correct logic.
                                 isJoinable={
                                     (app.patientjoinenabled === true || joinableAppointments.has(app._id)) &&
                                     (app.status.toLowerCase() === "next_up" ||
                                     app.status.toLowerCase() === "in_progress")
                                 }
                             /> :
-                            <TodayOfflineCard key={app._id} app={app} />
+                            <TodayOfflineCard key={app._id} app={app} navigate={navigate} />
                     ))
                 );
 
@@ -388,7 +384,7 @@ export default function PatientAppointments() {
         cancelled: "Cancelled History",
     };
 
-    // --- ⬇️ START OF RESTRUCTURED JSX ⬇️ ---
+    
     return (
         <section className="pa-container">
             

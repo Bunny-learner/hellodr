@@ -6,6 +6,8 @@ import { Patient } from "../models/patient.js"
 import { Doctor } from "../models/doctor.js"
 import { TimeSlot } from "../models/timeslot.js"
 import { Appointment } from "../models/appointment.js"
+import { Prescription } from "../models/prescription.js"
+import { createPrescriptionPDF } from "../utils/generatePrescriptionPDF.js"
 import nodemailer from "nodemailer"
 import bcrypt from "bcrypt"
 import mongoose from "mongoose"
@@ -333,156 +335,50 @@ const uploadBufferToCloudinary = (buffer) => {
   });
 };
 
-
-
 const generatePrescription = asynchandler(async (req, res) => {
-  const { prescriptionData, patientData, consultationId, roomid, doctorId } = req.body;
+  const { prescriptionData, patientData, roomid, doctorId } = req.body;
+  console.log(patientData)
 
- 
   try {
-    const doc = new PDFDocument({ size: 'A4', margin: 40 });
-    const buffers = [];
-    doc.on('data', buffers.push.bind(buffers));
+    // Generate PDF Buffer using helper
+    const pdfBuffer = await createPrescriptionPDF(prescriptionData, patientData);
+
+    // Upload PDF to Cloudinary
+    const uploadResult = await uploadBufferToCloudinary(pdfBuffer);
+    const pdfUrl = uploadResult.secure_url;
+
+    // Emit chat message
+    const msg = {
+      id: `msg_${Date.now()}`,
+      senderId: doctorId,
+      text: "Here is your prescription.",
+      timestamp: new Date().toISOString(),
+      files: [{ url: pdfUrl, name: "prescription.pdf", type: "application/pdf" }],
+    };
+
+    io.to(roomid).emit("sending", { msg, isSystem: true });
+
+    // Save to DB
     
-    
-    doc.on('end', async () => {
-      const pdfBuffer = Buffer.concat(buffers);
-
-      try {
-        
-        const uploadResult = await uploadBufferToCloudinary(pdfBuffer);
-console.log(uploadResult.secure_url)
-        // 2. Create the chat message object
-        const msg = {
-          id: `msg_${Date.now()}`,
-          senderId: doctorId,
-          text: "Here is your prescription.",
-          timestamp: new Date().toISOString(),
-          files: [
-            {
-              url: uploadResult.secure_url, 
-              name: 'prescription.pdf',
-              type: 'application/pdf',
-            },
-          ],
-        };
-
-
-
-
-    
-        let payload={msg,isSystem:true}
-        io.to(roomid).emit('sending',payload);//io.to sends to everyone in room just like
-        //socket.to(roomid)but socket.broadcast.to(roomid) does not send to its own socket
-        
-        //I SHOULD ADD THE PRESCRIPTION TO DB THINKING LIKE SHOULD I MAINITAIN AN NEW TABLE OR 
-        //STORE UNDER PATIENT TABLE AND ADD NEW FIELD PRESCRIPTIONS
-    
-        
-        // 7. Respond to the original HTTP request
-        res.status(200).json({ success: true, message: 'Prescription sent.' });
-
-      } catch (uploadError) {
-        console.error('Cloudinary upload error:', uploadError);
-        res.status(500).json({ message: 'Failed to upload PDF.' });
-      }
+    const savedPrescription = await Prescription.create({
+      patient: patientData.patientid,
+      doctor: doctorId,
+      medications: [pdfUrl],
     });
 
-    
-    // --- PDF Drawing Logic (Unchanged) ---
-    const pageWidth = doc.page.width;
-    const marginLeft = 40;
-    let y = 40;
-
-    // Header
-    doc.fontSize(20).font('Helvetica-Bold').text(prescriptionData.clinicName || "Clinic / Hospital Name", marginLeft, y);
-    doc.fontSize(12).font('Helvetica').text(`Address: ${prescriptionData.clinicAddress || "____________________________"}`, marginLeft, y + 25);
-    doc.text(`Phone: ${prescriptionData.clinicPhone || "______________________________"}`, marginLeft, y + 45);
-    y += 100;
-
-    // Line Separator
-    doc.strokeColor("#cccccc").lineWidth(1).moveTo(marginLeft, y).lineTo(pageWidth - marginLeft, y).stroke();
-    y += 25;
-
-    // Patient & Doctor Info
-    doc.fontSize(14).font('Helvetica-Bold').text("Patient Details", marginLeft, y);
-    y += 20;
-    doc.fontSize(12).font('Helvetica');
-    doc.text(`Name: ${patientData.name}`, marginLeft, y); y += 18;
-    doc.text(`Age / Gender: ${patientData.age} / ${patientData.gender}`, marginLeft, y); y += 18;
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, marginLeft, y); y += 25;
-
-    doc.fontSize(14).font('Helvetica-Bold').text("Doctor Details", marginLeft, y);
-    y += 20;
-    doc.fontSize(12).font('Helvetica');
-    doc.text(`Doctor: ${prescriptionData.doctorName}`, marginLeft, y); y += 18;
-    y += 30;
-
-    // Diagnosis
-    doc.fontSize(14).font('Helvetica-Bold').text("Diagnosis", marginLeft, y);
-    y += 18;
-    doc.fontSize(12).font('Helvetica');
-    doc.text(prescriptionData.diagnosis || "-", { width: pageWidth - (marginLeft * 2) });
-    y = doc.y + 40; // Update y to current position
-
-    // Medications
-    doc.fontSize(14).font('Helvetica-Bold').text("Medications (Rx)", marginLeft, y);
-    y += 22;
-    doc.fontSize(12).font('Helvetica');
-
-    if (!prescriptionData.medications || prescriptionData.medications.length === 0) {
-      doc.text("- No medications prescribed -", marginLeft, y);
-      y += 20;
-    } else {
-      // Draw a table header
-      doc.font('Helvetica-Bold');
-      doc.text("Medicine", marginLeft, y);
-      doc.text("Dose", marginLeft + 200, y);
-      doc.text("Quantity", marginLeft + 300, y);
-      doc.text("Notes", marginLeft + 400, y);
-      doc.font('Helvetica');
-      y += 20;
-
-      prescriptionData.medications.forEach((m) => {
-        const startY = y;
-        doc.text(m.name || 'N/A', marginLeft, y, { width: 180 });
-        doc.text(m.dose || 'N/A', marginLeft + 200, y, { width: 80 });
-        doc.text(m.qty || 'N/A', marginLeft + 300, y, { width: 80 });
-        doc.text(m.notes || '-', marginLeft + 400, y, { width: 150 });
-        
-        // Calculate max height of the row to draw line correctly
-        const endY = Math.max(doc.y, startY + 20); // Ensure at least 20px height
-        y = endY + 10;
-        
-        // Add line separator for row
-        doc.strokeColor("#eeeeee").lineWidth(1).moveTo(marginLeft, y - 5).lineTo(pageWidth - marginLeft, y - 5).stroke();
-      });
-      y += 10;
-    }
-
-    // Notes
-    doc.fontSize(14).font('Helvetica-Bold').text("Doctor's Notes", marginLeft, y);
-    y += 20;
-    doc.fontSize(12).font('Helvetica');
-    doc.text(prescriptionData.notes || "-", { width: pageWidth - (marginLeft * 2) });
-    y = doc.y + 40;
-    
-    // Footer
-    y = doc.page.height - 100;
-    doc.strokeColor("#cccccc").lineWidth(1).moveTo(marginLeft, y).lineTo(pageWidth - marginLeft, y).stroke();
-    y += 20;
-    doc.fontSize(12).font('Helvetica-Bold').text("Consultation completed via HelloDr", marginLeft, y);
-    doc.fontSize(10).font('Helvetica').text(prescriptionData.doctorSignature || `Dr. ${prescriptionData.doctorName}`, marginLeft, y + 20);
-
-
-    // This finalizes the PDF and triggers the 'end' event
-    doc.end();
+    res.status(200).json({
+      success: true,
+      message: "Prescription generated, uploaded & saved.",
+      pdfUrl,
+      prescription: savedPrescription,
+    });
 
   } catch (error) {
-    console.error('Error in generatePrescriptionController:', error);
-    res.status(500).json({ message: 'Internal server error.' });
+    console.error("Prescription error:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
+
 
 export { doc_signup, generatePrescription ,profile,logout, uploadimg,doc_login, add_timeslot, get_timeslots, change_timeslot_status,updateDoctorProfile,doctor_dashboard_details }
 

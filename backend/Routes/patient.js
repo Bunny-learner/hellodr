@@ -1,5 +1,5 @@
 import express,{Router} from "express"
-import {pat_login,getreviews,viewfav,like_dislike,addreview,logout,allslots,updateprofile,profile,getdoctors,cloudcred,filterdoctors,uploadimg,pat_signup,pat_reset,pat_verify,pat_send} from "../controllers/patientcontrollers.js"
+import {pat_login,getreviews,getprescriptions,viewfav,like_dislike,addreview,logout,allslots,updateprofile,profile,getdoctors,cloudcred,filterdoctors,uploadimg,pat_signup,pat_reset,pat_verify,pat_send} from "../controllers/patientcontrollers.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js"
 import { get_all_appointments } from "../controllers/appointment.controllers.js"
 const patient=Router()
@@ -24,6 +24,7 @@ patient.get('/logout',verifyJWT('patient'),logout)
 patient.post('/addreview',verifyJWT('patient'),addreview)
 patient.get('/reviews/:id',getreviews)
 patient.get('/viewfav',verifyJWT('patient'),viewfav)
+patient.get('/getprescriptions',verifyJWT('patient'),getprescriptions)
 patient.post('/like',verifyJWT('patient'),like_dislike)
 
 

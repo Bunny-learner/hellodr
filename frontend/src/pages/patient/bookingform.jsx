@@ -35,7 +35,11 @@ export default function BookingForm() {
   }, [savedAppointment, setValue]);
 
 
-  const back = () => navigate(-1);
+  const back = () => {const appointment = JSON.parse(localStorage.getItem("appointment"));
+
+navigate(`/patient/${appointment.doctorId}`)}
+
+
 
   const onSubmit = (data) => {
     // Merge form data into existing appointment object

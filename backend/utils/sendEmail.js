@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import emailTemplate from "./emailtemplate.js"
+import emailTemplate from "./emailtemplate1.js"
 
 export async function sendEmail(toEmail, subject, body, meta = {}) {
   try {

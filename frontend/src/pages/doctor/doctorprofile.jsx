@@ -256,7 +256,7 @@ if (!String(profile.speciality || "").trim()) {
     }
 
     return (
-        <div className="main">
+        <>
             {loading && <LinearProgress color="primary" className="progress" />}
             
             {/* Mobile Hamburger Button */}
@@ -592,6 +592,6 @@ if (!String(profile.speciality || "").trim()) {
                     </form>
                 </div>
             </div>
-        </div>
+        </>
     );
 }

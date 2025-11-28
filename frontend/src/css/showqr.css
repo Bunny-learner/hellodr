@@ -1,0 +1,181 @@
+/* WRAPPER */
+.qr-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+  background: #f5f8fc;
+  min-height: 100vh;
+  animation: fadeIn 0.3s ease;
+}
+
+/* CARD */
+.qr-card {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  padding: 28px;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  text-align: center;
+  animation: slideUp 0.4s ease;
+}
+
+/* TITLE */
+.qr-title {
+  font-size: 26px;
+  font-weight: 600;
+  color: #222;
+  margin-bottom: 10px;
+}
+
+/* DESCRIPTION */
+.qr-desc {
+  color: #666;
+  margin-bottom: 22px;
+  font-size: 15px;
+}
+
+/* QR IMAGE CONTAINER */
+.qr-image-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.qr-image {
+  width: 230px;
+  height: 230px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  background: #fff;
+}
+
+/* TOKEN */
+.backup-token {
+  font-size: 18px;
+  margin-bottom: 18px;
+  color: #333;
+}
+
+/* DIVIDER */
+.divider {
+  width: 100%;
+  height: 1px;
+  background: #eaeaea;
+  margin: 20px 0;
+}
+
+/* INFO SECTION */
+.qr-info {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.qr-info p {
+  font-size: 15px;
+  margin: 6px 0;
+  color: #333;
+}
+
+.qr-info span {
+  font-weight: 600;
+  color: #111;
+}
+
+/* BUTTONS */
+.qr-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.qr-btn {
+  flex: 1;
+  padding: 12px;
+  background: #e9eef4;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.qr-btn:hover {
+  background: #d5dde8;
+}
+
+.qr-btn-blue {
+  background: #4f46e5;
+  color: #fff;
+}
+
+.qr-btn-blue:hover {
+  background: #4338ca;
+}
+
+/* LOADER */
+.qr-loader {
+  text-align: center;
+  padding-top: 100px;
+}
+
+.loader-spinner {
+  width: 42px;
+  height: 42px;
+  border: 4px solid #ddd;
+  border-top-color: #4f46e5;
+  border-radius: 50%;
+  margin: auto;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ERROR */
+.qr-error {
+  text-align: center;
+  padding-top: 100px;
+}
+
+.qr-error h2 {
+  color: #e11d48;
+}
+
+/* ANIMATIONS */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(14px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+
+/* HEADER WITH LOGO */
+.qr-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 12px;
+  animation: fadeIn 0.4s ease;
+}
+
+.qr-logo {
+  margin-bottom: 8px;
+}
+
+.hospital-name {
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0;
+  color: #1e293b;
+  letter-spacing: 0.5px;
+}

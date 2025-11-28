@@ -16,24 +16,24 @@ const AppointmentSchema = new mongoose.Schema({
         enum: ['online', 'offline'],
         default: 'offline'
     },
-    name:{
+    name: {
         type: String,
         required: true
     },
-    age:{
+    age: {
         type: Number,
         required: true
     },
-    gender:{
+    gender: {
         type: String,
         enum: ['Male', 'Female', 'Other'],
         required: true
     },
-    phone:{
+    phone: {
         type: String,
         required: true
     },
-    email:{
+    email: {
         type: String,
         required: true
     },
@@ -46,23 +46,48 @@ const AppointmentSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['pending','accepted','cancelled','completed','in_progress','next_up','skipped','no_show'],
+        enum: ['pending', 'accepted', 'cancelled', 'completed', 'in_progress', 'next_up', 'skipped', 'no_show'],
         default: 'pending'
     },
-    patientjoinenabled:{
-        type:Boolean,
-        default :false
+    patientjoinenabled: {
+        type: Boolean,
+        default: false
     },
     token_number: {
         type: Number,
-        default:null
+        default: null
     },
     TimeSlot: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'TimeSlot',
         required: true
-    }
+    },
+    verifyToken: {
+        type: String,
+        default: null
+    },
+
+    qrPayload: {
+        type: String,
+        default: null
+    },
+
+    qrImage: {
+        type: String,  
+        default: null
+    },
+
+    completedVerified: {
+        type: Boolean,
+        default: false
+    },
+
+    checkedInAt: {
+        type: Date,
+        default: null
+    },
+
 }, { timestamps: true });
 
 
-export const Appointment=mongoose.model('Appointment', AppointmentSchema);
+export const Appointment = mongoose.model('Appointment', AppointmentSchema);

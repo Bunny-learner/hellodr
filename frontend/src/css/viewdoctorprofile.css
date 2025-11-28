@@ -12,6 +12,14 @@
 /* Global styles like 'body' are omitted as they should be in index.css
 */
 
+.highlight-section {
+  animation: flash 1.5s ease;
+}
+
+@keyframes flash {
+  0% { background: #fff3cd; }
+  100% { background: transparent; }
+}
 
 
 .vdp-like-btn,

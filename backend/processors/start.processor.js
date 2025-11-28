@@ -3,59 +3,87 @@ import { redisPub } from "../db/redisconnect.js";
 import { roomPresence } from "../sockets/index.js";
 import {Doctor} from  "../models/doctor.js"
 
-
-
 export async function startProcessor(job) {
   try {
     const { appointmentId, doctorId, patientId } = job.data;
 
-    console.log(
-      `\n[startProcessor] → Running job for appointment: ${appointmentId}`
-    );
+    console.log(`\n[startProcessor] → Running job for appointment: ${appointmentId}`);
 
-  
+    /* ------------------------------------------------------------------
+     * 1) Fetch Appointment
+     * ------------------------------------------------------------------ */
     const appt = await Appointment.findById(appointmentId);
-
     if (!appt) {
       console.log(`[startProcessor] ❌ Appointment not found → skip`);
       return;
     }
 
     const currentStatus = (appt.status || "").toLowerCase();
-    console.log(`[startProcessor] ✅ Promoting appointment → next_up`);
 
+    /* ------------------------------------------------------------------
+     * 2) Only "accepted" appointment should trigger
+     * ------------------------------------------------------------------ */
+    if (currentStatus !== "accepted") {
+      console.log(`[startProcessor] ⏭ Not eligible (status = ${currentStatus}) → skip`);
+      return;
+    }
+
+    console.log(`[startProcessor] 🔄 Moving appointment → next_up`);
     appt.status = "next_up";
     await appt.save();
-  
-    if (currentStatus === "in_progress") {
-      console.log(
-        `[startProcessor] ⏭ Appointment already 'in_progress' (doctor joined early) → skip`
-      );
+
+    /* ------------------------------------------------------------------
+     * 3) Fetch doctor + room
+     * ------------------------------------------------------------------ */
+    const doctor = await Doctor.findById(doctorId);
+    if (!doctor || !doctor.roomid) {
+      console.log("[startProcessor] ❌ Doctor not found or roomid missing");
       return;
     }
-    // We assume the roomI(d is the appointmentId. Update if this is different.
 
-    const temp = await Doctor.findById(doctorId)
-    const roomId =temp.roomid; 
+    const roomId = doctor.roomid;
     const roomState = roomPresence?.[roomId] || null;
 
+    /* ------------------------------------------------------------------
+     * 4) If doctor is already inside room → send delay
+     * ------------------------------------------------------------------ */
     if (roomState?.doctor === true) {
-      console.log(
-        `[startProcessor] ⏭ Doctor is already in the room (real-time check) → skip`
-      );
-      return;
-    }
+      console.log(`[startProcessor] ⏳ Doctor already inside room → send delay`);
+      
+      const doctorPayload = {
+        type: "delay",
+        data: {
+          doctorid: doctorId,
+          patientid: patientId,
+          message: "Next patient is waiting, please end current consultation soon.",
+          appointmentid: appointmentId,
+          isappointment: true,
+          from: "system",
+          to: "doctor",
+        },
+      };
 
-   
-    if (currentStatus !== "accepted") {
-      console.log(
-        `[startProcessor] ⏭ Not eligible (status = ${currentStatus}, e.g., cancelled/completed) → skip`
-      );
+      const patientPayload = {
+        type: "delay",
+        data: {
+          message:
+            "The doctor is currently busy with another consultation. Please wait, you will be notified soon.",
+          doctorid: doctorId,
+          patientid: patientId,
+          appointmentid: appointmentId,
+          isappointment: true,
+          from: "system",
+          to: "patient",
+        },
+      };
+
+      await redisPub.publish(`user:${patientId}`, JSON.stringify(patientPayload));
+      await redisPub.publish(`user:${doctorId}`, JSON.stringify(doctorPayload));
       return;
     }
 
     /* ------------------------------------------------------------------
-     * (5) Check queue state for this doctor on SAME day
+     * 5) Check DB — another appointment in progress?
      * ------------------------------------------------------------------ */
     const startDay = new Date(appt.date);
     startDay.setHours(0, 0, 0, 0);
@@ -63,102 +91,86 @@ export async function startProcessor(job) {
     const nextDay = new Date(startDay);
     nextDay.setDate(startDay.getDate() + 1);
 
-    const activeAppointment = await Appointment.findOne({
-      _id: { $ne: appointmentId }, // ⚠️ IMPORTANT: Exclude THIS appointment
+    const busyAppt = await Appointment.findOne({
+      _id: { $ne: appointmentId },
       doctor: doctorId,
+      status: "in_progress",
       date: { $gte: startDay, $lt: nextDay },
-      status: { $in: ["next_up", "in_progress"] }, 
     });
 
-    const doctorChannel = `user:${doctorId}`;
-    const patientChannel = `user:${patientId}`;
+    if (busyAppt) {
+      console.log(
+        `[startProcessor] ⏳ Doctor is busy with (${busyAppt._id}) → Delay`
+      );
 
-    
+      const doctorPayload = {
+        type: "delay",
+        data: {
+          doctorid: doctorId,
+          patientid: patientId,
+          message:
+            "Next patient is waiting, please close the ongoing consultation soon.",
+          appointmentid: appointmentId,
+          isappointment: true,
+          from: "system",
+          to: "doctor",
+        },
+      };
+
+      const patientPayload = {
+        type: "delay",
+        data: {
+          message:
+            "The doctor is busy with another appointment now. Please wait for your turn.",
+          doctorid: doctorId,
+          patientid: patientId,
+          appointmentid: appointmentId,
+          isappointment: true,
+          from: "system",
+          to: "patient",
+        },
+      };
+
+      await redisPub.publish(`user:${patientId}`, JSON.stringify(patientPayload));
+      await redisPub.publish(`user:${doctorId}`, JSON.stringify(doctorPayload));
+      return;
+    }
+
     /* ------------------------------------------------------------------
- * 5) Check if doctor is ACTUALLY BUSY
- * ------------------------------------------------------------------ */
+     * 6) Doctor is FREE → Send START notification to both
+     * ------------------------------------------------------------------ */
+    console.log(`[startProcessor] 🚀 Doctor is free → sending START notification`);
 
-// (A) REAL-TIME CHECK — Doctor is inside room
-if (roomState?.doctor === true) {
-  console.log(`[startProcessor] ⏳ Doctor is inside room → send delay`);
+    const doctorStartPayload = {
+      type: "start",
+      data: {
+        doctorid: doctorId,
+        patientid: patientId,
+        appointmentid: appointmentId,
+        message: "The next patient is ready. Please start the consultation.",
+        isappointment: true,
+        from: "system",
+        to: "doctor",
+      },
+    };
 
-  const doctorPayload = {
-    type: "delay",
-    data: {
-      doctorid: doctorId,
-      patientid: patientId,
-      message: "Next patient is waiting, please end current consultation soon.",
-      appointmentid: appointmentId,
-      isappointment: true,
-      from: "system",
-      to: "doctor",
-    },
-  };
+    const patientStartPayload = {
+      type: "start",
+      data: {
+        doctorid: doctorId,
+        patientid: patientId,
+        appointmentid: appointmentId,
+        message: "Your appointment time has come. Please be ready to join.",
+        isappointment: true,
+        from: "system",
+        to: "patient",
+      },
+    };
 
-  const patientPayload = {
-    type: "delay",
-    data: {
-      message:
-        "The doctor is busy with another patient. Please wait, you will be notified soon.",
-      doctorid: doctorId,
-      patientid: patientId,
-      appointmentid: appointmentId,
-      isappointment: true,
-      from: "system",
-      to: "patient",
-    },
-  };
+    await redisPub.publish(`user:${patientId}`, JSON.stringify(patientStartPayload));
+    await redisPub.publish(`user:${doctorId}`, JSON.stringify(doctorStartPayload));
 
-  await redisPub.publish(patientChannel, JSON.stringify(patientPayload));
-  await redisPub.publish(doctorChannel, JSON.stringify(doctorPayload));
-  return;
-}
-
-// (B) DB CHECK — Is ANY OTHER appointment in_progress?
-const busyAppt = await Appointment.findOne({
-  _id: { $ne: appointmentId },
-  doctor: doctorId,
-  status: "in_progress",
-  date: { $gte: startDay, $lt: nextDay },
-});
-
-if (busyAppt) {
-  console.log(
-    `[startProcessor] ⏳ Doctor is busy with active appointment (${busyAppt._id}) → Delay`
-  );
-
-  const doctorPayload = {
-    type: "delay",
-    data: {
-      doctorid: doctorId,
-      patientid: patientId,
-      message:
-        "Next patient is waiting, please close the ongoing consultation soon.",
-      appointmentid: appointmentId,
-      isappointment: true,
-      from: "system",
-      to: "doctor",
-    },
-  };
-
-  const patientPayload = {
-    type: "delay",
-    data: {
-      message:
-        "The doctor is busy with another appointment. Please wait for your turn.",
-      doctorid: doctorId,
-      patientid: patientId,
-      appointmentid: appointmentId,
-      isappointment: true,
-      from: "system",
-      to: "patient",
-    },
-  };
-
-  await redisPub.publish(patientChannel, JSON.stringify(patientPayload));
-  await redisPub.publish(doctorChannel, JSON.stringify(doctorPayload));
-  return;
-}
+    console.log(`[startProcessor] 📩 START notification sent to both doctor & patient`);
 
   } catch (err) {
     console.error(`[startProcessor] ❌ ERROR:`, err);

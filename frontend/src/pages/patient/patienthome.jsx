@@ -7,6 +7,7 @@ import FeaturedDoctorCard from "./featureddoctorcard";
 import CategoryCard from "./categorycard";
 import "../../css/patienthome.css";
 import Logo from "../logo";
+import Bubbles from"../../components/Loaders/bubbles"
 
 // Dummy testimonial data
 const testimonials = [
@@ -54,6 +55,21 @@ export default function PatientHome() {
   const [featuredDoctors, setFeaturedDoctors] = useState([]);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
 
+const [checkingRedirect, setCheckingRedirect] = useState(true);
+
+useEffect(() => {
+  const redirectUrl = localStorage.getItem("redirecturl");
+
+  if (redirectUrl) {
+    localStorage.removeItem("redirecturl");
+    window.location.replace(redirectUrl);
+  } else {
+    setCheckingRedirect(false);
+  }
+}, []);
+
+
+
   // Auto-slide testimonials
   useEffect(() => {
     const timer = setInterval(() => {
@@ -92,6 +108,13 @@ export default function PatientHome() {
 
   const prevTestimonial = () =>
     setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+
+
+  if (checkingRedirect) {
+  return (
+    <Bubbles/>
+  );
+}
 
   return (
     <div className="ph-page">

@@ -6,6 +6,7 @@ import Map from "../../components/map";
 import "../../css/viewdoctorprofile.css";
 import toast, { Toaster } from 'react-hot-toast';
 import Logo from "../logo";
+import { useLocation } from 'react-router-dom';
 import { useAuth } from "../AuthContext"
 const API = import.meta.env.VITE_API_URL;
 
@@ -158,6 +159,7 @@ export default function ViewDoctorProfile() {
   const { id: doctorId } = useParams();
   const navigate = useNavigate();
   const locationRef = useRef(null);
+const location = useLocation();
   const { doctors } = useContext(PatientContext);
   const { user } = useAuth();
   const [currentshowing,setCurrentShowing]=useState("")
@@ -169,6 +171,7 @@ export default function ViewDoctorProfile() {
   const [isLiked, setIsLiked] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [showBottomMenu,setShowBottomMenu]=useState(false)
+  
 
   useEffect(() => {
     if (!user || !doctorId) return;
@@ -194,6 +197,20 @@ export default function ViewDoctorProfile() {
       setError("Failed to fetch reviews");
     }
   }
+useEffect(() => {
+  if (location.state?.scrollTo === "location-section" && doctorProfile) {
+    setTimeout(() => {
+      const el = locationRef.current;
+      el.scrollIntoView({ behavior: "smooth" });
+
+      el.classList.add("highlight-section");
+      setTimeout(() => el.classList.remove("highlight-section"), 1500);
+    }, 300);
+  }
+}, [location.state, doctorProfile]);
+
+
+
 
   useEffect(() => {
     if (doctorProfile?.isLiked !== undefined) {

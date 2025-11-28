@@ -7,10 +7,9 @@ import { Doctor } from "../models/doctor.js";
 export const verifyJWT = (userType) => {
   return async (req, res, next) => {
     try {
-      // Get token from cookies
-      console.log("Inside the verifyJWT<----->")
+      
       const token = req.cookies["_host_AUTH"];
-      console.log(token,"accesstoken from cookies");
+      
 
       if (!token) {
         return res.status(401).json({ message: "Access token missing" ,istoken:false});
@@ -24,10 +23,11 @@ export const verifyJWT = (userType) => {
           user = await Doctor.findById(decoded._id);
       } else if (userType === "patient") {
         user = await Patient.findById(decoded._id);
+
       } else {
         return res.status(400).json({ message: "Invalid user type" });
       }
-      
+     
       if (!user) {
         console.log(decoded._id)
         return res.status(404).json({ message: `${userType} not found`,'accesstoken':token });

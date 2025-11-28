@@ -7,6 +7,7 @@ import { Doctor } from "../models/doctor.js"
 import { TimeSlot } from "../models/timeslot.js"
 import { Transaction } from "../models/transactions.js"
 import mongoose from "mongoose"
+import QRCode from "qrcode";
 import { loadTemplate } from "../utils/emailTemplate.js";
 import { redisPub } from '../db/redisconnect.js';
 import { Patient } from "../models/patient.js"
@@ -73,7 +74,7 @@ const book_appointment = asynchandler(async (req, res) => {
 
   const patientID = req.user._id;
   const patientEmail = req.user.email;
-
+console.log("patient",patientID)
 
 
   if (
@@ -90,13 +91,14 @@ const book_appointment = asynchandler(async (req, res) => {
     throw new ApiError("All fields are required");
   }
 
-
+console.log(1)
   const doctor = await Doctor.findById(doctorId);
   if (!doctor) {
     res.status(404);
     throw new ApiError("Doctor not found");
   }
 
+  console.log(2)
 
   const timeslot = await TimeSlot.findOne({
     doctor: doctorId,
@@ -323,23 +325,39 @@ const update_appointment_status = asynchandler(async (req, res) => {
   //Accepted
   if (status.toLowerCase() === "accepted") {
 
+    if(appointment.mode=="online"){
+
     await scheduleJobsForAppointment(appointment)
-    await scheduleRemindersForAppointment(appointment)
     await scheduleTimeoutJobs(appointment)
+    }
+    await scheduleRemindersForAppointment(appointment)
 
-    if (appointment.mode === "offline" && appointment.token_number) {
+ if (appointment.mode === "offline" && appointment.token_number) {
 
-    const body = loadTemplate("token_accepted.html", {
-  patientName: appointment.patient.name,
-  tokenNumber: appointment.token_number,
-  doctorName: appointment.doctor.name,
-  startTime: appointment.TimeSlot.StartTime,
-  endTime: appointment.TimeSlot.EndTime,
-  appointmentDate: indiaTime
+  const qrPayload = JSON.stringify({
+  appointmentId: appointment._id,
+  patientId: appointment.patient._id,
+  token: appointment.token_number,
 });
+  const qrDataURL = await QRCode.toDataURL(qrPayload); 
+  const qrPageUrl = `${process.env.WEB_URL}/showqr?appt=${appointment._id}`;
+appointment.qrPayload = qrPayload;
+appointment.qrImage = qrDataURL;
+await appointment.save()
 
-    sendEmail(appointment.patient.email, "Appointment Accepted", body);
-  }
+  const body = loadTemplate("token_accepted.html", {
+    patientName: appointment.patient.name,
+    tokenNumber: appointment.token_number,
+    doctorName: appointment.doctor.name,
+    startTime: appointment.TimeSlot.StartTime,
+    endTime: appointment.TimeSlot.EndTime,
+    appointmentDate: indiaTime,
+    qrImage: qrDataURL,         // base64 QR image (optional)
+    qrLink: qrPageUrl           // QR viewing page link
+  });
+
+  sendEmail(appointment.patient.email, "Appointment Accepted", body);
+}
 
   }
 
@@ -618,6 +636,10 @@ const getsession = asynchandler(async (req, res) => {
 
 
 
+
+
+
+
 const gettransactions = asynchandler(async (req, res) => {
   const patientId = req.user._id;
   console.log("patientID")
@@ -677,6 +699,99 @@ const update_inprogress = asynchandler(async (req, res) => {
     success: true
   });
 
-
 })
-export { book_appointment, update_inprogress, authorize, gettransactions, getsession, get_all_appointments, update_appointment_status, get_appiontment }
+
+
+const showqr=asynchandler(async(req,res)=>{
+
+  
+  const appt = await Appointment.findById(req.query.appt)
+    .populate("doctor")
+    .populate("TimeSlot");
+
+    console.log("here inside the showqr")
+  if (!appt || appt.mode !== "offline") {
+    res.status(404).json({"message":"Invalid Qr-Code "});
+    throw new ApiError("Appointment not found");
+  }
+
+  console.log("here in showqr")
+  res.json({
+    qrImage: appt.qrImage,        
+    tokenNumber: appt.token_number,
+    patientName: appt.name,
+    doctorName: appt.doctor.name,
+    date: appt.date,
+    startTime: appt.TimeSlot.StartTime,
+    endTime: appt.TimeSlot.EndTime
+  });
+})
+
+
+
+const verifyqr=asynchandler(async(req,res)=>{
+
+  try {
+    const { appointmentId, patientId, token } = req.body;
+
+    if (!appointmentId || !patientId || !token) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid QR data"
+      });
+    }
+
+    const appt = await Appointment.findById(appointmentId);
+    if (!appt) {
+      return res.status(404).json({
+        success: false,
+        message: "Appointment not found"
+      });
+    }
+
+    // 2. Validate patient
+    if (String(appt.patient) !== String(patientId)) {
+      return res.status(400).json({
+        success: false,
+        message: "QR does not belong to this patient"
+      });
+    }
+
+    // 3. Validate token
+    if (String(appt.token_number) !== String(token)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or mismatched token"
+      });
+    }
+
+    
+    if (appt.completedVerified === true) {
+      return res.status(400).json({
+        success: false,
+        message: "Appointment already verified"
+      });
+    }
+
+    // 5. Update appointment as completed
+    appt.completedVerified = true;
+    appt.checkedInAt = new Date();
+    appt.status = "completed";
+
+    await appt.save();
+
+    return res.json({
+      success: true,
+      message: "Patient verified successfully",
+      appointment: appt
+    });
+
+  } catch (err) {
+    console.error("QR Checkin Error:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Server error during QR verification"
+    });
+  }
+})
+export { book_appointment,showqr, verifyqr,update_inprogress, authorize, gettransactions, getsession, get_all_appointments, update_appointment_status, get_appiontment } 

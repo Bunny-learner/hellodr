@@ -18,6 +18,8 @@ import WaitingRoom from './pages/WaitingRoom'
 import Welcome1 from "./pages/patient/welcome1"
 import RoleSelection from './pages/role-selection';
 import Home from "./pages/patient/home.jsx"
+import ShowQR from './pages/showqr.jsx';
+import MyPrescriptions from './pages/patient/myprescriptions.jsx';
 
 const AppointmentReview =lazy(()=>import('./pages/patient/appointmentreview'))
 const AboutDoctor = lazy(() => import('./pages/patient/viewdoctorprofile'));
@@ -72,14 +74,18 @@ function App() {
           <Route path='/patient/settings' element={<Settings/>}/>
           <Route path="/patient/notifications" element={<Notification/>}/>
           <Route path="/patient/favourites" element={<FavouriteDoctors/>}/>
+          <Route path="/patient/prescriptions" element={<MyPrescriptions/>}/>
         </Route>
 
+         
          <Route path="/patient/appointment/form" element={<BookingForm/>} />
          <Route path="/patient/appointment/review" element={<AppointmentReview/>} />
 
         <Route path="/patient/profile" element={<PatientProfile />} />
         <Route path="/role-selection" element={<RoleSelection/>}/>
         <Route path="/home" element={<Home/>}/>
+        <Route path="/showqr" element={<ShowQR />} />
+
       </Routes>
     </Suspense>
   );

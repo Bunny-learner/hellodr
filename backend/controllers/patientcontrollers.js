@@ -8,6 +8,7 @@ import { TimeSlot } from "../models/timeslot.js"
 import {Review} from "../models/review.js"
 import bcrypt from "bcrypt"
 dotenv.config({ quiet: true })
+import { Prescription } from "../models/prescription.js";
 import { generate } from "./generate_tokens.js"
 const API = process.env.WEB_URL;
 
@@ -742,7 +743,46 @@ const viewfav = asynchandler(async (req, res) => {
   });
 });
 
-export { profile, viewfav,like_dislike,logout,addreview,getreviews, allslots,filterdoctors, uploadimg, updateprofile, getdoctors, pat_signup, cloudcred, pat_back, face_back, pat_login, pat_send, pat_verify, pat_reset }
+
+
+
+
+
+
+const getprescriptions = async (req, res) => {
+  try {
+    const patientId = req.user._id; // from auth middleware
+    console.log(patientId)
+    const prescriptions = await Prescription.find({ patient: patientId })
+      .populate("doctor", "name")
+      .sort({ createdAt: -1 });
+
+    const formatted = prescriptions.map(p => ({
+      id: p._id,
+      doctorName: p.doctor?.name || "Unknown Doctor",
+
+      // pick the LAST uploaded PDF
+      pdfUrl: p.medications.length > 0 
+        ? p.medications[p.medications.length - 1] 
+        : null,
+
+      allPdfUrls: p.medications,
+
+      notes: p.notes || "",
+      date: p.createdAt
+    }));
+
+    console.log(formatted,":formatted")
+
+    return res.status(200).json(formatted);
+  } catch (err) {
+    console.error("Error fetching prescriptions:", err);
+    return res.status(500).json({ message: "Failed to get prescriptions" });
+  }
+};
+
+
+export { profile,getprescriptions, viewfav,like_dislike,logout,addreview,getreviews, allslots,filterdoctors, uploadimg, updateprofile, getdoctors, pat_signup, cloudcred, pat_back, face_back, pat_login, pat_send, pat_verify, pat_reset }
 
 
 
